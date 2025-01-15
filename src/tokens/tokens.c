@@ -45,54 +45,55 @@ int is_operator(char c)
 void tokenize_input(t_ms *shell)
 {
 	int i = 0;
-	char buffer[4096];
+	char buffer[100000];
 	int buf_i;
 	int type;
 
 	while (shell->input[i])
 	{
-
-
-		// determine_token_type(input, &i, tokens);
-	while (shell->input[i] && isspace(shell->input[i]))
-		i++;
-	if (!shell->input[i])
-		break;
-	if (is_operator(shell->input[i]))
-	{
-		buffer[0] = shell->input[i];
-		buffer[1] = '\0';
-		if (buffer[0] == '|') type = TOKEN_PIPE;
-		else if (buffer[0] == '<')
+		while (shell->input[i] && isspace(shell->input[i]))
+			i++;
+		if (!shell->input[i])
+			break;
+		if (is_operator(shell->input[i]))
 		{
-			if (shell->input[i + 1] == '<')
+			buffer[0] = shell->input[i];
+			buffer[1] = '\0';
+			if (buffer[0] == '|')
 			{
-				buffer[1] = '<';
-				buffer[2] = '\0';
-				i++;
-				type = TOKEN_HERE_DOC;
+				type = TOKEN_PIPE;
+				shell->pipe_count++;
 			}
-			else
-				type = TOKEN_REDIR_IN;
-		}
-		else if (buffer[0] == '>')
-		{
-			if (shell->input[i + 1] == '>')
+			else if (buffer[0] == '<')
 			{
-				buffer[1] = '>';
-				buffer[2] = '\0';
-				i++;
-				type = TOKEN_APPEND;
+				if (shell->input[i + 1] == '<')
+				{
+					buffer[1] = '<';
+					buffer[2] = '\0';
+					i++;
+					type = TOKEN_HERE_DOC;
+				}
+				else
+					type = TOKEN_REDIR_IN;
 			}
-			else
-				type = TOKEN_REDIR_OUT;
+			else if (buffer[0] == '>')
+			{
+				if (shell->input[i + 1] == '>')
+				{
+					buffer[1] = '>';
+					buffer[2] = '\0';
+					i++;
+					type = TOKEN_APPEND;
+				}
+				else
+					type = TOKEN_REDIR_OUT;
+			}
+			create_token(shell, buffer, type);
+			type = TOKEN_ARGS;
+			shell->token_count++;
+			i++;
+			continue;
 		}
-		create_token(shell, buffer, type);
-		type = TOKEN_ARGS;
-		i++;
-		continue;
-	}
-
 		buf_i = 0;
 		while (shell->input[i] && !isspace(shell->input[i]) && !is_operator(shell->input[i]))
 		{
@@ -127,17 +128,6 @@ void print_tokens(t_token *tokens)
 			tokens->value,
 			type_names[tokens->type]);
 		tokens = tokens->next;
-	}
-}
-
-void free_tokens(t_token *tokens)
-{
-	while (tokens)
-	{
-		t_token *next = tokens->next;
-		free(tokens->value);
-		free(tokens);
-		tokens = next;
 	}
 }
 

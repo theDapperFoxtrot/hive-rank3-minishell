@@ -19,6 +19,16 @@ enum token_type {
 	TOKEN_APPEND     // >>
 };
 
+typedef struct s_command {
+	char	**args;
+	struct	s_command *next;
+	char	*input_file;
+	char	*output_file;
+	char	*heredoc_delimiter;
+	int		append_mode;
+} t_command;
+
+
 typedef struct s_token {
 	char *value;
 	int type;
@@ -27,10 +37,13 @@ typedef struct s_token {
 
 typedef struct s_ms
 {
-	int		exit_code;
-	char	**env_list;
-	char 	*input;
-	t_token *token;
+	int			exit_code;
+	char		**env_list;
+	char 		*input;
+	int			token_count;
+	int			pipe_count;
+	t_token 	*token;
+	t_command 	*commands;
 } 	t_ms;
 
 
@@ -52,6 +65,8 @@ int		env_list_size(char **envp);
 // parser
 void	tokenize_input(t_ms *shell);
 void print_tokens(t_token *tokens);
+void free_tokens(t_token *tokens);
+
 
 
 #endif

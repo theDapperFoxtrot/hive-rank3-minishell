@@ -5,27 +5,6 @@
 #include <string.h>
 #include <ctype.h>
 
-// void add_token(t_ms *shell, t_token *new_token)
-// {
-//     t_token *current;
-
-//     if (!new_token)
-//         return;
-    
-//     if (!shell->token)
-//     {
-//         shell->token = new_token;
-//         new_token->next = NULL;  // Explicitly set next to NULL
-//         return;
-//     }
-    
-//     current = shell->token;
-//     while (current->next)
-//         current = current->next;
-//     current->next = new_token;
-//     new_token->next = NULL;      // Explicitly set next to NULL
-// }
-
 void add_token(t_ms *shell, t_token *new_token)
 {
     t_token *current = shell->token;
@@ -73,17 +52,17 @@ void tokenize_input(t_ms *shell)
 }
 
 // For debugging
-void print_tokens(t_token *tokens)
-{
-	const char *type_names[] = {
-		"ARGS", "PIPE", "REDIR_IN", "HERE_DOC", "REDIR_OUT", "TOKEN_APPEND"
-	};
+// void print_tokens(t_token *tokens)
+// {
+// 	const char *type_names[] = {
+// 		"ARGS", "PIPE", "REDIR_IN", "HERE_DOC", "REDIR_OUT", "TOKEN_APPEND"
+// 	};
 
-	while (tokens)
-	{
-		printf("Token: %-15s Type: %s\n",
-			tokens->value,
-			type_names[tokens->type]);
-		tokens = tokens->next;
-	}
-}
+// 	while (tokens)
+// 	{
+// 		printf("Token: %-15s Type: %s\n",
+// 			tokens->value,
+// 			type_names[tokens->type]);
+// 		tokens = tokens->next;
+// 	}
+// }

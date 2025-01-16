@@ -41,27 +41,6 @@ void if_is_operator(t_ms *shell)
 	}
 }
 
-// void create_token(t_ms *shell)
-// {
-//     t_token *new_token;
-
-//     new_token = malloc(sizeof(t_token));
-//     if (!new_token)
-//         return;
-
-//     new_token->value = ft_strdup(shell->buffer);
-//     if (!new_token->value)       // Check if strdup failed
-//     {
-//         free(new_token);         // Clean up if strdup fails
-//         return;
-//     }
-    
-//     new_token->type = shell->type;
-//     new_token->next = NULL;      // Initialize next pointer to NULL
-    
-//     add_token(shell, new_token);
-// }
-
 void create_token(t_ms *shell)
 {
 	char *value;
@@ -71,14 +50,13 @@ void create_token(t_ms *shell)
 	type = shell->type;
     t_token *new_token = malloc(sizeof(t_token));
     if (!new_token)
-        return;
+        return ;
     new_token->value = ft_strdup(value);
 	if (!new_token->value)
 	{
-		//free the whole token list
-		// need error/cleanup function
+		cleanup(shell);
 		free(new_token);
-		return;
+		return ;
 	}
     new_token->type = type;
     new_token->next = NULL;
@@ -88,23 +66,22 @@ void create_token(t_ms *shell)
 // Function to check if character is a special shell character
 void write_token_args(t_ms *shell)
 {
-
-		shell->buf_i = 0;
-		while (shell->input[shell->i] && !isspace(shell->input[shell->i]) && !is_operator(shell->input[shell->i]))
+	shell->buf_i = 0;
+	while (shell->input[shell->i] && !isspace(shell->input[shell->i]) && !is_operator(shell->input[shell->i]))
+	{
+		if (shell->input[shell->i] == '"' || shell->input[shell->i] == '\'')
 		{
-			if (shell->input[shell->i] == '"' || shell->input[shell->i] == '\'')
-			{
-				char quote = shell->input[shell->i];
-				shell->buffer[shell->buf_i++] = shell->input[shell->i++];  // Include the opening quote
-				while (shell->input[shell->i] && shell->input[shell->i] != quote)
-					shell->buffer[shell->buf_i++] = shell->input[shell->i++];
-				if (shell->input[shell->i] == quote)
-					shell->buffer[shell->buf_i++] = shell->input[shell->i++];  // Include the closing quote
-			}
-			else
+			char quote = shell->input[shell->i];
+			shell->buffer[shell->buf_i++] = shell->input[shell->i++];  // Include the opening quote
+			while (shell->input[shell->i] && shell->input[shell->i] != quote)
 				shell->buffer[shell->buf_i++] = shell->input[shell->i++];
+			if (shell->input[shell->i] == quote)
+				shell->buffer[shell->buf_i++] = shell->input[shell->i++];  // Include the closing quote
 		}
-		shell->buffer[shell->buf_i] = '\0';
-		if (shell->buf_i > 0)
-			create_token(shell);
+		else
+			shell->buffer[shell->buf_i++] = shell->input[shell->i++];
+	}
+	shell->buffer[shell->buf_i] = '\0';
+	if (shell->buf_i > 0)
+		create_token(shell);
 }

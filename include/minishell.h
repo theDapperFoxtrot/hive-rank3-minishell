@@ -57,7 +57,7 @@ void	free_env(t_ms *shell);
 void	print_error(char *message, t_ms *shell, int status);
 int		count_args(char **command);
 //builtin
-void	check_command(char **command, t_ms *shell);
+void	check_command(t_ms *shell);
 void	ft_echo(char **command, t_ms *shell);
 void	ft_pwd(char **command, t_ms *shell);
 void	ft_exit(char **command, t_ms *shell);
@@ -66,9 +66,9 @@ void	ft_cd(char **command, t_ms *shell);
 void	create_env(t_ms *shell, char **envp);
 int		update_pwd(t_ms *shell, char *string, char *value);
 int		env_list_size(char **envp);
+void	ft_export(char **command, t_ms *shell);
 // parser
-void	print_tokens(t_token *tokens);
-void	free_tokens(t_token *tokens);
+// void	print_tokens(t_token *tokens);
 // tokens folder
 void	tokenize_input(t_ms *shell);
 int		is_operator(char c);
@@ -76,6 +76,10 @@ void	write_token_args(t_ms *shell);
 void	if_is_operator(t_ms *shell);
 void	create_token(t_ms *shell);
 void	add_token(t_ms *shell, t_token *new_token);
+// errors and cleanup
+void	cleanup(t_ms *shell);
+void	free_commands(t_command *commands);
+void	free_tokens(t_ms *shell);
 
 
 

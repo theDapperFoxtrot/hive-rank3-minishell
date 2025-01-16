@@ -11,8 +11,10 @@ SRCS = 	src/main.c \
 		src/builtin/env.c \
 		src/builtin/cd.c \
 		src/builtin/update_pwd.c \
+		src/builtin/export.c \
 		src/tokens/tokens.c \
-		src/tokens/tokens2.c
+		src/tokens/tokens2.c \
+		src/error_cleanup/error_cleanup.c
 OBJ_DIR = objects
 OBJS = $(addprefix $(OBJ_DIR)/,  $(SRCS:.c=.o))
 LIBFT = ./libft/libft.a

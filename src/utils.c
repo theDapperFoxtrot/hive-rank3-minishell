@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:39:22 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/13 19:02:37 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/16 17:26:06 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void	free_env(t_ms *shell)
 void	print_error(char *message, t_ms *shell, int status)
 {
 	ft_putendl_fd(message, 2);
+	cleanup(shell);
 	shell->exit_code = status;
 }
 int	count_args(char **command)

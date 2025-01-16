@@ -30,9 +30,9 @@ typedef struct s_command {
 
 
 typedef struct s_token {
-	char *value;
-	int type;
-	struct s_token *next;
+	char	*value;
+	int		type;
+	struct	s_token *next;
 } t_token;
 
 typedef struct s_ms
@@ -44,6 +44,10 @@ typedef struct s_ms
 	int			pipe_count;
 	t_token 	*token;
 	t_command 	*commands;
+	int			i;
+	char 		buffer[100000];
+	int			buf_i;
+	int			type;
 } 	t_ms;
 
 
@@ -63,9 +67,16 @@ void	create_env(t_ms *shell, char **envp);
 int		update_pwd(t_ms *shell, char *string, char *value);
 int		env_list_size(char **envp);
 // parser
+void	print_tokens(t_token *tokens);
+void	free_tokens(t_token *tokens);
+// tokens folder
 void	tokenize_input(t_ms *shell);
-void print_tokens(t_token *tokens);
-void free_tokens(t_token *tokens);
+int		is_operator(char c);
+void	write_token_args(t_ms *shell);
+void	if_is_operator(t_ms *shell);
+void	create_token(t_ms *shell);
+void	add_token(t_ms *shell, t_token *new_token);
+
 
 
 

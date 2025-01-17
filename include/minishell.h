@@ -37,24 +37,23 @@ typedef struct s_token {
 
 typedef struct s_ms
 {
-	int			exit_code;
-	char		**env_list;
-	char 		*input;
-	int			token_count;
-	int			pipe_count;
-	t_token 	*token;
-	t_command 	*commands;
-	int			i;
-	char 		buffer[100000];
-	int			buf_i;
-	int			type;
+	unsigned char	exit_code;
+	char			**env_list;
+	char 			*input;
+	int				pipe_count;
+	t_token 		*token;
+	t_command 		*commands;
+	int				i;
+	char 			buffer[100000];
+	int				buf_i;
+	int				type;
 } 	t_ms;
 
 
 //utils.c
 void	free_args(char **commands);
 void	free_env(t_ms *shell);
-void	print_error(char *message, t_ms *shell, int status);
+void	print_error(char *message, t_ms *shell, unsigned char status);
 int		count_args(char **command);
 //builtin
 void	check_command(t_ms *shell);
@@ -67,6 +66,7 @@ void	create_env(t_ms *shell, char **envp);
 int		update_pwd(t_ms *shell, char *string, char *value);
 int		env_list_size(char **envp);
 void	ft_export(char **command, t_ms *shell);
+void	quicksort(char **arr, int low, int high);
 // parser
 // void	print_tokens(t_token *tokens);
 // tokens folder

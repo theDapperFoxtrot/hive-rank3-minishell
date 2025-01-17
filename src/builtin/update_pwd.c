@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/09 13:47:21 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/13 19:03:22 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/17 14:59:57 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ int	update_pwd(t_ms *shell, char *string, char *value)
 	if (!new_value)
 	{
 		print_error("Malloc failed update_env", shell, 1);
-		//need to free args but ft_split command is not used, when parsing is done properly
-		free_env(shell);
 		exit(shell->exit_code);
 	}
 	len = ft_strlen(string);

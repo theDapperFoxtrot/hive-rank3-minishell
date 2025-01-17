@@ -9,13 +9,13 @@ void add_token(t_ms *shell, t_token *new_token)
 {
     t_token *current = shell->token;
 
-    if (!new_token)
-        return;
+    if (!new_token || !shell)
+        return ;
     if (!shell->token)
     {
         shell->token = new_token;
 		new_token->next = NULL;
-        return;
+        return ;
     }
     while (current->next)
         current = current->next;
@@ -25,6 +25,7 @@ void add_token(t_ms *shell, t_token *new_token)
 
 void tokenize_input(t_ms *shell)
 {
+	shell->token = NULL;
 	shell->i = 0;
 	while (shell->input[shell->i])
 	{
@@ -43,7 +44,6 @@ void tokenize_input(t_ms *shell)
 			if_is_operator(shell);
 			create_token(shell);
 			shell->type = TOKEN_ARGS;
-			shell->token_count++;
 			shell->i++;
 			continue;
 		}

@@ -3,7 +3,10 @@
 void cleanup(t_ms *shell)
 {
     if (shell->input)
+    {
         free(shell->input);
+        shell->input = NULL;
+    }
     if (shell->token)
         free_tokens(shell);
     if (shell->commands)
@@ -24,6 +27,7 @@ void free_commands(t_command *commands)
         free(commands);
         commands = tmp;
     }
+    commands = NULL; // Ensure the commands pointer is reset
 }
 
 void free_tokens(t_ms *shell)
@@ -43,5 +47,6 @@ void free_tokens(t_ms *shell)
         free(current);               // Free the token structure itself
         current = next;              // Move to next token
     }
+    shell->token = NULL; // Ensure the tokens pointer is reset
 }
 

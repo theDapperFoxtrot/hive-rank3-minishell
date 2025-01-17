@@ -12,6 +12,7 @@ SRCS = 	src/main.c \
 		src/builtin/cd.c \
 		src/builtin/update_pwd.c \
 		src/builtin/export.c \
+		src/builtin/quicksort.c \
 		src/tokens/tokens.c \
 		src/tokens/tokens2.c \
 		src/error_cleanup/error_cleanup.c

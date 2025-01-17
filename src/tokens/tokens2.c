@@ -43,22 +43,22 @@ void if_is_operator(t_ms *shell)
 
 void create_token(t_ms *shell)
 {
-	char *value;
-	int type;
+    t_token *new_token;
 
-	value = shell->buffer;
-	type = shell->type;
-    t_token *new_token = malloc(sizeof(t_token));
+	if (!shell || !shell->buffer)
+		return ;
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return ;
     if (!new_token)
         return ;
-    new_token->value = ft_strdup(value);
+    new_token->value = ft_strdup(shell->buffer);
 	if (!new_token->value)
 	{
-		cleanup(shell);
 		free(new_token);
-		return ;
+		print_error("Error: malloc failed", shell, 1);
 	}
-    new_token->type = type;
+    new_token->type = shell->type;
     new_token->next = NULL;
     add_token(shell, new_token);
 }

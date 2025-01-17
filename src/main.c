@@ -80,13 +80,11 @@ void clear_buffer(t_ms *shell)
 void parsing(t_ms *shell)
 {
 	tokenize_input(shell); // Tokenizes input and prepares for parsing
-	// print_tokens(shell->token); // For debugging
 	parse_tokens(shell);   // Converts tokens into commands
 	clear_buffer(shell);
 	free_tokens(shell); // Free the tokens list
 	check_command(shell);  // Checks if the command is a builtin or external command
 	free_commands(shell->commands); // Free the commands list
-	shell->commands = NULL; // Ensure the commands pointer is reset
 	free(shell->input);
 }
 

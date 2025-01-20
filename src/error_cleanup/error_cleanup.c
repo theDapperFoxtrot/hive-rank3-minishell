@@ -1,52 +1,51 @@
 #include "../../include/minishell.h"
 
-void cleanup(t_ms *shell)
+void	cleanup(t_ms *shell)
 {
-    if (shell->input)
-    {
-        free(shell->input);
-        shell->input = NULL;
-    }
-    if (shell->token)
-        free_tokens(shell);
-    if (shell->commands)
-        free_commands(shell->commands);
-    free_env(shell);
+	if (shell->input)
+	{
+		free(shell->input);
+		shell->input = NULL;
+	}
+	if (shell->token)
+		free_tokens(shell);
+	if (shell->commands)
+		free_commands(shell->commands);
+	free_env(shell);
 }
 
-void free_commands(t_command *commands)
+void	free_commands(t_command *commands)
 {
-    t_command *tmp;
+	t_command	*tmp;
 
-    while (commands)
-    {
-        tmp = commands->next;
-        free_split(commands->args);
-        free(commands->input_file);
-        free(commands->output_file);
-        free(commands);
-        commands = tmp;
-    }
-    commands = NULL; // Ensure the commands pointer is reset
+	while (commands)
+	{
+		tmp = commands->next;
+		free_split(commands->args);
+		free(commands->input_file);
+		free(commands->output_file);
+		free(commands);
+		commands = tmp;
+	}
+	commands = NULL;
 }
 
-void free_tokens(t_ms *shell)
+void	free_tokens(t_ms *shell)
 {
-    t_token *current;
-    t_token *next;
+	t_token	*current;
+	t_token	*next;
 
-    current = shell->token;
-    while (current != NULL)
-    {
-        next = current->next;        // Store next pointer before freeing
-        if (current->value != NULL)
-        {
-            free(current->value);
-            current->value = NULL;
-        }
-        free(current);               // Free the token structure itself
-        current = next;              // Move to next token
-    }
-    shell->token = NULL; // Ensure the tokens pointer is reset
+	current = shell->token;
+	while (current != NULL)
+	{
+		next = current->next;
+		if (current->value != NULL)
+		{
+			free(current->value);
+			current->value = NULL;
+		}
+		free(current);
+		current = next;
+	}
+	shell->token = NULL;
 }
-

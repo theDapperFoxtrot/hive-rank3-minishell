@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:39:22 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/17 15:56:48 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/20 16:17:16 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	free_args(char **commands)
 	i = 0;
 	if (commands)
 	{
-		while(commands[i])
+		while (commands[i])
 		{
 			free(commands[i]);
 			i++;
@@ -27,6 +27,7 @@ void	free_args(char **commands)
 	}
 	free(commands);
 }
+
 void	free_env(t_ms *shell)
 {
 	int	i;
@@ -34,7 +35,7 @@ void	free_env(t_ms *shell)
 	i = 0;
 	if (shell->env_list)
 	{
-		while(shell->env_list[i])
+		while (shell->env_list[i])
 		{
 			free(shell->env_list[i]);
 			i++;
@@ -49,9 +50,10 @@ void	print_error(char *message, t_ms *shell, unsigned char status)
 	cleanup(shell);
 	shell->exit_code = status;
 }
+
 int	count_args(char **command)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (command[i])

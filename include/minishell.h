@@ -10,46 +10,45 @@
 # include <stdio.h>
 
 // Simplified token types
-enum token_type {
-	TOKEN_ARGS,       // ARGS, including quoted strings
-	TOKEN_PIPE,      // |
-	TOKEN_REDIR_IN,  // <
-	TOKEN_HERE_DOC,  // <<
-	TOKEN_REDIR_OUT, // >
-	TOKEN_APPEND     // >>
+enum e_token_type
+{
+	TOKEN_ARGS,
+	TOKEN_PIPE,
+	TOKEN_REDIR_IN,
+	TOKEN_HERE_DOC,
+	TOKEN_REDIR_OUT,
+	TOKEN_APPEND
 };
+typedef struct s_command
+{
+	char				**args;
+	struct s_command	*next;
+	char				*input_file;
+	char				*output_file;
+	char				*heredoc_delimiter;
+	int					append_mode;
+}	t_command;
 
-typedef struct s_command {
-	char	**args;
-	struct	s_command *next;
-	char	*input_file;
-	char	*output_file;
-	char	*heredoc_delimiter;
-	int		append_mode;
-} t_command;
-
-
-typedef struct s_token {
-	char	*value;
-	int		type;
-	struct	s_token *next;
-} t_token;
+typedef struct s_token
+{
+	char			*value;
+	int				type;
+	struct s_token	*next;
+}	t_token;
 
 typedef struct s_ms
 {
 	unsigned char	exit_code;
 	char			**env_list;
-	char 			*input;
+	char			*input;
 	int				pipe_count;
-	t_token 		*token;
-	t_command 		*commands;
+	t_token			*token;
+	t_command		*commands;
 	int				i;
-	char 			buffer[100000];
+	char			buffer[100000];
 	int				buf_i;
 	int				type;
-} 	t_ms;
-
-
+}	t_ms;
 //utils.c
 void	free_args(char **commands);
 void	free_env(t_ms *shell);
@@ -69,6 +68,8 @@ void	ft_export(char **command, t_ms *shell);
 void	quicksort(char **arr, int low, int high);
 void	ft_unset(char **command, t_ms *shell);
 // parser
+void	parse_tokens(t_ms *shell);
+void	add_argument(t_command *cmd, char *arg);
 // void	print_tokens(t_token *tokens);
 // tokens folder
 void	tokenize_input(t_ms *shell);
@@ -81,8 +82,4 @@ void	add_token(t_ms *shell, t_token *new_token);
 void	cleanup(t_ms *shell);
 void	free_commands(t_command *commands);
 void	free_tokens(t_ms *shell);
-
-
-
-
 #endif

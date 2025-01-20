@@ -1,14 +1,14 @@
 #include "../../include/minishell.h"
 
-void unset_env_variable(t_ms *shell, char *key)
+void	unset_env_variable(t_ms *shell, char *key)
 {
-	int i;
-	int j;
-	char **temp_list;
-	int list_size;
+	int		i;
+	int		j;
+	char	**temp_list;
+	int		list_size;
+
 	list_size = env_list_size(shell->env_list);
 	temp_list = (char **) malloc((list_size) * sizeof(char *));
-
 	i = 0;
 	j = 0;
 	while (shell->env_list[i])
@@ -16,7 +16,7 @@ void unset_env_variable(t_ms *shell, char *key)
 		if (ft_strncmp(shell->env_list[i], key, ft_strlen(key)) == 0)
 		{
 			i++;
-			continue;
+			continue ;
 		}
 		temp_list[j] = ft_strdup(shell->env_list[i]);
 		i++;
@@ -28,9 +28,9 @@ void unset_env_variable(t_ms *shell, char *key)
 	shell->env_list = temp_list;
 }
 
-int does_var_exist(t_ms *shell, char *key)
+int	does_var_exist(t_ms *shell, char *key)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (shell->env_list[i])
@@ -42,15 +42,13 @@ int does_var_exist(t_ms *shell, char *key)
 	return (0);
 }
 
-void ft_unset(char **command, t_ms *shell)
+void	ft_unset(char **command, t_ms *shell)
 {
-	int i;
+	int	i;
 
-	// when you type unset
 	if (!command[1])
-		return;
+		return ;
 	i = 1;
-	// when you type unset
 	while (command[i])
 	{
 		if (does_var_exist(shell, command[i]))
@@ -58,4 +56,3 @@ void ft_unset(char **command, t_ms *shell)
 		i++;
 	}
 }
-

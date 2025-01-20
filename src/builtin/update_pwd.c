@@ -6,12 +6,11 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/09 13:47:21 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/17 14:59:57 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/20 15:43:51 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
 
 int	update_pwd(t_ms *shell, char *string, char *value)
 {

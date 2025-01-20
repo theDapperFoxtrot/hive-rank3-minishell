@@ -16,6 +16,7 @@ SRCS = 	src/main.c \
 		src/builtin/unset.c \
 		src/tokens/tokens.c \
 		src/tokens/tokens2.c \
+		src/parsing/parsing.c \
 		src/error_cleanup/error_cleanup.c
 OBJ_DIR = objects
 OBJS = $(addprefix $(OBJ_DIR)/,  $(SRCS:.c=.o))

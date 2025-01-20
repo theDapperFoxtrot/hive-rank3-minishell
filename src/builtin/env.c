@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 10:34:14 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/17 15:29:34 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/20 15:31:56 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,15 @@
 
 int	env_list_size(char **envp)
 {
-	int 	i;
+	int	i;
 
 	i = 0;
 	while (envp[i])
 		i++;
 	return (i);
 }
-static char	**copy_env(t_ms *shell, char **env_list, char **envp)
+
+char	**copy_env(t_ms *shell, char **env_list, char **envp)
 {
 	int	i;
 
@@ -43,7 +44,7 @@ static char	**copy_env(t_ms *shell, char **env_list, char **envp)
 	return (env_list);
 }
 
-void create_env(t_ms *shell, char **envp)
+void	create_env(t_ms *shell, char **envp)
 {
 	int		env_size;
 	char	**env_list;

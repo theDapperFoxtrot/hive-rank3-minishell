@@ -6,53 +6,34 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:17:41 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/20 14:50:59 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/20 15:41:26 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-int is_builtin(char **command, t_ms *shell)
+void	is_builtin(char **command, t_ms *shell)
 {
 	if (ft_strncmp(command[0], "echo", 4) == 0)
-	{
 		ft_echo(command, shell);
-		return (1);
-	}
 	else if (ft_strncmp(command[0], "pwd", 3) == 0)
-	{
 		ft_pwd(command, shell);
-		return (1);
-	}
 	else if (ft_strncmp(command[0], "exit", 4) == 0)
-	{
 		ft_exit(command, shell);
-		return (1);
-	}
 	else if (ft_strncmp(command[0], "env", 3) == 0)
-	{
 		ft_env(command, shell);
-		return (1);
-	}
 	else if (ft_strncmp(command[0], "cd", 2) == 0)
-	{
 		ft_cd(command, shell);
-		return (1);
-	}
 	else if (ft_strncmp(command[0], "export", 6) == 0)
-	{
 		ft_export(command, shell);
-		return (1);
-	}
 	else if (ft_strncmp(command[0], "unset", 5) == 0)
-	{
 		ft_unset(command, shell);
-		return (1);
-	}
-	else
-		return (0);
 }
 
+// void	does_not_exist(char **command, t_ms *shell)
+// {
+// 	return ;
+// }
 
 void	check_command(t_ms *shell)
 {
@@ -61,13 +42,14 @@ void	check_command(t_ms *shell)
 	command = shell->commands->args;
 	while (command)
 	{
-		if (is_builtin(command, shell))
-			return ;
-		// else if (is_in_env(command, shell))
+		is_builtin(command, shell);
+		// if (is_in_env(command, shell))
 		// 	return ;
-		else
-			return ;
+		// else
 			// does_not_exist(command, shell);
-		command = shell->commands->next->args;
+		if (shell->commands->next)
+			command = shell->commands->next->args;
+		else
+			break ;
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:33:02 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/17 15:49:41 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/20 15:31:56 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	check_numeric(char **command, t_ms *shell)
 		cleanup(shell);
 		exit(shell->exit_code);
 	}
-	while(command[1][i])
+	while (command[1][i])
 	{
 		if (ft_isalpha(command[1][i]) == 1)
 		{

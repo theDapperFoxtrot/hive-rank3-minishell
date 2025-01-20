@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_command.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:17:41 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/16 19:10:02 by saylital         ###   ########.fr       */
+/*   Updated: 2025/01/20 14:50:59 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,11 @@ int is_builtin(char **command, t_ms *shell)
 	else if (ft_strncmp(command[0], "export", 6) == 0)
 	{
 		ft_export(command, shell);
+		return (1);
+	}
+	else if (ft_strncmp(command[0], "unset", 5) == 0)
+	{
+		ft_unset(command, shell);
 		return (1);
 	}
 	else

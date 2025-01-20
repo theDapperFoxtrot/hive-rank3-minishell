@@ -67,6 +67,7 @@ int		update_pwd(t_ms *shell, char *string, char *value);
 int		env_list_size(char **envp);
 void	ft_export(char **command, t_ms *shell);
 void	quicksort(char **arr, int low, int high);
+void	ft_unset(char **command, t_ms *shell);
 // parser
 // void	print_tokens(t_token *tokens);
 // tokens folder

@@ -1,13 +1,11 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 # include "../libft/libft.h"
+# include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-
-// REMOVE
-# include <stdio.h>
 
 // Simplified token types
 enum e_token_type
@@ -36,6 +34,20 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
+typedef struct s_exp
+{
+	int		i;
+	int		j;
+	int		var_start;
+	int		var_len;
+	char	*result;
+	int		closing_quote;
+	char	quote_type;
+	int		closing_brace;
+	char	*var_name;
+	char	*value;
+}	t_exp;
+
 typedef struct s_ms
 {
 	unsigned char	exit_code;
@@ -44,6 +56,7 @@ typedef struct s_ms
 	int				pipe_count;
 	t_token			*token;
 	t_command		*commands;
+	t_exp			exp;
 	int				i;
 	char			buffer[100000];
 	int				buf_i;
@@ -70,6 +83,15 @@ void	ft_unset(char **command, t_ms *shell);
 // parser
 void	parse_tokens(t_ms *shell);
 void	add_argument(t_command *cmd, char *arg);
+char	*handle_expansions(t_ms *shell, const char *str);
+void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token);
+void	handle_token_pipe(t_ms *shell, t_command *cmd);
+void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token);
+void	handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token);
+char    *handle_expansions_quotes(t_ms *shell, const char *str);
+int	find_closing_quote(const char *str, char quote_type, int start);
+int	find_closing_brace(const char *str, int start);
+char	*expand_env_var(t_ms *shell, const char *var_name, int with_braces);
 // void	print_tokens(t_token *tokens);
 // tokens folder
 void	tokenize_input(t_ms *shell);

@@ -11,6 +11,7 @@ void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token)
 		exit(shell->exit_code);
 	}
 	add_argument(cmd, expanded_value);
+	cmd->arg_count++;
 	free(expanded_value);
 }
 t_command	*handle_token_pipe(t_ms *shell)

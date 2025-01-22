@@ -4,7 +4,7 @@ void	safe_dup2(int fd, int fd2)
 {
 	if (dup2(fd, fd2) == -1)
 	{
-		ft_putendl_fd("pipex: dup2 failed", 2);
+		ft_putendl_fd("minishell: dup2 failed", 2);
 		close(fd);
 		exit(EXIT_FAILURE);
 	}
@@ -20,7 +20,7 @@ void	read_file(int *fd, t_command *cmd)
 	if (fd_open == -1)
 	{
 		close(fd[1]);
-		ft_putstr_fd("pipex: ", 2);
+		ft_putstr_fd("minishell: ", 2);
 		perror(cmd->args[1]);
 		exit(0);
 	}
@@ -37,7 +37,7 @@ void	write_file(int *fd, t_command *cmd)
 	if (fd_write == -1)
 	{
 		close(fd[0]);
-		ft_putstr_fd("pipex: ", 2);
+		ft_putstr_fd("minishell: ", 2);
 		perror(cmd->args[cmd->arg_count - 1]);
 		exit(1);
 	}
@@ -54,7 +54,7 @@ void	append_file(int *fd, t_command *cmd)
 	if (fd_write == -1)
 	{
 		close(fd[0]);
-		ft_putstr_fd("pipex: ", 2);
+		ft_putstr_fd("minishell: ", 2);
 		perror(cmd->args[cmd->arg_count - 1]);
 		exit(1);
 	}

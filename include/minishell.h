@@ -22,6 +22,7 @@ enum e_token_type
 typedef struct s_command
 {
 	char				**args;
+	int					arg_count;
 	struct s_command	*next;
 	char				*input_file;
 	char				*output_file;
@@ -30,7 +31,7 @@ typedef struct s_command
 	int					redir_in;
 	int					redir_out;
 	int					append_mode;
-	int					pid;
+	pid_t				pid;
 }	t_command;
 
 typedef struct s_token
@@ -67,6 +68,7 @@ typedef struct s_ms
 	char			buffer[100000];
 	int				buf_i;
 	int				type;
+	int				fd[2];
 }	t_ms;
 //utils.c
 void	free_args(char **commands);
@@ -93,7 +95,9 @@ char	*handle_expansions(t_ms *shell, const char *str);
 void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token);
 t_command	*handle_token_pipe(t_ms *shell);
 void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token);
+void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token);
 void	handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token);
+void	handle_token_append(t_ms *shell, t_command *cmd, t_token *token);
 char    *handle_expansions_quotes(t_ms *shell, const char *str);
 int	find_closing_quote(const char *str, char quote_type, int start);
 int	find_closing_brace(const char *str, int start);
@@ -106,6 +110,11 @@ void	write_token_args(t_ms *shell);
 void	if_is_operator(t_ms *shell);
 void	create_token(t_ms *shell);
 void	add_token(t_ms *shell, t_token *new_token);
+// file helpers
+void	safe_dup2(int fd, int fd2);
+void	read_file(int *fd, t_command *cmd);
+void	write_file(int *fd, t_command *cmd);
+void	append_file(int *fd, t_command *cmd);
 // errors and cleanup
 void	cleanup(t_ms *shell);
 void	free_commands(t_command *commands);

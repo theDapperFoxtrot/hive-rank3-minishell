@@ -190,8 +190,12 @@ void parse_tokens(t_ms *shell)
 		}
 		else if (token->type == TOKEN_REDIR_IN)
 			handle_token_redir_in(shell, cmd, token);
-		else if (token->type == TOKEN_REDIR_OUT || token->type == TOKEN_APPEND)
+		else if (token->type == TOKEN_HERE_DOC)
+			handle_token_heredoc(shell, cmd, token);
+		else if (token->type == TOKEN_REDIR_OUT)
 			handle_token_redir_out(shell, cmd, token);
+		else if (token->type == TOKEN_APPEND)
+			handle_token_append(shell, cmd, token);
 		token = token->next;
 	}
 }

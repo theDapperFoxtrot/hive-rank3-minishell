@@ -4,6 +4,8 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <fcntl.h>
+# include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
@@ -24,7 +26,11 @@ typedef struct s_command
 	char				*input_file;
 	char				*output_file;
 	char				*heredoc_delimiter;
+	int					heredoc;
+	int					redir_in;
+	int					redir_out;
 	int					append_mode;
+	int					pid;
 }	t_command;
 
 typedef struct s_token

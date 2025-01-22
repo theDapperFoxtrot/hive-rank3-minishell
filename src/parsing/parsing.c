@@ -183,7 +183,11 @@ void parse_tokens(t_ms *shell)
 		if (token->type == TOKEN_ARGS)
 			handle_token_args(shell, cmd, token);
 		else if (token->type == TOKEN_PIPE)
-			handle_token_pipe(shell, cmd);
+		{
+			cmd->next = handle_token_pipe(shell);
+			cmd = cmd->next;
+			cmd->next = NULL;
+		}
 		else if (token->type == TOKEN_REDIR_IN)
 			handle_token_redir_in(shell, cmd, token);
 		else if (token->type == TOKEN_REDIR_OUT || token->type == TOKEN_APPEND)

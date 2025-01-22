@@ -11,11 +11,32 @@ void	clear_buffer(t_ms *shell)
 		i++;
 	}
 }
+void print_commands(t_command *cmd)
+{
+	int	i;
+	int j;
 
+	j = 0;
+	i = 0;
+	while (cmd != NULL)
+	{
+		printf("----[Structure %d]----\n", j);
+		while (cmd->args[i])
+		{
+			printf("[%d]%s\n", i, cmd->args[i]);
+			i++;
+		}
+		i = 0;
+		j++;
+		cmd = cmd->next;
+	}
+	printf("----[End of Structure]----\n");
+}
 void	process_input(t_ms *shell)
 {
 	tokenize_input(shell);
 	parse_tokens(shell); // <-- ADD EXPANSION; ${something}; single/double quotes
+	print_commands(shell->commands);
 	clear_buffer(shell);
 	free_tokens(shell);
 	check_command(shell);
@@ -30,6 +51,7 @@ static void	init_shell(t_ms *shell, char **envp)
 	shell->exp.i = 0;
 	create_env(shell, envp);
 }
+
 
 int	main(int argc, char *argv[], char *envp[])
 {

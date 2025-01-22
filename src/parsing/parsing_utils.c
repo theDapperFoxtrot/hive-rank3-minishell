@@ -13,20 +13,19 @@ void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token)
 	add_argument(cmd, expanded_value);
 	free(expanded_value);
 }
-void	handle_token_pipe(t_ms *shell, t_command *cmd)
+t_command	*handle_token_pipe(t_ms *shell)
 {
-	t_command	*prev_cmd;
+	t_command	*new_cmd;
 
-	prev_cmd = NULL;
-	prev_cmd = cmd;
-	cmd = malloc(sizeof(t_command));
-	if (!cmd)
+	new_cmd = NULL;
+	new_cmd = malloc(sizeof(t_command));
+	if (!new_cmd)
 	{
 		print_error("Error: malloc failed", shell, 1);
 		exit(shell->exit_code);
 	}
-	ft_bzero(cmd, sizeof(t_command));
-	prev_cmd->next = cmd;
+	ft_bzero(new_cmd, sizeof(t_command));
+	return (new_cmd);
 }
 void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token)
 {

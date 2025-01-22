@@ -85,7 +85,7 @@ void	parse_tokens(t_ms *shell);
 void	add_argument(t_command *cmd, char *arg);
 char	*handle_expansions(t_ms *shell, const char *str);
 void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token);
-void	handle_token_pipe(t_ms *shell, t_command *cmd);
+t_command	*handle_token_pipe(t_ms *shell);
 void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token);
 void	handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token);
 char    *handle_expansions_quotes(t_ms *shell, const char *str);

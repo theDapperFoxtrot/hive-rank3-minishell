@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:17:41 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/20 15:41:26 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/22 17:35:09 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,18 @@ void	is_builtin(char **command, t_ms *shell)
 
 void	check_command(t_ms *shell)
 {
-	char	**command;
+	t_command	*command;
 
-	command = shell->commands->args;
+	command = shell->commands;
 	while (command)
 	{
-		is_builtin(command, shell);
+		is_builtin(command->args, shell);
 		// if (is_in_env(command, shell))
 		// 	return ;
 		// else
 			// does_not_exist(command, shell);
-		if (shell->commands->next)
-			command = shell->commands->next->args;
+		if (command->next)
+			command = command->next;
 		else
 			break ;
 	}

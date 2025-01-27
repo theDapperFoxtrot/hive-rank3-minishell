@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_command.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:17:41 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/27 16:34:19 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/27 17:41:41:36 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ char	*find_directory(char **dir, char *splitted_args)
 		free(executable_path);
 		i++;
 	}
-	ft_putstr_fd("pipex: command not found: ", 2);
+	ft_putstr_fd("find_directory error: ", 2);
 	ft_putendl_fd(splitted_args, 2);
 	return (NULL);
 }
@@ -123,20 +123,19 @@ char	*find_executable_path(t_ms *shell)
 	char	*get_path;
 	char	**path_directory;
 	char	*found_path;
-	char	*command;
+	t_command	*command;
 	char 	**envp;
 
 	envp = shell->env_list;
-	command = shell->commands->args[0];
-	get_path = find_path(command, envp);
+	command = shell->commands;
+		get_path = find_path(command->args[0], envp);
+	find_path(command->args[0], envp);
 	if (get_path == NULL)
 		return (NULL);
 	path_directory = ft_split(get_path, ':');
 	if (path_directory == NULL)
 		return (NULL);
-	found_path = find_directory(path_directory, command);
-	// free(command);
-	// free_split(path_directory);
+	found_path = find_directory(path_directory, command->args[0]);
 	return (found_path);
 }
 
@@ -176,9 +175,11 @@ void check_command(t_ms *shell)
 			if (command->not_builtin)
 			{
 				path = find_executable_path(shell);
+				if (path == NULL)
+					printf("null path\n");
 				if (execve(path, command->args, shell->env_list) == -1)
 				{
-					ft_putstr_fd("minishell: ", 2);
+					ft_putstr_fd("minishell: execve failed", 2);
 					perror(command->args[0]);
 					ft_exit(command->args, shell);
 				}

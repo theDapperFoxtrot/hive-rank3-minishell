@@ -16,12 +16,12 @@ void	read_file(int *fd, t_command *cmd)
 	int	fd_open;
 
 	close(fd[0]);
-	fd_open = open(cmd->args[1], O_RDONLY);
+	fd_open = open(cmd->input_file, O_RDONLY);
 	if (fd_open == -1)
 	{
 		close(fd[1]);
-		ft_putstr_fd("minishell: ", 2);
-		perror(cmd->args[1]);
+		ft_putstr_fd("minishell: readfile error\n", 2);
+		perror(cmd->input_file);
 		exit(0);
 	}
 	safe_dup2(fd_open, STDIN_FILENO);
@@ -33,12 +33,12 @@ void	write_file(int *fd, t_command *cmd)
 	int	fd_write;
 
 	close(fd[1]);
-	fd_write = open(cmd->args[cmd->arg_count - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd_write = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd_write == -1)
 	{
 		close(fd[0]);
-		ft_putstr_fd("minishell: ", 2);
-		perror(cmd->args[cmd->arg_count - 1]);
+		ft_putstr_fd("minishell: writefile error\n", 2);
+		perror(cmd->output_file);
 		exit(1);
 	}
 	safe_dup2(fd_write, STDOUT_FILENO);
@@ -50,12 +50,12 @@ void	append_file(int *fd, t_command *cmd)
 	int	fd_write;
 
 	close(fd[1]);
-	fd_write = open(cmd->args[cmd->arg_count - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+	fd_write = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd_write == -1)
 	{
 		close(fd[0]);
-		ft_putstr_fd("minishell: ", 2);
-		perror(cmd->args[cmd->arg_count - 1]);
+		ft_putstr_fd("minishell: append file error\n", 2);
+		perror(cmd->output_file);
 		exit(1);
 	}
 	safe_dup2(fd_write, STDOUT_FILENO);

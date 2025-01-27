@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:50:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/17 16:12:03 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/27 16:07:34 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void	ft_pwd(char **command, t_ms *shell)
 {
 	char	*pwd;
 
+	shell->commands->not_builtin = 0;
 	if (command[1])
 	{
 		print_error("pwd: too many arguments", shell, 1);

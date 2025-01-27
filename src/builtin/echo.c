@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 10:24:22 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/20 15:31:56 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/27 16:08:04 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void	ft_echo(char **command, t_ms *shell)
 {
 	int	i;
 
+	shell->commands->not_builtin = 0;
 	i = 1;
 	if (ft_strncmp(command[1], "$?", 2) == 0)
 	{

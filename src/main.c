@@ -40,11 +40,6 @@ void	process_input(t_ms *shell)
 	print_commands(shell->commands);
 	clear_buffer(shell);
 	free_tokens(shell);
-	if (pipe(shell->fd) == -1)
-	{
-		print_error("Error: pipe failed", shell, 1);
-		exit(shell->exit_code);
-	}
 	check_command(shell);
 	free_commands(shell->commands);
 	free(shell->input);

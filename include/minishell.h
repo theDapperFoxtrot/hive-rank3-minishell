@@ -32,6 +32,8 @@ typedef struct s_command
 	int					redir_out;
 	int					append_mode;
 	pid_t				pid;
+	// char 				*path;
+	int					not_builtin;
 }	t_command;
 
 typedef struct s_token
@@ -88,6 +90,7 @@ int		env_list_size(char **envp);
 void	ft_export(char **command, t_ms *shell);
 void	quicksort(char **arr, int low, int high);
 void	ft_unset(char **command, t_ms *shell);
+void	close_fds(t_ms *shell);
 // parser
 void	parse_tokens(t_ms *shell);
 void	add_argument(t_command *cmd, char *arg);

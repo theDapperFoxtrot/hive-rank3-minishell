@@ -12,20 +12,39 @@
 
 #include "../../include/minishell.h"
 
-void	is_builtin(char **command, t_ms *shell)
+int	is_builtin(char **command, t_ms *shell)
 {
 	if (ft_strncmp(command[0], "echo", 4) == 0)
+	{
 		ft_echo(command, shell);
+		return (1);
+	}
 	else if (ft_strncmp(command[0], "pwd", 3) == 0)
+	{
 		ft_pwd(command, shell);
+		return (1);
+	}
 	else if (ft_strncmp(command[0], "env", 3) == 0)
+	{
 		ft_env(command, shell);
+		return (1);
+	}
 	else if (ft_strncmp(command[0], "cd", 2) == 0)
+	{
 		ft_cd(command, shell);
+		return (1);
+	}
 	else if (ft_strncmp(command[0], "export", 6) == 0)
+	{
 		ft_export(command, shell);
+		return (1);
+	}
 	else if (ft_strncmp(command[0], "unset", 5) == 0)
+	{
 		ft_unset(command, shell);
+		return (1);
+	}
+	return (0);
 }
 
 void	fork_error(int *new_pipe)
@@ -204,8 +223,7 @@ void check_command(t_ms *shell)
 				handle_output_redirection(new_pipe, command); // You need to implement this
 
 			// Execute builtin or external command
-			is_builtin(command->args, shell);
-			if (command->not_builtin)
+			if (!is_builtin(command->args, shell))
 			{
 				char *path = find_executable_path(shell);
 				if (!path)

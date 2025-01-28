@@ -32,7 +32,6 @@ typedef struct s_command
 	int					redir_out;
 	int					append_mode;
 	pid_t				pid;
-	int					not_builtin;
 }	t_command;
 
 typedef struct s_token

@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 10:34:14 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/27 17:56:48 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/28 15:50:50 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	ft_env(char **command, t_ms *shell)
 {
 	int	i;
 
-	shell->commands->not_builtin = 0;
+	
 	i = 0;
 	if (command[1])
 	{

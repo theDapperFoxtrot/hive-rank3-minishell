@@ -46,7 +46,7 @@ void	ft_unset(char **command, t_ms *shell)
 {
 	int	i;
 
-	shell->commands->not_builtin = 0;
+	
 	if (!command[1])
 		return ;
 	i = 1;

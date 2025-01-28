@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 12:43:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/27 17:56:49 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/28 15:50:50 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void	ft_export(char **command, t_ms *shell)
 	char	*value;
 	int		i;
 
-	shell->commands->not_builtin = 0;
+	
 	if (export_command_check(command, shell))
 		return ;
 	i = 1;

@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 10:24:22 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/28 15:16:11 by smishos          ###   ########.fr       */
+/*   Updated: 2025/01/28 15:50:50 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // {
 // 	int	i;
 
-// 	shell->commands->not_builtin = 0;
+// 	
 // 	i = 1;
 // 	if (ft_strncmp(command[1], "$?", 2) == 0)
 // 	{
@@ -39,7 +39,7 @@
 void ft_echo(char **command, t_ms *shell)
 {
     int i;
-    shell->commands->not_builtin = 0;
+    
     i = 1;
 
     if (command[1] && ft_strncmp(command[1], "$?", 2) == 0)

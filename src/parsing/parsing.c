@@ -19,7 +19,6 @@ void	add_argument(t_command *cmd, char *arg)
 	cmd->args[i] = ft_strdup(arg);
 	cmd->args[i + 1] = NULL;
 	cmd->next = NULL;
-	cmd->not_builtin = 1;
 }
 
 int	find_closing_quote(const char *str, char quote_type, int start)

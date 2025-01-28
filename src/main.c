@@ -33,8 +33,29 @@ void print_commands(t_command *cmd)
 	printf("----[End of Structure]----\n");
 }
 
+int	invalid_input(char *input)
+{
+    int i;
+
+    i = 0;
+    while (input[i])
+    {
+        if (input[i] != ' ' \
+		&& input[i] != '\t' \
+		&& input[i] != '\n' \
+		&& input[i] != '\v' \
+		&& input[i] != '\f' \
+		&& input[i] != '\r')
+            return (0);
+        i++;
+    }
+    return (1);
+}
+
 void	process_input(t_ms *shell)
 {
+	if (invalid_input(shell->input))
+		return ;
 	tokenize_input(shell);
 	parse_tokens(shell); // <-- ADD EXPANSION; ${something}; single/double quotes
 	print_commands(shell->commands);

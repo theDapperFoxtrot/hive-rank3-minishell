@@ -23,13 +23,7 @@ void	read_file(int *fd, t_command *cmd)
 		perror(cmd->input_file);
 		exit(0);
 	}
-	if (dup2(fd_open, STDIN_FILENO) == -1)
-	{
-		ft_putendl_fd("minishell: dup2 failed", 2);
-		close(fd_open);
-		exit(EXIT_FAILURE);
-	}
-	// safe_dup2(fd_open, STDIN_FILENO);
+	safe_dup2(fd_open, STDIN_FILENO);
 	close(fd_open);
 }
 
@@ -45,13 +39,7 @@ void	write_file(int *fd, t_command *cmd)
 		perror(cmd->output_file);
 		exit(1);
 	}
-	if (dup2(fd_write, STDOUT_FILENO) == -1)
-	{
-		ft_putendl_fd("minishell: dup2 failed", 2);
-		close(fd_write);
-		exit(EXIT_FAILURE);
-	}
-	// safe_dup2(fd_write, STDOUT_FILENO);
+	safe_dup2(fd_write, STDOUT_FILENO);
 	close(fd_write);
 }
 

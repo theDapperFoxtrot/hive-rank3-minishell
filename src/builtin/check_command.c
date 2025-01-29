@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   check_command.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/02 13:17:41 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/27 17:41:41:36 by saylital         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/minishell.h"
 
 int	is_builtin(char **command, t_ms *shell)
@@ -53,12 +41,6 @@ void	fork_error(int *new_pipe)
 	close(new_pipe[0]);
 	close(new_pipe[1]);
 	exit(EXIT_FAILURE);
-}
-
-void	close_fds(int *new_pipe)
-{
-	close(new_pipe[0]);
-	close(new_pipe[1]);
 }
 
 int	handle_exit(t_ms *shell)
@@ -137,16 +119,14 @@ char	*find_directory(char **dir, char *splitted_args)
 	return (NULL);
 }
 
-char	*find_executable_path(t_ms *shell)
+char	*find_executable_path(t_ms *shell, t_command *command)
 {
 	char	*get_path;
 	char	**path_directory;
 	char	*found_path;
-	t_command	*command;
 	char 	**envp;
 
 	envp = shell->env_list;
-	command = shell->commands;
 		get_path = find_path(command->args[0], envp);
 	find_path(command->args[0], envp);
 	if (get_path == NULL)
@@ -158,22 +138,20 @@ char	*find_executable_path(t_ms *shell)
 	return (found_path);
 }
 
-void handle_input_redirection(int *new_pipe, t_command *command)
+void handle_input_redirection(t_command *command)
 {
 	if (command->redir_in && command->heredoc)
-		read_file(new_pipe, command);
+		read_file(command);
 	else if (command->redir_in)
-		read_file(new_pipe, command);
-
+		read_file(command);
 }
 
-void handle_output_redirection(int *new_pipe, t_command *command)
+void handle_output_redirection(t_command *command)
 {
 	if (command->redir_out)
-		write_file(new_pipe, command);
+		write_file(command);
 	if (command->append_mode)
-		append_file(new_pipe, command);
-
+		append_file(command);
 }
 
 void check_command(t_ms *shell)
@@ -185,74 +163,58 @@ void check_command(t_ms *shell)
 	command = shell->commands;
 	while (command)
 	{
-		// Create pipe ONLY if there's a next command
 		if (command->next && pipe(new_pipe) == -1)
 		{
 			ft_putendl_fd("minishell: pipe failed", 2);
 			exit(EXIT_FAILURE);
 		}
-
 		if (ft_strncmp(command->args[0], "exit", 4) == 0)
 			ft_exit(command->args, shell);
-
 		command->pid = fork();
 		if (command->pid == -1)
 			fork_error(new_pipe);
-
-		if (command->pid == 0) // CHILD PROCESS
+		if (command->pid == 0)
 		{
-			// Handle input redirection from previous command
 			if (prev_pipe_in != -1)
 			{
 				dup2(prev_pipe_in, STDIN_FILENO);
 				close(prev_pipe_in);
 			}
-
-			// Handle output redirection to next command
 			if (command->next)
 			{
 				dup2(new_pipe[1], STDOUT_FILENO);
 				close(new_pipe[1]);
 				close(new_pipe[0]);
 			}
-
-			// Handle file redirections (your existing logic)
 			if (command->redir_in)
-				handle_input_redirection(new_pipe, command); // You need to implement this
+				handle_input_redirection(command);
 			if (command->redir_out)
-				handle_output_redirection(new_pipe, command); // You need to implement this
-
-			// Execute builtin or external command
+				handle_output_redirection(command);
 			if (!is_builtin(command->args, shell))
 			{
-				char *path = find_executable_path(shell);
+				char *path = find_executable_path(shell, command);
 				if (!path)
-					exit(127); // Command not found
+					exit(127);
 				execve(path, command->args, shell->env_list);
 				perror("minishell");
-				exit(126); // Permission error
+				exit(126);
 			}
 			cleanup(shell);
 			exit(shell->exit_code);
 		}
-		else // PARENT PROCESS
+		else
 		{
-			// Close previous pipe input if used
 			if (prev_pipe_in != -1)
 				close(prev_pipe_in);
-			// Prepare for next command
 			if (command->next)
 			{
-				close(new_pipe[1]); // Close write end, keep read end for next
+				close(new_pipe[1]);
 				prev_pipe_in = new_pipe[0];
 			}
 			command = command->next;
 		}
 	}
-	// Close final pipe input if any
 	if (prev_pipe_in != -1)
 		close(prev_pipe_in);
-	// Wait for all children
 	while (waitpid(-1, NULL, 0) > 0);
 }
-

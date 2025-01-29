@@ -87,7 +87,6 @@ int		env_list_size(char **envp);
 void	ft_export(char **command, t_ms *shell);
 void	quicksort(char **arr, int low, int high);
 void	ft_unset(char **command, t_ms *shell);
-void	close_fds(int *new_pipe);
 // parser
 void	parse_tokens(t_ms *shell);
 void	add_argument(t_command *cmd, char *arg);
@@ -112,9 +111,9 @@ void	create_token(t_ms *shell);
 void	add_token(t_ms *shell, t_token *new_token);
 // file helpers
 void	safe_dup2(int fd, int fd2);
-void	read_file(int *fd, t_command *cmd);
-void	write_file(int *fd, t_command *cmd);
-void	append_file(int *fd, t_command *cmd);
+void	read_file(t_command *cmd);
+void	write_file(t_command *cmd);
+void	append_file(t_command *cmd);
 // errors and cleanup
 void	cleanup(t_ms *shell);
 void	free_commands(t_command *commands);

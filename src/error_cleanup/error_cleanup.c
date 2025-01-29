@@ -11,7 +11,6 @@ void	cleanup(t_ms *shell)
 		free_tokens(shell);
 	if (shell->commands)
 		free_commands(shell->commands);
-	// close_fds(shell);
 	free_env(shell);
 }
 

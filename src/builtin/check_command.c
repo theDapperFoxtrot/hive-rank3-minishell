@@ -145,8 +145,8 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 
 void handle_input_redirection(t_command *command)
 {
-	if (command->redir_in && command->heredoc)
-		read_file(command);
+	if (command->heredoc)
+		read_heredoc(command);
 	else if (command->redir_in)
 		read_file(command);
 }
@@ -192,9 +192,9 @@ void check_command(t_ms *shell)
 				close(new_pipe[1]);
 				close(new_pipe[0]);
 			}
-			if (command->redir_in)
+			if (command->redir_in || command->heredoc)
 				handle_input_redirection(command);
-			if (command->redir_out)
+			if (command->redir_out || command->append_mode)
 				handle_output_redirection(command);
 			if (is_parent_builtin(command->args, shell))
 				command = command->next;

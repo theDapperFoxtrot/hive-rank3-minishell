@@ -27,6 +27,8 @@ typedef struct s_command
 	char				*input_file;
 	char				*output_file;
 	char				*heredoc_delimiter;
+	char				**heredoc_lines;
+	char				*heredoc_line;
 	int					heredoc;
 	int					redir_in;
 	int					redir_out;
@@ -114,6 +116,7 @@ void	safe_dup2(int fd, int fd2);
 void	read_file(t_command *cmd);
 void	write_file(t_command *cmd);
 void	append_file(t_command *cmd);
+void	read_heredoc(t_command *cmd);
 // errors and cleanup
 void	cleanup(t_ms *shell, int clean_shell);
 void	free_commands(t_command *commands);

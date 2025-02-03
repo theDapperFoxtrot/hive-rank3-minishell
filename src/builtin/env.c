@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 10:34:14 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/28 15:50:50 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/03 16:26:16 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ char	**copy_env(t_ms *shell, char **env_list, char **envp)
 			while (--i >= 0)
 				free(env_list[i]);
 			free(env_list);
-			print_error("Malloc failed copy_env", shell, 1);
+			print_error("Malloc failed copy_env", shell, 1, 1);
 			exit(shell->exit_code);
 		}
 		i++;
@@ -53,7 +53,7 @@ void	create_env(t_ms *shell, char **envp)
 	env_list = malloc((env_size + 1) * sizeof(char *));
 	if (!env_list)
 	{
-		print_error("Malloc failed create_env", shell, 1);
+		print_error("Malloc failed create_env", shell, 1, 1);
 		exit(shell->exit_code);
 	}
 	shell->env_list = copy_env(shell, env_list, envp);

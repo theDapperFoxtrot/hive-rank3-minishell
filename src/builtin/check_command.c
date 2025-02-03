@@ -207,7 +207,7 @@ void check_command(t_ms *shell)
 				perror("minishell");
 				exit(126);
 			}
-			cleanup(shell);
+			cleanup(shell, 1);
 			exit(shell->exit_code);
 		}
 		else

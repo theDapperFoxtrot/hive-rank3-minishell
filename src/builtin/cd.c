@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:39:40 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/28 15:50:50 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/03 16:25:57 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	free_oldpwd_and_error(t_ms *shell, char *oldpwd, char* message)
 {
 	free(oldpwd);
 	{
-		print_error(message, shell, 1);
+		print_error(message, shell, 1, 1);
 		exit(shell->exit_code);
 	}
 }
@@ -44,7 +44,7 @@ void	ft_cd(char **command, t_ms *shell)
 	char	*home;
 	int		count;
 
-	
+
 	oldpwd = getcwd(NULL, 0);
 	// CHECK GETENV WHEN WE IMPLEMENT UNSET; MAKING SURE IT FETCHES THE RIGHT ENV
 	home =  getenv("HOME");
@@ -53,7 +53,7 @@ void	ft_cd(char **command, t_ms *shell)
 		free_oldpwd_and_error(shell, oldpwd, "minishell: cd: getcwd failed");
 	if (count > 2)
 	{
-		print_error("minishell: cd: too many arguments", shell, 1);
+		print_error("minishell: cd: too many arguments", shell, 1, 0);
 		free(oldpwd);
 		return ;
 	}

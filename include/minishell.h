@@ -72,7 +72,7 @@ typedef struct s_ms
 //utils.c
 void	free_args(char **commands);
 void	free_env(t_ms *shell);
-void	print_error(char *message, t_ms *shell, unsigned char status);
+void	print_error(char *message, t_ms *shell, unsigned char status, int clean_shell);
 int		count_args(char **command);
 //builtin
 void	check_command(t_ms *shell);
@@ -115,7 +115,7 @@ void	read_file(t_command *cmd);
 void	write_file(t_command *cmd);
 void	append_file(t_command *cmd);
 // errors and cleanup
-void	cleanup(t_ms *shell);
+void	cleanup(t_ms *shell, int clean_shell);
 void	free_commands(t_command *commands);
 void	free_tokens(t_ms *shell);
 #endif

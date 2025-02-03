@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:39:22 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/20 16:17:16 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/03 16:23:48 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ void	free_env(t_ms *shell)
 	free(shell->env_list);
 }
 
-void	print_error(char *message, t_ms *shell, unsigned char status)
+void	print_error(char *message, t_ms *shell, unsigned char status, int clean_shell)
 {
 	ft_putendl_fd(message, 2);
-	cleanup(shell);
+	cleanup(shell, clean_shell);
 	shell->exit_code = status;
 }
 

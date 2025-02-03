@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-void	cleanup(t_ms *shell)
+void	cleanup(t_ms *shell, int clean_shell)
 {
 	if (shell->input)
 	{
@@ -11,7 +11,8 @@ void	cleanup(t_ms *shell)
 		free_tokens(shell);
 	if (shell->commands)
 		free_commands(shell->commands);
-	free_env(shell);
+	if (clean_shell)
+		free_env(shell);
 }
 
 void	free_commands(t_command *commands)

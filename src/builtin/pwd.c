@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:50:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/03 16:26:32 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/04 16:44:41 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,12 @@ void	ft_pwd(char **command, t_ms *shell)
 {
 	char	*pwd;
 
-	
-	if (command[1])
-	{
-		print_error("pwd: too many arguments", shell, 1, 0);
-		return ;
-	}
+	(void) command;
+	// if (command[1])
+	// {
+	// 	print_error("pwd: too many arguments", shell, 1, 0);
+	// 	return ;
+	// }
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 	{

@@ -72,7 +72,12 @@ char	*expand_env_var(t_ms *shell, const char *var_name, int with_braces)
 
 	// Handle special case for $?
 	if (var_name[0] == '?' && (!with_braces || var_name[1] == '}'))
-		return ft_itoa(shell->exit_code);
+	{
+		value = ft_itoa(shell->exit_code);
+		var_name++;
+		if (ft_isalnum(var_name[0]))
+			value = ft_strjoin(value, var_name);
+	}
 
 	// Find the actual variable name length (up to '}' if in braces)
 	int name_len = 0;
@@ -201,12 +206,12 @@ void parse_tokens(t_ms *shell)
 		else if (token->type == TOKEN_REDIR_OUT)
 		{
 			handle_token_redir_out(shell, cmd, token);
-			return ;
+			token = token->next;
 		}
 		else if (token->type == TOKEN_APPEND)
 		{
 			handle_token_append(shell, cmd, token);
-			return ;
+			token = token->next;
 		}
 		token = token->next;
 	}

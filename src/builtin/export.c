@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 12:43:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/29 18:24:11 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/04 16:44:02 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,8 @@ void	ft_export(char **command, t_ms *shell)
 			value = equal_sign + 1;
 			set_env_variable(shell, key, value);
 		}
-		else
-			export_error(arg);
+		// else
+		// 	export_error(arg);
 		i++;
 	}
 }

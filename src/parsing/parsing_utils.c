@@ -56,8 +56,10 @@ void	make_heredoc_one_line(t_ms *shell, t_command *cmd)
 {
 	int		i;
 	char	*line;
+	char	*temp;
 
 	i = 0;
+	cmd->heredoc_line = ft_strdup("");
 	while(cmd->heredoc_lines[i])
 	{
 		line = ft_strjoin(cmd->heredoc_lines[i], "\n");
@@ -68,7 +70,10 @@ void	make_heredoc_one_line(t_ms *shell, t_command *cmd)
 			exit(shell->exit_code);
 		}
 		free(cmd->heredoc_lines[i]);
+		temp = cmd->heredoc_line;
 		cmd->heredoc_line = ft_strjoin(cmd->heredoc_line, line);
+		free(temp);
+        free(line);
 		i++;
 	}
 }
@@ -99,6 +104,7 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	cmd->heredoc_lines[i] = NULL;
 	make_heredoc_one_line(shell, cmd);
 	free(cmd->heredoc_lines);
+	free(cmd->heredoc_delimiter);
 	cmd->heredoc = 1;
 }
 

@@ -119,7 +119,7 @@ char	*find_directory(char **dir, char *splitted_args)
 		free(executable_path);
 		i++;
 	}
-	ft_putstr_fd("find_directory error: ", 2);
+	ft_putstr_fd("command not found: ", 2);
 	ft_putendl_fd(splitted_args, 2);
 	return (NULL);
 }
@@ -140,13 +140,57 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 	if (path_directory == NULL)
 		return (NULL);
 	found_path = find_directory(path_directory, command->args[0]);
+	free_split(path_directory);
 	return (found_path);
 }
 
-void handle_input_redirection(t_command *command)
+void handle_input_redirection(t_ms *shell, t_command *command)
 {
+	int pipefd[2];
+
 	if (command->heredoc)
-		read_heredoc(command);
+	{
+        if (pipe(pipefd) == -1)
+        {
+            perror("pipe");
+            exit(EXIT_FAILURE);
+        }
+        command->pid = fork();
+        if (command->pid == -1)
+        {
+            perror("fork");
+			free(shell->commands->heredoc_line);
+			cleanup(shell, 1);
+            exit(EXIT_FAILURE);
+        }
+        if (command->pid == 0) // Child process
+        {
+            close(pipefd[0]); // Close read end
+		if (write(pipefd[1], command->heredoc_line, ft_strlen(command->heredoc_line)) == -1)
+		{
+			ft_putendl_fd("minishell: write failed", 2);
+			close(pipefd[0]);
+			close(pipefd[1]);
+			free(shell->commands->heredoc_line);
+			cleanup(shell, 1);
+			exit(EXIT_FAILURE);
+		}
+            close(pipefd[1]);
+			free(shell->commands->heredoc_line);
+			cleanup(shell, 1);
+            exit(EXIT_SUCCESS);
+        }
+        else // Parent process
+        {
+            close(pipefd[1]); // Close write end
+            dup2(pipefd[0], STDIN_FILENO);
+            close(pipefd[0]);
+			if (command->redir_out)
+				write_file(command);
+			while (waitpid(-1, NULL, 0) > 0);
+        }
+	}
+		// read_heredoc(command);
 	else if (command->redir_in)
 		read_file(command);
 }
@@ -193,7 +237,7 @@ void check_command(t_ms *shell)
 				close(new_pipe[0]);
 			}
 			if (command->redir_in || command->heredoc)
-				handle_input_redirection(command);
+				handle_input_redirection(shell, command);
 			if (command->redir_out || command->append_mode)
 				handle_output_redirection(command);
 			if (is_parent_builtin(command->args, shell))
@@ -202,10 +246,16 @@ void check_command(t_ms *shell)
 			{
 				char *path = find_executable_path(shell, command);
 				if (!path)
+				{
+					cleanup(shell, 1);
 					exit(127);
-				execve(path, command->args, shell->env_list);
-				perror("minishell");
-				exit(126);
+				}
+				if (execve(path, command->args, shell->env_list) == -1)
+				{
+					perror("minishell");
+					shell->exit_code = 126;
+					exit(shell->exit_code);
+				}
 			}
 			cleanup(shell, 1);
 			exit(shell->exit_code);
@@ -225,6 +275,7 @@ void check_command(t_ms *shell)
 	if (prev_pipe_in != -1)
 		close(prev_pipe_in);
 	while (waitpid(-1, NULL, 0) > 0);
+	//get the exit code also from the child process
 }
 
 

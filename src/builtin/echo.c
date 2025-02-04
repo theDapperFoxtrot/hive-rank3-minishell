@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 10:24:22 by saylital          #+#    #+#             */
-/*   Updated: 2025/01/29 16:11:56 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/04 17:42:27 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	ft_echo(char **command, t_ms *shell)
 	if (ft_strncmp(command[1], "$?", 2) == 0)
 	{
 		printf("%d\n", shell->exit_code);
-		return ;
+		// return ;
 	}
 	if (ft_strncmp(command[1], "-n", 2) == 0)
 		i++;

@@ -5,6 +5,8 @@ int is_parent_builtin(char **command, t_ms *shell)
 
 	if (ft_strncmp(command[0], "export", 6) == 0)
 	{
+		if (shell->pipe_count > 0)
+			return (1);
 		ft_export(command, shell);
 		return (1);
 	}
@@ -43,7 +45,7 @@ int	is_builtin(char **command, t_ms *shell)
 
 void	fork_error(int *new_pipe)
 {
-	ft_putendl_fd("pipex: Fork error: forking failed", 2);
+	ft_putendl_fd("minishell: Fork error: forking failed", 2);
 	close(new_pipe[0]);
 	close(new_pipe[1]);
 	exit(EXIT_FAILURE);
@@ -67,7 +69,7 @@ char	*find_path(char *cmd, char **envp)
 	}
 	if (path == NULL)
 	{
-		ft_putstr_fd("pipex: command not found: ", 2);
+		ft_putstr_fd("minishell: command not found: ", 2);
 		ft_putendl_fd(cmd, 2);
 		return (NULL);
 	}
@@ -90,7 +92,7 @@ char	*find_directory(char **dir, char *splitted_args)
 		{
 			if (access(executable_path, X_OK) == 0)
 				return (executable_path);
-			ft_putendl_fd("pipex: permission denied:", 2);
+			ft_putendl_fd("minishell: permission denied:", 2);
 			free(executable_path);
 			exit(126);
 		}

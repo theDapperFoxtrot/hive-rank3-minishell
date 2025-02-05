@@ -18,7 +18,7 @@ void	read_file(t_command *cmd)
 	fd_open = open(cmd->input_file, O_RDONLY);
 	if (fd_open == -1)
 	{
-		ft_putstr_fd("minishell: readfile error\n", 2);
+		ft_putstr_fd("minishell: ", 2);
 		perror(cmd->input_file);
 		exit(EXIT_FAILURE);
 	}
@@ -39,7 +39,7 @@ void	write_file(t_command *cmd)
 	fd_write = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd_write == -1)
 	{
-		ft_putstr_fd("minishell: writefile error\n", 2);
+		ft_putstr_fd("minishell: ", 2);
 		perror(cmd->output_file);
 		exit(EXIT_FAILURE);
 	}
@@ -54,7 +54,7 @@ void	append_file(t_command *cmd)
 	fd_write = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd_write == -1)
 	{
-		ft_putstr_fd("minishell: append file error\n", 2);
+		ft_putstr_fd("minishell: ", 2);
 		perror(cmd->output_file);
 		exit(EXIT_FAILURE);
 	}

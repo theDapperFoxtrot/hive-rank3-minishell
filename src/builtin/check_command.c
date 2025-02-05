@@ -2,9 +2,10 @@
 
 int is_parent_builtin(char **command, t_ms *shell)
 {
-	if (ft_strncmp(command[0], "cd", 2) == 0)
+
+	if (ft_strncmp(command[0], "export", 6) == 0)
 	{
-		ft_cd(command, shell);
+		ft_export(command, shell);
 		return (1);
 	}
 	else if (ft_strncmp(command[0], "unset", 5) == 0)
@@ -30,6 +31,11 @@ int	is_builtin(char **command, t_ms *shell)
 	else if (ft_strncmp(command[0], "env", 3) == 0)
 	{
 		ft_env(command, shell);
+		return (1);
+	}
+	else if (ft_strncmp(command[0], "cd", 2) == 0)
+	{
+		ft_cd(command, shell);
 		return (1);
 	}
 	return (0);
@@ -209,11 +215,10 @@ void check_command(t_ms *shell)
 	{
 		if (ft_strncmp(command->args[0], "exit", 4) == 0)
 			ft_exit(command->args, shell);
-		if (ft_strncmp(command->args[0], "export", 6) == 0)
+		if (is_parent_builtin(command->args, shell))
 		{
-			ft_export(command->args, shell);
 			command = command->next;
-			continue ;
+			continue;
 		}
 		if (command->next && pipe(new_pipe) == -1)
 		{
@@ -241,8 +246,6 @@ void check_command(t_ms *shell)
 				handle_input_redirection(shell, command);
 			if (command->redir_out || command->append_mode)
 				handle_output_redirection(command);
-			if (is_parent_builtin(command->args, shell))
-				command = command->next;
 			else if (!is_builtin(command->args, shell))
 			{
 				char *path = find_executable_path(shell, command);

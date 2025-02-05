@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 12:43:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/05 14:50:35 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/05 17:21:06 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,31 +40,68 @@ void	print_sorted_env(t_ms *shell)
 	free(copy_list);
 }
 
-void	set_env_variable(t_ms *shell, char *key, char *value)
+void	export_error(t_ms *shell, char *arg)
+{
+	ft_putstr_fd("export: `", 2);
+	ft_putstr_fd(arg, 2);
+	ft_putstr_fd("': not a valid identifier\n", 2);
+	shell->exit_code = 1;
+}
+void	set_env_variable(t_ms *shell, char *key, char *value, char *equal_sign)
 {
 	int		i;
 	char	*temp;
 
 	i = 0;
+	if (!ft_isalpha(key[i]) && key[i] != '_')
+	{
+		export_error(shell, key);
+		shell->exit_code = 1;
+		return ;
+	}
+	i++;
+	while (key[i])
+	{
+		if (!ft_isalnum(key[i]) && key[i] != '_')
+		{
+			export_error(shell, key);
+			shell->exit_code = 1;
+			return ;
+		}
+		i++;
+	}
 	while (shell->env_list[i])
 	{
 		if (ft_strncmp(shell->env_list[i], key, ft_strlen(key)) == 0)
 		{
 			free(shell->env_list[i]);
-			temp = ft_strjoin(key, "=");
-			shell->env_list[i] = ft_strjoin(temp, value);
-			free(temp);
+			if (ft_strlen(value) > 0)
+			{
+				temp = ft_strjoin(key, "=");
+				shell->env_list[i] = ft_strjoin(temp, value);
+				free(temp);
+			}
+			else if (shell->equal_found)
+			{
+				temp = ft_strjoin(key, "=\"\"");
+				shell->env_list[i] = ft_strdup(temp);
+				free(temp);
+			}
+			else if (ft_strlen(value) == 0)
+				shell->env_list[i] = ft_strdup(key);
 			return ;
 		}
 		i++;
 	}
+	if (shell->equal_found)
+		equal_sign[0] = '=';
 	shell->env_list = ft_realloc(shell->env_list, \
 	sizeof(char *) * env_list_size(shell->env_list), \
 	sizeof(char *) * (env_list_size(shell->env_list) + 2));
-	if (value)
+	if (ft_strchr(key, '='))
 	{
-		temp = ft_strjoin(key, "=");
-		shell->env_list[i] = ft_strjoin(temp, value);
+		temp = ft_strjoin(key, "\"\"");
+		shell->env_list[i] = ft_strdup(temp);
 		free(temp);
 	}
 	else
@@ -73,12 +110,6 @@ void	set_env_variable(t_ms *shell, char *key, char *value)
 	shell->env_list[i] = NULL;
 }
 
-void	export_error(char *arg)
-{
-	ft_putstr_fd("export: `", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putstr_fd("': not a valid identifier\n", 2);
-}
 
 int	export_command_check(char **command, t_ms *shell)
 {
@@ -103,27 +134,35 @@ void	ft_export(char **command, t_ms *shell)
 	if (export_command_check(command, shell))
 		return ;
 	i = 1;
+	shell->equal_found = 0;
 	while (command[i])
 	{
 		arg = command[i];
-		equal_sign = strchr(arg, '=');
+		equal_sign = ft_strchr(arg, '=');
+		if (arg[0] == '=')
+		{
+			export_error(shell, arg);
+			i++;
+			continue ;
+		}
 		if (!equal_sign)
 		{
+			shell->equal_found = 0;
 			key = arg;
-			value = NULL;
-			set_env_variable(shell, key, value);
+			value = '\0';
+			set_env_variable(shell, key, value, equal_sign);
 		}
 		else if (equal_sign)
 		{
+			shell->equal_found = 1;
 			*equal_sign = '\0';
 			key = arg;
 			value = equal_sign + 1;
-			set_env_variable(shell, key, value);
+			set_env_variable(shell, key, value, equal_sign);
 		}
 		else
 		{
-			export_error(arg);
-			shell->exit_code = 1;
+			export_error(shell, arg);
 		}
 		i++;
 	}

@@ -62,10 +62,8 @@ void	process_input(t_ms *shell)
 	parse_tokens(shell); // <-- ADD EXPANSION; ${something}; single/double quotes
 	// print_commands(shell->commands);
 	clear_buffer(shell);
-	free_tokens(shell);
 	check_command(shell);
-	free_commands(shell->commands);
-	free(shell->input);
+	cleanup(shell, 0);
 }
 
 static void	init_shell(t_ms *shell, char **envp)

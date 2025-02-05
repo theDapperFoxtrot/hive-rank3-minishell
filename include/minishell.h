@@ -70,6 +70,7 @@ typedef struct s_ms
 	char			buffer[100000];
 	int				buf_i;
 	int				type;
+	int				equal_found;
 }	t_ms;
 //utils.c
 void	free_args(char **commands);

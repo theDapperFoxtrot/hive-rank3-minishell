@@ -193,11 +193,15 @@ void check_command(t_ms *shell)
 	while (command)
 	{
 		if (ft_strncmp(command->args[0], "exit", 4) == 0)
+		{
 			ft_exit(command->args, shell);
+			command = command->next;
+			continue ;
+		}
 		if (is_parent_builtin(command->args, shell))
 		{
 			command = command->next;
-			continue;
+			continue ;
 		}
 		if (command->next && pipe(new_pipe) == -1)
 		{

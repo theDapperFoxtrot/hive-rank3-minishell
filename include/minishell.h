@@ -62,6 +62,7 @@ typedef struct s_ms
 	unsigned char	exit_code;
 	char			**env_list;
 	char			*input;
+	int				child_count;
 	int				pipe_count;
 	t_token			*token;
 	t_command		*commands;

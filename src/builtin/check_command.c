@@ -13,6 +13,11 @@ int is_parent_builtin(char **command, t_ms *shell)
 		ft_unset(command, shell);
 		return (1);
 	}
+		else if (ft_strncmp(command[0], "cd", 2) == 0)
+	{
+		ft_cd(command, shell);
+		return (1);
+	}
 	return (0);
 }
 
@@ -33,11 +38,6 @@ int	is_builtin(char **command, t_ms *shell)
 		ft_env(command, shell);
 		return (1);
 	}
-	else if (ft_strncmp(command[0], "cd", 2) == 0)
-	{
-		ft_cd(command, shell);
-		return (1);
-	}
 	return (0);
 }
 
@@ -47,29 +47,6 @@ void	fork_error(int *new_pipe)
 	close(new_pipe[0]);
 	close(new_pipe[1]);
 	exit(EXIT_FAILURE);
-}
-
-int	handle_exit(t_ms *shell)
-{
-	int		pipe_count;
-	int		status;
-	int		exit_code;
-	int		child_pid;
-
-	while (shell->commands)
-	{
-		shell->commands = shell->commands->next;
-	}
-	shell->i = 0;
-	pipe_count = shell->pipe_count;
-	while (shell->i < pipe_count + 1)
-	{
-		child_pid = waitpid(-1, &status, 0);
-		if (WIFEXITED(status) && child_pid == shell->commands->pid)
-			exit_code = WEXITSTATUS(status);
-		shell->i++;
-	}
-	return (exit_code);
 }
 
 char	*find_path(char *cmd, char **envp)
@@ -206,11 +183,13 @@ void handle_output_redirection(t_command *command)
 
 void check_command(t_ms *shell)
 {
-	t_command *command;
-	int prev_pipe_in = -1;
-	int new_pipe[2];
+	t_command	*command;
+	int			prev_pipe_in = -1;
+	int			new_pipe[2];
+	int			status;
 
 	command = shell->commands;
+	shell->child_count = 0;
 	while (command)
 	{
 		if (ft_strncmp(command->args[0], "exit", 4) == 0)
@@ -225,7 +204,7 @@ void check_command(t_ms *shell)
 			ft_putendl_fd("minishell: pipe failed", 2);
 			exit(EXIT_FAILURE);
 		}
-
+		shell->child_count++;
 		command->pid = fork();
 		if (command->pid == -1)
 			fork_error(new_pipe);
@@ -278,58 +257,9 @@ void check_command(t_ms *shell)
 	}
 	if (prev_pipe_in != -1)
 		close(prev_pipe_in);
-	while (waitpid(-1, NULL, 0) > 0);
-	//get the exit code also from the child process
+	while (shell->child_count-- > 0)
+	{
+		waitpid(-1, &status, 0);
+		shell->exit_code = WEXITSTATUS(status);
+	}
 }
-
-
-// int is_builtin(char **cmd)
-// {
-//     if (!ft_strcmp(cmd[0], "echo")) return ECHO;
-//     if (!ft_strcmp(cmd[0], "cd"))   return CD;
-//     if (!ft_strcmp(cmd[0], "export")) return EXPORT;
-//     // ...
-//     return NOT_A_BUILTIN;
-// }
-
-// void execute_builtin(int builtin_type, char **cmd, t_ms *shell)
-// {
-//     if (builtin_type == EXPORT)
-//         ft_export(cmd, shell);
-//     else if (builtin_type == CD)
-//         ft_cd(cmd, shell);
-//     // ...
-// }
-
-// void check_command(t_ms *shell)
-// {
-//     t_command *command = shell->commands;
-
-//     while (command)
-//     {
-//         int type = is_builtin(command->args);
-//         // If "export", "cd", "unset", etc.—run in the parent:
-//         if (type == EXPORT || type == CD || type == UNSET || type == EXIT /* etc. */)
-//         {
-//             execute_builtin(type, command->args, shell);
-//         }
-//         else
-//         {
-//             // fork/exec for external commands *or* builtins safe in child (e.g. echo).
-//             pid_t pid = fork();
-//             if (pid == 0) {
-//                 // child
-//                 // redirect, pipes, etc...
-//                 if (type != NOT_A_BUILTIN)
-//                     execute_builtin(type, command->args, shell);
-//                 else
-//                     execve(...);
-//                 exit(...);
-//             } else {
-//                 // parent
-//                 waitpid(pid, &status, 0);
-//             }
-//         }
-//         command = command->next;
-//     }
-// }

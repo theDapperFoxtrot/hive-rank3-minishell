@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:39:40 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/03 16:25:57 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/05 18:25:48 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void cd_to_arg(char **command, t_ms *shell)
 	{
 		ft_putstr_fd("minishell: cd: ", 2);
 		ft_putstr_fd(command[1], 2);
-		ft_putstr_fd(": no such file or directory\n", 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 		shell->exit_code = 1;
 	}
 }
@@ -53,8 +53,15 @@ void	ft_cd(char **command, t_ms *shell)
 		free_oldpwd_and_error(shell, oldpwd, "minishell: cd: getcwd failed");
 	if (count > 2)
 	{
-		print_error("minishell: cd: too many arguments", shell, 1, 0);
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
 		free(oldpwd);
+		shell->exit_code = 1;
+		return ;
+	}
+	if (shell->pipe_count > 0)
+	{
+		free(oldpwd);
+		shell->exit_code = 1;
 		return ;
 	}
 	update_pwd(shell, "OLDPWD=", oldpwd);

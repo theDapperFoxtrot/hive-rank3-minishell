@@ -7,11 +7,6 @@ int is_parent_builtin(char **command, t_ms *shell)
 		ft_cd(command, shell);
 		return (1);
 	}
-	else if (ft_strncmp(command[0], "export", 6) == 0)
-	{
-		ft_export(command, shell);
-		return (1);
-	}
 	else if (ft_strncmp(command[0], "unset", 5) == 0)
 	{
 		ft_unset(command, shell);
@@ -214,6 +209,12 @@ void check_command(t_ms *shell)
 	{
 		if (ft_strncmp(command->args[0], "exit", 4) == 0)
 			ft_exit(command->args, shell);
+		if (ft_strncmp(command->args[0], "export", 6) == 0)
+		{
+			ft_export(command->args, shell);
+			command = command->next;
+			continue ;
+		}
 		if (command->next && pipe(new_pipe) == -1)
 		{
 			ft_putendl_fd("minishell: pipe failed", 2);

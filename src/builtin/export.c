@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 12:43:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/04 16:44:02 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/05 14:50:35 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,14 @@ void	set_env_variable(t_ms *shell, char *key, char *value)
 	shell->env_list = ft_realloc(shell->env_list, \
 	sizeof(char *) * env_list_size(shell->env_list), \
 	sizeof(char *) * (env_list_size(shell->env_list) + 2));
-	temp = ft_strjoin(key, "=");
-	shell->env_list[i] = ft_strjoin(temp, value);
-	free(temp);
+	if (value)
+	{
+		temp = ft_strjoin(key, "=");
+		shell->env_list[i] = ft_strjoin(temp, value);
+		free(temp);
+	}
+	else
+		shell->env_list[i] = ft_strdup(key);
 	i++;
 	shell->env_list[i] = NULL;
 }
@@ -85,6 +90,7 @@ int	export_command_check(char **command, t_ms *shell)
 	return (0);
 }
 
+
 void	ft_export(char **command, t_ms *shell)
 {
 	char	*arg;
@@ -101,15 +107,24 @@ void	ft_export(char **command, t_ms *shell)
 	{
 		arg = command[i];
 		equal_sign = strchr(arg, '=');
-		if (equal_sign)
+		if (!equal_sign)
+		{
+			key = arg;
+			value = NULL;
+			set_env_variable(shell, key, value);
+		}
+		else if (equal_sign)
 		{
 			*equal_sign = '\0';
 			key = arg;
 			value = equal_sign + 1;
 			set_env_variable(shell, key, value);
 		}
-		// else
-		// 	export_error(arg);
+		else
+		{
+			export_error(arg);
+			shell->exit_code = 1;
+		}
 		i++;
 	}
 }

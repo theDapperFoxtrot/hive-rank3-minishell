@@ -60,7 +60,7 @@ void	process_input(t_ms *shell)
 	if (!shell->token)
 		return ;
 	parse_tokens(shell); // <-- ADD EXPANSION; ${something}; single/double quotes
-	print_commands(shell->commands);
+	// print_commands(shell->commands);
 	clear_buffer(shell);
 	free_tokens(shell);
 	check_command(shell);

@@ -121,9 +121,9 @@ void	create_token(t_ms *shell);
 void	add_token(t_ms *shell, t_token *new_token);
 // file helpers
 void	safe_dup2(int fd, int fd2);
-void	read_file(t_command *cmd);
-void	write_file(t_command *cmd);
-void	append_file(t_command *cmd);
+void	read_file(t_command *cmd, int i);
+void	write_file(t_command *cmd, int i);
+void	append_file(t_command *cmd, int i);
 void	read_heredoc(t_command *cmd);
 // errors and cleanup
 void	cleanup(t_ms *shell, int clean_shell);

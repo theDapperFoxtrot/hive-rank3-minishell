@@ -127,7 +127,9 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 void handle_input_redirection(t_ms *shell, t_command *command)
 {
 	int pipefd[2];
+	int i;
 
+	i = 0;
 	if (command->heredoc)
 	{
         if (pipe(pipefd) == -1)
@@ -166,23 +168,36 @@ void handle_input_redirection(t_ms *shell, t_command *command)
             dup2(pipefd[0], STDIN_FILENO);
             close(pipefd[0]);
 			if (command->redir_out)
-				write_file(command);
+				write_file(command, i);
 			while (waitpid(-1, NULL, 0) > 0);
         }
 	}
 		// read_heredoc(command);
 	else if (command->redir_in)
-		while (command->input_count-- > 0)
-			read_file(command);
+		while (i < command->input_count)
+		{
+			read_file(command, i);
+			i++;
+		}
 }
 
 void handle_output_redirection(t_command *command)
 {
+	int i;
+
+	i = 0;
 	if (command->redir_out)
-		while (command->output_count-- > 0)
-			write_file(command);
-	if (command->append_mode)
-		append_file(command);
+		while (i < command->output_count)
+		{
+			write_file(command, i);
+			i++;
+		}
+	else if (command->append_mode)
+		while (i < command->output_count)
+		{
+			append_file(command, i);
+			i++;
+		}
 }
 
 void check_command(t_ms *shell)

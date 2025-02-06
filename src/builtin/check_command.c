@@ -233,7 +233,7 @@ void check_command(t_ms *shell)
 				handle_input_redirection(shell, command);
 			if (command->redir_out || command->append_mode)
 				handle_output_redirection(command);
-			else if (!is_builtin(command->args, shell))
+			if (!is_builtin(command->args, shell))
 			{
 				char *path = find_executable_path(shell, command);
 				if (!path)

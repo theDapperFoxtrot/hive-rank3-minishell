@@ -209,6 +209,18 @@ void parse_tokens(t_ms *shell)
 			cmd->output_count = 0;
 			cmd->free_input_count = 0;
 			cmd->free_output_count = 0;
+			cmd->input_file = (char **) malloc(sizeof(char *) * shell->rd_in_count + 1);
+			if (!cmd->input_file)
+			{
+				print_error("Error: malloc failed", shell, 1, 1);
+				exit(shell->exit_code);
+			}
+			cmd->output_file = (char **) malloc(sizeof(char *) * shell->rd_out_count + 1);
+			if (!cmd->output_file)
+			{
+				print_error("Error: malloc failed", shell, 1, 1);
+				exit(shell->exit_code);
+			}
 			cmd->next = NULL;
 		}
 		else if (token->type == TOKEN_REDIR_IN)

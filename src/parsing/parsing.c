@@ -183,6 +183,20 @@ void parse_tokens(t_ms *shell)
 	ft_bzero(cmd, sizeof(t_command));
 	shell->commands = cmd;
 	token = shell->token;
+	cmd->input_file = (char **) malloc(sizeof(char *) * shell->rd_in_count + 1);
+	if (!cmd->input_file)
+	{
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
+	}
+	cmd->output_file = (char **) malloc(sizeof(char *) * shell->rd_out_count + 1);
+	if (!cmd->output_file)
+	{
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
+	}
+	cmd->input_count = 0;
+	cmd->output_count = 0;
 	while (token)
 	{
 		if (token->type == TOKEN_ARGS)
@@ -191,6 +205,10 @@ void parse_tokens(t_ms *shell)
 		{
 			cmd->next = handle_token_pipe(shell);
 			cmd = cmd->next;
+			cmd->input_count = 0;
+			cmd->output_count = 0;
+			cmd->free_input_count = 0;
+			cmd->free_output_count = 0;
 			cmd->next = NULL;
 		}
 		else if (token->type == TOKEN_REDIR_IN)

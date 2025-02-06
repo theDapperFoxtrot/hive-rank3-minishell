@@ -172,13 +172,15 @@ void handle_input_redirection(t_ms *shell, t_command *command)
 	}
 		// read_heredoc(command);
 	else if (command->redir_in)
-		read_file(command);
+		while (command->input_count-- > 0)
+			read_file(command);
 }
 
 void handle_output_redirection(t_command *command)
 {
 	if (command->redir_out)
-		write_file(command);
+		while (command->output_count-- > 0)
+			write_file(command);
 	if (command->append_mode)
 		append_file(command);
 }

@@ -30,14 +30,20 @@ void	if_is_operator(t_ms *shell)
 			shell->type = TOKEN_HERE_DOC;
 		}
 		else
+		{
 			shell->type = TOKEN_REDIR_IN;
+			shell->rd_in_count++;
+		}
 	}
 	else if (shell->buffer[0] == '>')
 	{
 		if (shell->input[shell->i + 1] == '>')
 			check_for_append(shell);
 		else
+		{
 			shell->type = TOKEN_REDIR_OUT;
+			shell->rd_out_count++;
+		}
 	}
 }
 

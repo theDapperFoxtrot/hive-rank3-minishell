@@ -24,8 +24,12 @@ typedef struct s_command
 	char				**args;
 	int					arg_count;
 	struct s_command	*next;
-	char				*input_file;
-	char				*output_file;
+	char				**input_file;
+	int					input_count;
+	int					free_input_count;
+	char				**output_file;
+	int					output_count;
+	int					free_output_count;
 	char				*heredoc_delimiter;
 	char				**heredoc_lines;
 	char				*heredoc_line;
@@ -72,6 +76,8 @@ typedef struct s_ms
 	int				buf_i;
 	int				type;
 	int				equal_found;
+	int				rd_in_count;
+	int				rd_out_count;
 }	t_ms;
 //utils.c
 void	free_args(char **commands);

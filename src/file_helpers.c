@@ -15,12 +15,18 @@ void	read_file(t_command *cmd)
 {
 	int	fd_open;
 
-	fd_open = open(cmd->input_file, O_RDONLY);
+	fd_open = open(cmd->input_file[cmd->input_count], O_RDONLY);
 	if (fd_open == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		perror(cmd->input_file);
+		perror(cmd->input_file[cmd->input_count]);
+		free(cmd->input_file[cmd->input_count]);
 		exit(EXIT_FAILURE);
+	}
+	if (cmd->input_count != cmd->free_input_count - 1)
+	{
+		close(fd_open);
+		return ;
 	}
 	safe_dup2(fd_open, STDIN_FILENO);
 	close(fd_open);
@@ -36,12 +42,17 @@ void	write_file(t_command *cmd)
 {
 	int	fd_write;
 
-	fd_write = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd_write = open(cmd->output_file[cmd->output_count], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd_write == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		perror(cmd->output_file);
+		perror(cmd->output_file[cmd->output_count]);
 		exit(EXIT_FAILURE);
+	}
+	if (cmd->output_count != cmd->free_output_count - 1)
+	{
+		close(fd_write);
+		return ;
 	}
 	safe_dup2(fd_write, STDOUT_FILENO);
 	close(fd_write);
@@ -51,11 +62,11 @@ void	append_file(t_command *cmd)
 {
 	int	fd_write;
 
-	fd_write = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	fd_write = open(cmd->output_file[cmd->output_count], O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd_write == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		perror(cmd->output_file);
+		perror(cmd->output_file[cmd->output_count]);
 		exit(EXIT_FAILURE);
 	}
 	safe_dup2(fd_write, STDOUT_FILENO);

@@ -23,7 +23,11 @@ void	free_commands(t_command *commands)
 	{
 		tmp = commands->next;
 		free_split(commands->args);
+		while (commands->free_input_count-- > 0)
+			free(commands->input_file[commands->free_input_count]);
 		free(commands->input_file);
+		while (commands->free_output_count-- > 0)
+			free(commands->output_file[commands->free_output_count]);
 		free(commands->output_file);
 		free(commands);
 		commands = tmp;

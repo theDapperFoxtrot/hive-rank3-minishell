@@ -69,6 +69,8 @@ void	process_input(t_ms *shell)
 static void	init_shell(t_ms *shell, char **envp)
 {
 	ft_bzero(shell, sizeof(t_ms));
+	shell->rd_in_count = 0;
+	shell->rd_out_count = 0;
 	ft_bzero(&shell->exp, sizeof(t_exp));
 	shell->exp.i = 0;
 	create_env(shell, envp);

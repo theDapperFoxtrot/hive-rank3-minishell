@@ -172,6 +172,25 @@ char	*handle_expansions(t_ms *shell, const char *str)
 	return (shell->exp.result);
 }
 
+void	count_cmd_args(t_ms *shell, t_token *token)
+{
+	t_command	*cmd;
+
+	cmd = shell->commands;
+	while (token)
+	{
+		if (token->type == TOKEN_ARGS)
+			cmd->command_input_count++;
+		else if (token->type == TOKEN_HERE_DOC)
+			cmd->command_input_count++;
+		else if (token->type == TOKEN_REDIR_IN)
+			cmd->command_input_count = cmd->command_input_count + 2;
+		else if (token->type == TOKEN_REDIR_OUT || token->type == TOKEN_APPEND)
+			cmd->command_input_count = cmd->command_input_count + 2;
+		token = token->next;
+	}
+}
+
 void parse_tokens(t_ms *shell)
 {
 	t_token		*token;
@@ -197,10 +216,13 @@ void parse_tokens(t_ms *shell)
 	}
 	cmd->input_count = 0;
 	cmd->output_count = 0;
+	count_cmd_args(shell, token);
+	cmd->command_input = (char **) malloc(sizeof(char *) * cmd->command_input_count + 1);
+	cmd->command_input_index = 0;
 	while (token)
 	{
 		if (token->type == TOKEN_ARGS)
-			handle_token_args(shell, cmd, token);
+		handle_token_args(shell, cmd, token);
 		else if (token->type == TOKEN_PIPE)
 		{
 			cmd->next = handle_token_pipe(shell);
@@ -209,6 +231,9 @@ void parse_tokens(t_ms *shell)
 			cmd->output_count = 0;
 			cmd->free_input_count = 0;
 			cmd->free_output_count = 0;
+			cmd->command_input = (char **) malloc(sizeof(char *) * cmd->command_input_count + 1);
+			cmd->command_input_count = 0;
+			cmd->command_input_index = 0;
 			cmd->input_file = (char **) malloc(sizeof(char *) * shell->rd_in_count + 1);
 			if (!cmd->input_file)
 			{
@@ -243,6 +268,8 @@ void parse_tokens(t_ms *shell)
 			handle_token_append(shell, cmd, token);
 			token = token->next;
 		}
+		if (!token->next)
+			cmd->command_input[cmd->command_input_index] = NULL;
 		token = token->next;
 	}
 }

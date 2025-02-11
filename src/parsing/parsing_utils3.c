@@ -4,7 +4,7 @@ void handle_token_append(t_ms *shell, t_command *cmd, t_token *token)
 {
 	char        *expanded_value;
 
-
+	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
 	token = token->next;
 	if (token && token->type == TOKEN_ARGS)
 	{
@@ -14,6 +14,7 @@ void handle_token_append(t_ms *shell, t_command *cmd, t_token *token)
 			print_error("Error: malloc failed", shell, 1, 1);
 			exit(shell->exit_code);
 		}
+		cmd->command_input[cmd->command_input_index + 1] = ft_strdup(expanded_value);
 		cmd->output_file[cmd->output_count] = ft_strdup(expanded_value);
 		if (!cmd->output_file)
 		{
@@ -23,4 +24,5 @@ void handle_token_append(t_ms *shell, t_command *cmd, t_token *token)
 		cmd->append_mode = 1;
 		free(expanded_value);
 	}
+	cmd->command_input_index += 2;
 }

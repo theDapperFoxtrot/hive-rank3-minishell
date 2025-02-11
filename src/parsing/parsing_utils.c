@@ -32,15 +32,17 @@ void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token)
 {
 	char        *expanded_value;
 
+	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
 	token = token->next;
 	if (token && token->type == TOKEN_ARGS)
 	{
 		expanded_value = handle_expansions(shell, token->value);
 		if (!expanded_value)
 		{
-			print_error("Error: malloc failed", shell, 1, 1);
+			print_error("minishell: syntax error", shell, 1, 1);
 			exit(shell->exit_code);
 		}
+		cmd->command_input[cmd->command_input_index + 1] = ft_strdup(expanded_value);
 		cmd->input_file[cmd->input_count] = ft_strdup(expanded_value);
 		if (!cmd->input_file)
 		{
@@ -52,6 +54,7 @@ void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token)
 	}
 	cmd->input_count++;
 	cmd->free_input_count++;
+	cmd->command_input_index += 2;
 }
 
 void	make_heredoc_one_line(t_ms *shell, t_command *cmd)
@@ -84,6 +87,7 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 {
 	int			i;
 
+	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
 	token = token->next;
 	if (token && token->type == TOKEN_ARGS)
 	{
@@ -108,6 +112,7 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	free(cmd->heredoc_lines);
 	free(cmd->heredoc_delimiter);
 	cmd->heredoc = 1;
+	cmd->command_input_index++;
 }
 
 
@@ -115,7 +120,7 @@ void handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)
 {
 	char        *expanded_value;
 
-
+	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
 	token = token->next;
 	if (token && token->type == TOKEN_ARGS)
 	{
@@ -125,6 +130,7 @@ void handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)
 			print_error("Error: malloc failed", shell, 1, 1);
 			exit(shell->exit_code);
 		}
+		cmd->command_input[cmd->command_input_index + 1] = ft_strdup(expanded_value);
 		cmd->output_file[cmd->output_count] = ft_strdup(expanded_value);
 		if (!cmd->output_file)
 		{
@@ -136,5 +142,6 @@ void handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)
 	}
 	cmd->output_count++;
 	cmd->free_output_count++;
+	cmd->command_input_index += 2;
 }
 

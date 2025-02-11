@@ -124,39 +124,36 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 	return (found_path);
 }
 
-void handle_input_redirection(t_ms *shell, t_command *command)
+void handle_input_redirection(t_ms *shell, t_command *command, char *symbol, char *file)
 {
 	int pipefd[2];
-	int i;
-
-	i = 0;
-	if (command->heredoc)
+	if (ft_strncmp(symbol, "<<", 2) == 0)
 	{
-        if (pipe(pipefd) == -1)
+		if (pipe(pipefd) == -1)
         {
-            perror("pipe");
+			perror("pipe");
             exit(EXIT_FAILURE);
         }
         command->pid = fork();
         if (command->pid == -1)
         {
-            perror("fork");
+			perror("fork");
 			free(shell->commands->heredoc_line);
 			cleanup(shell, 1);
             exit(EXIT_FAILURE);
         }
         if (command->pid == 0) // Child process
         {
-            close(pipefd[0]); // Close read end
-		if (write(pipefd[1], command->heredoc_line, ft_strlen(command->heredoc_line)) == -1)
-		{
-			ft_putendl_fd("minishell: write failed", 2);
-			close(pipefd[0]);
-			close(pipefd[1]);
-			free(shell->commands->heredoc_line);
-			cleanup(shell, 1);
-			exit(EXIT_FAILURE);
-		}
+			close(pipefd[0]); // Close read end
+			if (write(pipefd[1], command->heredoc_line, ft_strlen(command->heredoc_line)) == -1)
+			{
+				ft_putendl_fd("minishell: write failed", 2);
+				close(pipefd[0]);
+				close(pipefd[1]);
+				free(shell->commands->heredoc_line);
+				cleanup(shell, 1);
+				exit(EXIT_FAILURE);
+			}
             close(pipefd[1]);
 			free(shell->commands->heredoc_line);
 			cleanup(shell, 1);
@@ -164,40 +161,26 @@ void handle_input_redirection(t_ms *shell, t_command *command)
         }
         else // Parent process
         {
-            close(pipefd[1]); // Close write end
+			close(pipefd[1]); // Close write end
             dup2(pipefd[0], STDIN_FILENO);
             close(pipefd[0]);
 			if (command->redir_out)
-				write_file(command, i);
+			write_file(file);
 			while (waitpid(-1, NULL, 0) > 0);
         }
 	}
-		// read_heredoc(command);
-	else if (command->redir_in)
-		while (i < command->input_count)
-		{
-			read_file(command, i);
-			i++;
-		}
+	// read_heredoc(command);
+	else if (ft_strncmp(symbol, "<", 1) == 0)
+		read_file(file);
 }
 
-void handle_output_redirection(t_command *command)
+void handle_output_redirection(t_command *command, char *symbol, char *file)
 {
-	int i;
-
-	i = 0;
-	if (command->redir_out)
-		while (i < command->output_count)
-		{
-			write_file(command, i);
-			i++;
-		}
-	else if (command->append_mode)
-		while (i < command->output_count)
-		{
-			append_file(command, i);
-			i++;
-		}
+	(void) command;
+	if (ft_strncmp(symbol, ">", 1) == 0)
+			write_file(file);
+	else if (ft_strncmp(symbol, ">>", 2) == 0)
+			append_file(file);
 }
 
 void check_command(t_ms *shell)
@@ -206,6 +189,7 @@ void check_command(t_ms *shell)
 	int			prev_pipe_in = -1;
 	int			new_pipe[2];
 	int			status;
+	int			i;
 
 	command = shell->commands;
 	shell->child_count = 0;
@@ -244,10 +228,27 @@ void check_command(t_ms *shell)
 				close(new_pipe[1]);
 				close(new_pipe[0]);
 			}
-			if (command->redir_in || command->heredoc)
-				handle_input_redirection(shell, command);
-			if (command->redir_out || command->append_mode)
-				handle_output_redirection(command);
+			i = 0;
+			while (command->command_input[i] && \
+			(command->heredoc || command->redir_in ||\
+			command->redir_out || command->append_mode))
+			{
+				if (ft_strncmp(command->command_input[i], "<", 1) == 0)
+				{
+					handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
+				}
+				if (ft_strncmp(command->command_input[i], "<<", 2) == 0)
+					handle_input_redirection(shell, command, command->command_input[i], NULL);
+				if (ft_strncmp(command->command_input[i], ">", 1) == 0)
+				{
+					handle_output_redirection(command, command->command_input[i], command->command_input[i + 1]);
+				}
+				if (ft_strncmp(command->command_input[i], ">>", 2) == 0)
+				{
+					handle_output_redirection(command, command->command_input[i], command->command_input[i + 1]);
+				}
+				i++;
+			}
 			if (!is_builtin(command->args, shell))
 			{
 				char *path = find_executable_path(shell, command);
@@ -280,6 +281,7 @@ void check_command(t_ms *shell)
 	}
 	if (prev_pipe_in != -1)
 		close(prev_pipe_in);
+	// wait for all children to finish IN ORDER
 	while (shell->child_count-- > 0)
 	{
 		waitpid(-1, &status, 0);

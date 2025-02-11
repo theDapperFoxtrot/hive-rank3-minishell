@@ -13,24 +13,14 @@ void	clear_buffer(t_ms *shell)
 }
 void print_commands(t_command *cmd)
 {
-	int	i;
-	int j;
-
-	j = 0;
-	i = 0;
-	while (cmd != NULL)
+	while (cmd)
 	{
-		printf("----[Structure %d]----\n", j);
-		while (cmd->args[i])
-		{
-			printf("[%d]%s\n", i, cmd->args[i]);
-			i++;
-		}
-		i = 0;
-		j++;
+		printf("Args: ");
+		for (int i = 0; cmd->command_input[i]; i++)
+			printf("%s\n", cmd->command_input[i]);
+		printf("\n");
 		cmd = cmd->next;
 	}
-	printf("----[End of Structure]----\n");
 }
 
 int	invalid_input(char *input)

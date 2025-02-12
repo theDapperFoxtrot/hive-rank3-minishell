@@ -168,7 +168,6 @@ char	*handle_expansions(t_ms *shell, const char *str)
 		else
 			shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
 	}
-	shell->exp.j = shell->exp.i;
 	shell->exp.result[shell->exp.j] = '\0';
 	return (shell->exp.result);
 }

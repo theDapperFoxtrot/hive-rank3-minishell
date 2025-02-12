@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:50:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/05 17:36:59 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/12 18:28:30 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ void	ft_pwd(char **command, t_ms *shell)
 		print_error("getcwd failed", shell, 1, 1);
 		exit(shell->exit_code);
 	}
-	printf("%s\n", pwd);
+	ft_putstr_fd(pwd, 1);
+	ft_putstr_fd("\n", 1);
+	// printf("%s\n", pwd);
 	free(pwd);
 	shell->exit_code = 0;
 	return ;

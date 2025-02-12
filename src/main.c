@@ -1,5 +1,7 @@
 #include "../include/minishell.h"
 
+int g_signal = 0;
+
 void	clear_buffer(t_ms *shell)
 {
 	int	i;
@@ -98,6 +100,7 @@ int	main(int argc, char *argv[], char *envp[])
 
 	(void)argc;
 	(void)argv;
+	// g_signal = 0;
 	init_shell(&shell, envp);
 	while (1)
 	{

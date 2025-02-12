@@ -8,6 +8,9 @@
 # include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <signal.h>
+
+extern int	g_signal;
 
 // Simplified token types
 enum e_token_type
@@ -103,19 +106,19 @@ void	ft_export(char **command, t_ms *shell);
 void	quicksort(char **arr, int low, int high);
 void	ft_unset(char **command, t_ms *shell);
 // parser
-void	parse_tokens(t_ms *shell);
-void	add_argument(t_command *cmd, char *arg);
-char	*handle_expansions(t_ms *shell, const char *str);
-void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token);
+void		parse_tokens(t_ms *shell);
+void		add_argument(t_command *cmd, char *arg);
+char		*handle_expansions(t_ms *shell, const char *str);
+void    	handle_token_args(t_ms *shell, t_command *cmd, t_token *token);
 t_command	*handle_token_pipe(t_ms *shell);
-void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token);
-void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token);
-void	handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token);
-void	handle_token_append(t_ms *shell, t_command *cmd, t_token *token);
-char    *handle_expansions_quotes(t_ms *shell, const char *str);
-int	find_closing_quote(const char *str, char quote_type, int start);
-int	find_closing_brace(const char *str, int start);
-char	*expand_env_var(t_ms *shell, const char *var_name, int with_braces);
+void		handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token);
+void		handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token);
+void		handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token);
+void		handle_token_append(t_ms *shell, t_command *cmd, t_token *token);
+char    	*handle_expansions_quotes(t_ms *shell, const char *str);
+int			find_closing_quote(const char *str, char quote_type, int start);
+int			find_closing_brace(const char *str, int start);
+char		*expand_env_var(t_ms *shell, const char *var_name, int with_braces);
 // void	print_tokens(t_token *tokens);
 // tokens folder
 void	tokenize_input(t_ms *shell);

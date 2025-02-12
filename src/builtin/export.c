@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 12:43:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/12 17:57:24 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/12 18:28:10 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ void	print_sorted_env(t_ms *shell)
 	i = 0;
 	while (copy_list[i])
 	{
-		printf("%s\n", copy_list[i]);
+		ft_putstr_fd(copy_list[i], 1);
+		ft_putstr_fd("\n", 1);
+		// printf("%s\n", copy_list[i]);
 		i++;
 	}
 	free(copy_list);

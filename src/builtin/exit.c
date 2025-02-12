@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:33:02 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/03 16:28:23 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/12 18:27:27 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ static void	check_numeric(char **command, t_ms *shell)
 	if (command[1][i] == '#')
 	{
 		shell->exit_code = 0;
-		printf("exit\n");
+		// printf("exit\n");
+		ft_putstr_fd("exit\n", 1);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}
@@ -41,7 +42,8 @@ void	ft_exit(char **command, t_ms *shell)
 {
 	if (!command[1])
 	{
-		printf("exit\n");
+		// printf("exit\n");
+		ft_putstr_fd("exit\n", 1);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}
@@ -54,7 +56,8 @@ void	ft_exit(char **command, t_ms *shell)
 	}
 	else if (command[1])
 		shell->exit_code = ft_atoi(command[1]);
-	printf("exit\n");
+	// printf("exit\n");
+	ft_putstr_fd("exit\n", 1);
 	cleanup(shell, 1);
 	exit(shell->exit_code);
 }

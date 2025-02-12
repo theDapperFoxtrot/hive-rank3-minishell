@@ -11,11 +11,33 @@ void	clear_buffer(t_ms *shell)
 		i++;
 	}
 }
+
 void print_commands(t_command *cmd)
+{
+	int	i;
+	int j;
+
+	j = 0;
+	i = 0;
+	while (cmd != NULL)
+	{
+		printf("----[Structure %d]----\n", j);
+		while (cmd->args[i])
+		{
+			printf("[%d]%s\n", i, cmd->args[i]);
+			i++;
+		}
+		i = 0;
+		j++;
+		cmd = cmd->next;
+	}
+	printf("----[End of Structure]----\n");
+}
+void print_redirections(t_command *cmd)
 {
 	while (cmd)
 	{
-		printf("Args: ");
+		printf("New Command:\n");
 		for (int i = 0; cmd->command_input[i]; i++)
 			printf("%s\n", cmd->command_input[i]);
 		printf("\n");
@@ -51,7 +73,10 @@ void	process_input(t_ms *shell)
 		return ;
 	parse_tokens(shell); // <-- ADD EXPANSION; ${something}; single/double quotes
 	// print_commands(shell->commands);
+	// print_redirections(shell->commands);
 	clear_buffer(shell);
+	if (shell->commands->args == NULL)
+		return ;
 	check_command(shell);
 	cleanup(shell, 0);
 }

@@ -10,6 +10,11 @@ void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token)
 		print_error("Error: malloc failed", shell, 1, 1);
 		exit(shell->exit_code);
 	}
+	if (expanded_value[0] == '\0')
+	{
+		free(expanded_value);
+		return ;
+	}
 	add_argument(cmd, expanded_value);
 	cmd->arg_count++;
 	free(expanded_value);

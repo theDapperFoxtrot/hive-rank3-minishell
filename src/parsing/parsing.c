@@ -222,9 +222,11 @@ void parse_tokens(t_ms *shell)
 	while (token)
 	{
 		if (token->type == TOKEN_ARGS)
-		handle_token_args(shell, cmd, token);
+			handle_token_args(shell, cmd, token);
 		else if (token->type == TOKEN_PIPE)
 		{
+			if (cmd->command_input)
+				cmd->command_input[cmd->command_input_index] = NULL;
 			cmd->next = handle_token_pipe(shell);
 			cmd = cmd->next;
 			cmd->input_count = 0;
@@ -269,7 +271,10 @@ void parse_tokens(t_ms *shell)
 			token = token->next;
 		}
 		if (!token->next)
+		{
+			if (cmd->command_input)
 			cmd->command_input[cmd->command_input_index] = NULL;
+		}
 		token = token->next;
 	}
 }

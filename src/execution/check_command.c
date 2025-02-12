@@ -76,6 +76,20 @@ char	*find_path(char *cmd, char **envp)
 	return (path);
 }
 
+int	is_dir(char *str)
+{
+	int		fd3;
+
+	fd3 = open(str, O_DIRECTORY);
+	if (fd3 != -1)
+	{
+		close(fd3);
+		return (1);
+	}
+	return (0);
+}
+
+
 char	*find_directory(char **dir, char *splitted_args)
 {
 	int		i;
@@ -99,9 +113,10 @@ char	*find_directory(char **dir, char *splitted_args)
 		free(executable_path);
 		i++;
 	}
-	ft_putstr_fd("command not found: ", 2);
-	ft_putendl_fd(splitted_args, 2);
-	return (NULL);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(splitted_args, 2);
+	ft_putstr_fd(": command not found\n", 2);
+return (NULL);
 }
 
 char	*find_executable_path(t_ms *shell, t_command *command)
@@ -111,6 +126,29 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 	char	*found_path;
 	char 	**envp;
 
+	if (ft_strchr(command->args[0], '/'))
+	{
+		if (access(command->args[0], F_OK) == 0)
+		{
+			if (access(command->args[0], X_OK) == 0)
+			{
+				if (!is_dir(command->args[0]))
+					return (ft_strdup(command->args[0]));
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(command->args[0], 2);
+				ft_putstr_fd(": Is a directory\n", 2);
+				exit(126);
+			}
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(command->args[0], 2);
+			ft_putstr_fd(": Permission denied\n", 2);
+			exit(126);
+		}
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(command->args[0], 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		return (NULL);
+	}
 	envp = shell->env_list;
 		get_path = find_path(command->args[0], envp);
 	find_path(command->args[0], envp);
@@ -191,6 +229,11 @@ void check_command(t_ms *shell)
 	int			status;
 	int			i;
 
+	char		*path;
+
+
+	shell->last_pid = 0;
+
 	command = shell->commands;
 	shell->child_count = 0;
 	while (command)
@@ -251,7 +294,7 @@ void check_command(t_ms *shell)
 			}
 			if (!is_builtin(command->args, shell))
 			{
-				char *path = find_executable_path(shell, command);
+				path = find_executable_path(shell, command);
 				if (!path)
 				{
 					cleanup(shell, 1);
@@ -271,6 +314,8 @@ void check_command(t_ms *shell)
 		{
 			if (prev_pipe_in != -1)
 				close(prev_pipe_in);
+			if (!command->next)
+				shell->last_pid = command->pid;
 			if (command->next)
 			{
 				close(new_pipe[1]);
@@ -284,7 +329,8 @@ void check_command(t_ms *shell)
 	// wait for all children to finish IN ORDER
 	while (shell->child_count-- > 0)
 	{
-		waitpid(-1, &status, 0);
-		shell->exit_code = WEXITSTATUS(status);
+		shell->wpid = waitpid(-1, &status, 0);
+		if (shell->wpid == shell->last_pid)
+			shell->exit_code = WEXITSTATUS(status);
 	}
 }

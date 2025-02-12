@@ -81,6 +81,8 @@ typedef struct s_ms
 	int				equal_found;
 	int				rd_in_count;
 	int				rd_out_count;
+	pid_t			last_pid;
+	pid_t			wpid;
 }	t_ms;
 //utils.c
 void	free_args(char **commands);

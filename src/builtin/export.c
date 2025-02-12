@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 12:43:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/05 17:21:06 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/12 17:34:30 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void	set_env_variable(t_ms *shell, char *key, char *value, char *equal_sign)
 	shell->env_list = ft_realloc(shell->env_list, \
 	sizeof(char *) * env_list_size(shell->env_list), \
 	sizeof(char *) * (env_list_size(shell->env_list) + 2));
-	if (ft_strchr(key, '='))
+	if (ft_strchr(key, '=') && !value)
 	{
 		temp = ft_strjoin(key, "\"\"");
 		shell->env_list[i] = ft_strdup(temp);

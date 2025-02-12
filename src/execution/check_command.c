@@ -3,19 +3,19 @@
 int is_parent_builtin(char **command, t_ms *shell)
 {
 
-	if (ft_strncmp(command[0], "export", 6) == 0)
+	if (ft_strncmp(command[0], "export", 6) == 0 && ft_strlen(command[0]) == 6)
 	{
 		if (shell->pipe_count > 0)
 			return (1);
 		ft_export(command, shell);
 		return (1);
 	}
-	else if (ft_strncmp(command[0], "unset", 5) == 0)
+	else if (ft_strncmp(command[0], "unset", 5) == 0 && ft_strlen(command[0]) == 5)
 	{
 		ft_unset(command, shell);
 		return (1);
 	}
-		else if (ft_strncmp(command[0], "cd", 2) == 0)
+		else if (ft_strncmp(command[0], "cd", 2) == 0 && ft_strlen(command[0]) == 2)
 	{
 		ft_cd(command, shell);
 		return (1);
@@ -25,17 +25,17 @@ int is_parent_builtin(char **command, t_ms *shell)
 
 int	is_builtin(char **command, t_ms *shell)
 {
-	if (ft_strncmp(command[0], "echo", 4) == 0)
+	if (ft_strncmp(command[0], "echo", 4) == 0 && ft_strlen(command[0]) == 4)
 	{
 		ft_echo(command, shell);
 		return (1);
 	}
-	else if (ft_strncmp(command[0], "pwd", 3) == 0)
+	else if (ft_strncmp(command[0], "pwd", 3) == 0 && ft_strlen(command[0]) == 3)
 	{
 		ft_pwd(command, shell);
 		return (1);
 	}
-	else if (ft_strncmp(command[0], "env", 3) == 0)
+	else if (ft_strncmp(command[0], "env", 3) == 0 && ft_strlen(command[0]) == 3)
 	{
 		ft_env(command, shell);
 		return (1);
@@ -238,7 +238,7 @@ void check_command(t_ms *shell)
 	shell->child_count = 0;
 	while (command)
 	{
-		if (ft_strncmp(command->args[0], "exit", 4) == 0)
+		if (ft_strncmp(command->args[0], "exit", 4) == 0 && ft_strlen(command->args[0]) == 4)
 		{
 			ft_exit(command->args, shell);
 			command = command->next;

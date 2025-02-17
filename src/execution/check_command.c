@@ -2,7 +2,6 @@
 
 int is_parent_builtin(char **command, t_ms *shell)
 {
-
 	if (ft_strncmp(command[0], "export", 6) == 0 && ft_strlen(command[0]) == 6)
 	{
 		if (shell->pipe_count > 0)
@@ -221,33 +220,31 @@ void handle_output_redirection(t_command *command, char *symbol, char *file)
 			append_file(file);
 }
 
-void check_command(t_ms *shell)
+void check_command(t_ms *shell, t_command *command)
 {
-	t_command	*command;
 	int			prev_pipe_in = -1;
 	int			new_pipe[2];
 	int			status;
 	int			i;
-
 	char		*path;
 
-
 	shell->last_pid = 0;
-
-	command = shell->commands;
 	shell->child_count = 0;
 	while (command)
 	{
-		if (ft_strncmp(command->args[0], "exit", 4) == 0 && ft_strlen(command->args[0]) == 4)
+		if (command->args)
 		{
-			ft_exit(command->args, shell);
-			command = command->next;
-			continue ;
-		}
-		if (is_parent_builtin(command->args, shell))
-		{
-			command = command->next;
-			continue ;
+			if (ft_strncmp(command->args[0], "exit", 4) == 0 && ft_strlen(command->args[0]) == 4)
+			{
+				ft_exit(command->args, shell);
+				command = command->next;
+				continue ;
+			}
+			if (is_parent_builtin(command->args, shell))
+			{
+				command = command->next;
+				continue ;
+			}
 		}
 		if (command->next && pipe(new_pipe) == -1)
 		{
@@ -256,6 +253,7 @@ void check_command(t_ms *shell)
 		}
 		shell->child_count++;
 		command->pid = fork();
+		sig_child(&sig_handler_child);
 		if (command->pid == -1)
 			fork_error(new_pipe);
 		if (command->pid == 0)
@@ -292,19 +290,22 @@ void check_command(t_ms *shell)
 				}
 				i++;
 			}
-			if (!is_builtin(command->args, shell))
+			if (command->args)
 			{
-				path = find_executable_path(shell, command);
-				if (!path)
+				if (!is_builtin(command->args, shell))
 				{
-					cleanup(shell, 1);
-					exit(127);
-				}
-				if (execve(path, command->args, shell->env_list) == -1)
-				{
-					perror("minishell");
-					shell->exit_code = 126;
-					exit(shell->exit_code);
+					path = find_executable_path(shell, command);
+					if (!path)
+					{
+						cleanup(shell, 1);
+						exit(127);
+					}
+					if (execve(path, command->args, shell->env_list) == -1)
+					{
+						perror("minishell");
+						shell->exit_code = 126;
+						exit(shell->exit_code);
+					}
 				}
 			}
 			cleanup(shell, 1);

@@ -22,16 +22,13 @@ enum e_token_type
 	TOKEN_REDIR_OUT,
 	TOKEN_APPEND
 };
+
 typedef struct s_command
 {
 	char				**args;
 	int					arg_count;
 	struct s_command	*next;
-	char				**input_file;
-	int					input_count;
 	int					free_input_count;
-	char				**output_file;
-	int					output_count;
 	int					free_output_count;
 	char				*heredoc_delimiter;
 	char				**heredoc_lines;
@@ -43,7 +40,6 @@ typedef struct s_command
 	pid_t				pid;
 	char				**command_input;
 	int					command_input_index;
-	int					command_input_count;
 }	t_command;
 
 typedef struct s_token
@@ -75,6 +71,7 @@ typedef struct s_ms
 	int				child_count;
 	int				pipe_count;
 	t_token			*token;
+	t_token			*next_start;
 	t_command		*commands;
 	t_exp			exp;
 	int				i;
@@ -86,14 +83,25 @@ typedef struct s_ms
 	int				rd_out_count;
 	pid_t			last_pid;
 	pid_t			wpid;
+	int				heredoc_line_count;
 }	t_ms;
+
+// signals
+void	sig_heredoc(void *func);
+void	sig_ignore(void);
+void	sig_child(void *func);
+void	sig_init(void *func);
+void	sig_handler_child(int signal);
+void	sig_handler_sigint(int signal);
+void	sig_handler_heredoc(int signal);
+
 //utils.c
 void	free_args(char **commands);
 void	free_env(t_ms *shell);
 void	print_error(char *message, t_ms *shell, unsigned char status, int clean_shell);
 int		count_args(char **command);
 //builtin
-void	check_command(t_ms *shell);
+void	check_command(t_ms *shell, t_command *command);
 void	ft_echo(char **command, t_ms *shell);
 void	ft_pwd(char **command, t_ms *shell);
 void	ft_exit(char **command, t_ms *shell);

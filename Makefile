@@ -21,7 +21,9 @@ SRCS = 	src/main.c \
 		src/parsing/parsing_utils3.c \
 		src/error_cleanup/error_cleanup.c \
 		src/file_helpers.c \
-		src/execution/check_command.c
+		src/execution/check_command.c \
+		src/signals/signals.c \
+		src/signals/signal_handlers.c
 OBJ_DIR = objects
 OBJS = $(addprefix $(OBJ_DIR)/,  $(SRCS:.c=.o))
 LIBFT = ./libft/libft.a

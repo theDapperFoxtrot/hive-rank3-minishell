@@ -172,29 +172,43 @@ char	*handle_expansions(t_ms *shell, const char *str)
 	return (shell->exp.result);
 }
 
-void	count_cmd_args(t_ms *shell, t_token *token)
+int	count_cmd_args(t_ms *shell, t_token *token)
 {
-	t_command	*cmd;
+	int	command_input_count;
 
-	cmd = shell->commands;
-	while (token)
+	command_input_count = 0;
+	while (token && token->type != TOKEN_PIPE)
 	{
 		if (token->type == TOKEN_ARGS)
-			cmd->command_input_count++;
+			command_input_count++;
 		else if (token->type == TOKEN_HERE_DOC)
-			cmd->command_input_count++;
+			command_input_count++;
 		else if (token->type == TOKEN_REDIR_IN)
-			cmd->command_input_count = cmd->command_input_count + 2;
+			command_input_count = command_input_count + 2;
 		else if (token->type == TOKEN_REDIR_OUT || token->type == TOKEN_APPEND)
-			cmd->command_input_count = cmd->command_input_count + 2;
-		token = token->next;
+			command_input_count = command_input_count + 2;
+		if (token->next)
+		{
+			if (token->next->type == TOKEN_PIPE)
+			{
+				token = token->next;
+				token = token->next;
+				shell->next_start = token;
+				break ;
+			}
+			token = token->next;
+		}
+		else
+			break ;
 	}
+	return (command_input_count);
 }
 
 void parse_tokens(t_ms *shell)
 {
 	t_token		*token;
 	t_command	*cmd;
+	int			command_input_count;
 
 	cmd = malloc(sizeof(t_command));
 	if (!cmd)
@@ -202,22 +216,13 @@ void parse_tokens(t_ms *shell)
 	ft_bzero(cmd, sizeof(t_command));
 	shell->commands = cmd;
 	token = shell->token;
-	cmd->input_file = (char **) malloc(sizeof(char *) * shell->rd_in_count + 1);
-	if (!cmd->input_file)
+	command_input_count = count_cmd_args(shell, token);
+	cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 1));
+	if (!cmd->command_input)
 	{
 		print_error("Error: malloc failed", shell, 1, 1);
 		exit(shell->exit_code);
 	}
-	cmd->output_file = (char **) malloc(sizeof(char *) * shell->rd_out_count + 1);
-	if (!cmd->output_file)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
-	cmd->input_count = 0;
-	cmd->output_count = 0;
-	count_cmd_args(shell, token);
-	cmd->command_input = (char **) malloc(sizeof(char *) * cmd->command_input_count + 1);
 	cmd->command_input_index = 0;
 	while (token)
 	{
@@ -229,21 +234,10 @@ void parse_tokens(t_ms *shell)
 				cmd->command_input[cmd->command_input_index] = NULL;
 			cmd->next = handle_token_pipe(shell);
 			cmd = cmd->next;
-			cmd->input_count = 0;
-			cmd->output_count = 0;
-			cmd->free_input_count = 0;
-			cmd->free_output_count = 0;
-			cmd->command_input = (char **) malloc(sizeof(char *) * cmd->command_input_count + 1);
-			cmd->command_input_count = 0;
 			cmd->command_input_index = 0;
-			cmd->input_file = (char **) malloc(sizeof(char *) * shell->rd_in_count + 1);
-			if (!cmd->input_file)
-			{
-				print_error("Error: malloc failed", shell, 1, 1);
-				exit(shell->exit_code);
-			}
-			cmd->output_file = (char **) malloc(sizeof(char *) * shell->rd_out_count + 1);
-			if (!cmd->output_file)
+			command_input_count = count_cmd_args(shell, shell->next_start);
+			cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 1));
+			if (!cmd->command_input)
 			{
 				print_error("Error: malloc failed", shell, 1, 1);
 				exit(shell->exit_code);

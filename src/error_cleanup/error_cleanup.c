@@ -23,10 +23,13 @@ void	free_commands(t_command *commands)
 	{
 		tmp = commands->next;
 		free_split(commands->args);
-		while (commands->free_input_count-- > 0)
-			free(commands->input_file[commands->free_input_count]);
-		while (commands->free_output_count-- > 0)
-			free(commands->output_file[commands->free_output_count]);
+		free_split(commands->heredoc_lines);
+		if (commands->heredoc_delimiter)
+			free(commands->heredoc_delimiter);
+		if (commands->heredoc_line)
+			free(commands->heredoc_line);
+		if (commands->command_input)
+			free_split(commands->command_input);
 		free(commands);
 		commands = tmp;
 	}

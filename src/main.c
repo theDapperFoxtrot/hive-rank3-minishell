@@ -1,4 +1,5 @@
 #include "../include/minishell.h"
+#include <signal.h>
 
 int g_signal = 0;
 
@@ -73,13 +74,12 @@ void	process_input(t_ms *shell)
 	tokenize_input(shell);
 	if (!shell->token)
 		return ;
-	parse_tokens(shell); // <-- ADD EXPANSION; ${something}; single/double quotes
+	parse_tokens(shell);
+	free_tokens(shell);
 	// print_commands(shell->commands);
 	// print_redirections(shell->commands);
 	clear_buffer(shell);
-	if (shell->commands->args == NULL)
-		return ;
-	check_command(shell);
+	check_command(shell, shell->commands);
 	cleanup(shell, 0);
 }
 
@@ -88,11 +88,11 @@ static void	init_shell(t_ms *shell, char **envp)
 	ft_bzero(shell, sizeof(t_ms));
 	shell->rd_in_count = 0;
 	shell->rd_out_count = 0;
+	shell->heredoc_line_count = 0;
 	ft_bzero(&shell->exp, sizeof(t_exp));
 	shell->exp.i = 0;
 	create_env(shell, envp);
 }
-
 
 int	main(int argc, char *argv[], char *envp[])
 {
@@ -102,13 +102,14 @@ int	main(int argc, char *argv[], char *envp[])
 	(void)argv;
 	// g_signal = 0;
 	init_shell(&shell, envp);
+	sig_init(&sig_handler_sigint);
 	while (1)
 	{
 		shell.input = readline("minishell> ");
 		if (!shell.input)
 		{
-			printf("exit\n");
-			break ;
+				printf("exit\n");
+				break ;
 		}
 		if (*(shell.input))
 			add_history(shell.input);

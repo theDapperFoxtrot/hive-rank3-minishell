@@ -38,6 +38,11 @@ void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token)
 	char        *expanded_value;
 
 	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
+	if (!cmd->command_input[cmd->command_input_index])
+	{
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
+	}
 	token = token->next;
 	if (token && token->type == TOKEN_ARGS)
 	{
@@ -48,8 +53,7 @@ void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token)
 			exit(shell->exit_code);
 		}
 		cmd->command_input[cmd->command_input_index + 1] = ft_strdup(expanded_value);
-		cmd->input_file[cmd->input_count] = ft_strdup(expanded_value);
-		if (!cmd->input_file)
+		if (!cmd->command_input[cmd->command_input_index + 1])
 		{
 			print_error("Error: malloc failed", shell, 1, 1);
 			exit(shell->exit_code);
@@ -57,8 +61,6 @@ void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token)
 		cmd->redir_in = 1;
 		free(expanded_value);
 	}
-	cmd->input_count++;
-	cmd->free_input_count++;
 	cmd->command_input_index += 2;
 }
 
@@ -104,14 +106,39 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 		}
 	}
 	i = 0;
+	sig_heredoc(&sig_handler_heredoc);
+	shell->heredoc_line_count++;
 	cmd->heredoc_lines = (char **) malloc(sizeof(char *) * 100000);
 	while (1)
 	{
+		sig_heredoc(&sig_handler_heredoc);
 		cmd->heredoc_lines[i] = readline("> ");
-		if (ft_strncmp(cmd->heredoc_lines[i], cmd->heredoc_delimiter, ft_strlen(cmd->heredoc_lines[i])) == 0)
+		if (g_signal == SIGINT)
+			break;
+		if (cmd->heredoc_lines[i] == NULL)
+		{
+			ft_putstr_fd("minishell: warning: here-document at line ", 2);
+			ft_putnbr_fd(shell->heredoc_line_count, 2);
+			ft_putstr_fd(" delimited by end-of-file (wanted `", 2);
+			ft_putstr_fd(cmd->heredoc_delimiter, 2);
+			ft_putstr_fd("')", 2);
+			ft_putstr_fd("\n", 2);
 			break ;
+		}
+		if (ft_strncmp(cmd->heredoc_lines[i], cmd->heredoc_delimiter, ft_strlen(cmd->heredoc_lines[i])) == 0)
+		break ;
 		i++;
 	}
+	if (g_signal == SIGINT)
+	{
+		free(cmd->heredoc_lines);
+		free(cmd->heredoc_delimiter);
+		shell->exit_code = 130; // Set exit code for SIGINT
+		g_signal = 0; // Reset the global signal flag
+		return ; // Return early to skip further processing
+	}
+	// Check if the loop was exited due to SIGINT
+	shell->heredoc_line_count = shell->heredoc_line_count + i;
 	cmd->heredoc_lines[i] = NULL;
 	make_heredoc_one_line(shell, cmd);
 	free(cmd->heredoc_lines);
@@ -126,6 +153,12 @@ void handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)
 	char        *expanded_value;
 
 	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
+	if (!cmd->command_input[cmd->command_input_index])
+	{
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
+	}
+
 	token = token->next;
 	if (token && token->type == TOKEN_ARGS)
 	{
@@ -136,8 +169,7 @@ void handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)
 			exit(shell->exit_code);
 		}
 		cmd->command_input[cmd->command_input_index + 1] = ft_strdup(expanded_value);
-		cmd->output_file[cmd->output_count] = ft_strdup(expanded_value);
-		if (!cmd->output_file)
+		if (!cmd->command_input[cmd->command_input_index + 1])
 		{
 			print_error("Error: malloc failed", shell, 1, 1);
 			exit(shell->exit_code);
@@ -145,8 +177,6 @@ void handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)
 		cmd->redir_out = 1;
 		free(expanded_value);
 	}
-	cmd->output_count++;
-	cmd->free_output_count++;
 	cmd->command_input_index += 2;
 }
 

@@ -5,11 +5,11 @@ int is_parent_builtin(char **command, t_ms *shell)
 	if (ft_strncmp(command[0], "export", 6) == 0 && ft_strlen(command[0]) == 6)
 	{
 		if (shell->pipe_count > 0)
-			return (1);
+			return (0);
 		ft_export(command, shell);
 		return (1);
 	}
-	else if (ft_strncmp(command[0], "unset", 5) == 0 && ft_strlen(command[0]) == 5)
+	if (ft_strncmp(command[0], "unset", 5) == 0 && ft_strlen(command[0]) == 5)
 	{
 		ft_unset(command, shell);
 		return (1);
@@ -19,19 +19,25 @@ int is_parent_builtin(char **command, t_ms *shell)
 		ft_cd(command, shell);
 		return (1);
 	}
+		else if (ft_strncmp(command[0], "pwd", 3) == 0 && ft_strlen(command[0]) == 3)
+	{
+		ft_pwd(command, shell);
+		return (1);
+	}
+
 	return (0);
 }
 
 int	is_builtin(char **command, t_ms *shell)
 {
-	if (ft_strncmp(command[0], "echo", 4) == 0 && ft_strlen(command[0]) == 4)
+	if (ft_strncmp(command[0], "export", 6) == 0 && ft_strlen(command[0]) == 6)
 	{
-		ft_echo(command, shell);
+		ft_export(command, shell);
 		return (1);
 	}
-	else if (ft_strncmp(command[0], "pwd", 3) == 0 && ft_strlen(command[0]) == 3)
+	else if (ft_strncmp(command[0], "echo", 4) == 0 && ft_strlen(command[0]) == 4)
 	{
-		ft_pwd(command, shell);
+		ft_echo(command, shell);
 		return (1);
 	}
 	else if (ft_strncmp(command[0], "env", 3) == 0 && ft_strlen(command[0]) == 3)
@@ -202,22 +208,22 @@ void handle_input_redirection(t_ms *shell, t_command *command, char *symbol, cha
             dup2(pipefd[0], STDIN_FILENO);
             close(pipefd[0]);
 			if (command->redir_out)
-			write_file(file);
+			write_file(shell, file);
 			while (waitpid(-1, NULL, 0) > 0);
         }
 	}
 	// read_heredoc(command);
 	else if (ft_strncmp(symbol, "<", 1) == 0)
-		read_file(file);
+		read_file(shell, file);
 }
 
-void handle_output_redirection(t_command *command, char *symbol, char *file)
+void handle_output_redirection(t_ms *shell, t_command *command, char *symbol, char *file)
 {
 	(void) command;
 	if (ft_strncmp(symbol, ">", 1) == 0)
-			write_file(file);
+			write_file(shell, file);
 	else if (ft_strncmp(symbol, ">>", 2) == 0)
-			append_file(file);
+			append_file(shell, file);
 }
 
 void check_command(t_ms *shell, t_command *command)
@@ -282,11 +288,11 @@ void check_command(t_ms *shell, t_command *command)
 					handle_input_redirection(shell, command, command->command_input[i], NULL);
 				if (ft_strncmp(command->command_input[i], ">", 1) == 0)
 				{
-					handle_output_redirection(command, command->command_input[i], command->command_input[i + 1]);
+					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
 				}
 				if (ft_strncmp(command->command_input[i], ">>", 2) == 0)
 				{
-					handle_output_redirection(command, command->command_input[i], command->command_input[i + 1]);
+					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
 				}
 				i++;
 			}

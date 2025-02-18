@@ -84,6 +84,7 @@ typedef struct s_ms
 	pid_t			last_pid;
 	pid_t			wpid;
 	int				heredoc_line_count;
+	char 			*prev_pwd;
 }	t_ms;
 
 // signals
@@ -137,9 +138,9 @@ void	create_token(t_ms *shell);
 void	add_token(t_ms *shell, t_token *new_token);
 // file helpers
 void	safe_dup2(int fd, int fd2);
-void	read_file(char *file);
-void	write_file(char *file);
-void	append_file(char *file);
+void	read_file(t_ms *shell, char *file);
+void	write_file(t_ms *shell, char *file);
+void	append_file(t_ms *shell, char *file);
 void	read_heredoc(t_command *cmd);
 // errors and cleanup
 void	cleanup(t_ms *shell, int clean_shell);

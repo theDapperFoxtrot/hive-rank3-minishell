@@ -11,7 +11,7 @@ void	safe_dup2(int fd, int fd2)
 	close(fd);
 }
 
-void	read_file(char *file)
+void	read_file(t_ms *shell, char *file)
 {
 	int	fd_open;
 
@@ -20,7 +20,7 @@ void	read_file(char *file)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		perror(file);
-		free(file);
+		cleanup(shell, 1);
 		exit(EXIT_FAILURE);
 	}
 	safe_dup2(fd_open, STDIN_FILENO);
@@ -33,7 +33,7 @@ void	read_heredoc(t_command *cmd)
 		free(cmd->heredoc_line);
 }
 
-void	write_file(char *file)
+void	write_file(t_ms *shell, char *file)
 {
 	int	fd_write;
 
@@ -42,13 +42,14 @@ void	write_file(char *file)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		perror(file);
+		cleanup(shell, 1);
 		exit(EXIT_FAILURE);
 	}
 	safe_dup2(fd_write, STDOUT_FILENO);
 	close(fd_write);
 }
 
-void	append_file(char *file)
+void	append_file(t_ms *shell, char *file)
 {
 	int	fd_write;
 
@@ -57,6 +58,7 @@ void	append_file(char *file)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		perror(file);
+		cleanup(shell, 1);
 		exit(EXIT_FAILURE);
 	}
 	safe_dup2(fd_write, STDOUT_FILENO);

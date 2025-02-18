@@ -46,7 +46,6 @@ void	ft_unset(char **command, t_ms *shell)
 {
 	int	i;
 
-	
 	if (!command[1])
 		return ;
 	i = 1;

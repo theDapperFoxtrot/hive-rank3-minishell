@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:33:02 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/12 18:27:27 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/18 18:35:47 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ void	ft_exit(char **command, t_ms *shell)
 	{
 		// printf("exit\n");
 		ft_putstr_fd("exit\n", 1);
+		// if (shell->prev_pwd)
+		// 	free(shell->prev_pwd);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}
@@ -58,6 +60,8 @@ void	ft_exit(char **command, t_ms *shell)
 		shell->exit_code = ft_atoi(command[1]);
 	// printf("exit\n");
 	ft_putstr_fd("exit\n", 1);
+	// if (shell->prev_pwd)
+	// 	free(shell->prev_pwd);
 	cleanup(shell, 1);
 	exit(shell->exit_code);
 }

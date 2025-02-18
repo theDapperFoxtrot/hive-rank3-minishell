@@ -116,6 +116,8 @@ int	main(int argc, char *argv[], char *envp[])
 		process_input(&shell);
 	}
 	rl_clear_history();
-	free_env(&shell);
+	cleanup(&shell, 1);
+	if (shell.prev_pwd)
+		free(shell.prev_pwd);
 	return (shell.exit_code);
 }

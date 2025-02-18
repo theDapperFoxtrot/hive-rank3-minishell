@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 10:34:14 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/03 16:26:16 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/18 16:17:53 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	ft_env(char **command, t_ms *shell)
 		shell->exit_code = 127;
 		return ;
 	}
-	while (shell->env_list[i] != NULL)
+	while (shell->env_list[i])
 	{
 		printf("%s\n", shell->env_list[i]);
 		i++;

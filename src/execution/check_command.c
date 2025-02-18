@@ -233,6 +233,7 @@ void check_command(t_ms *shell, t_command *command)
 	int			status;
 	int			i;
 	char		*path;
+	int			exec;
 
 	shell->last_pid = 0;
 	shell->child_count = 0;
@@ -275,6 +276,7 @@ void check_command(t_ms *shell, t_command *command)
 				close(new_pipe[1]);
 				close(new_pipe[0]);
 			}
+			exec = is_builtin(command->args, shell);
 			i = 0;
 			while (command->command_input[i] && \
 			(command->heredoc || command->redir_in ||\
@@ -298,7 +300,7 @@ void check_command(t_ms *shell, t_command *command)
 			}
 			if (command->args)
 			{
-				if (!is_builtin(command->args, shell))
+				if (!exec)
 				{
 					path = find_executable_path(shell, command);
 					if (!path)

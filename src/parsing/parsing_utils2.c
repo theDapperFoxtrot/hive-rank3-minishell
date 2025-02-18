@@ -2,7 +2,7 @@
 
 char    *handle_expansions_quotes(t_ms *shell, const char *str)
 {
-    shell->exp.closing_quote = find_closing_quote(str, str[shell->exp.i], shell->exp.i);
+    shell->exp.closing_quote = find_closing_quote(shell, str, str[shell->exp.i], shell->exp.i);
     if (shell->exp.closing_quote == -1)
     {
         free(shell->exp.result);

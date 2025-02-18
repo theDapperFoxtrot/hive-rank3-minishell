@@ -10,13 +10,13 @@ void	add_token(t_ms *shell, t_token *new_token)
 	if (!shell->token) //if very first token, set it to new token
 	{
 		shell->token = new_token;
-		// new_token->next = NULL;
+		new_token->next = NULL;
 		return ;
 	}
 	while (current->next) //otherwise, iterate to the end of the list, and add next new token
 		current = current->next;
 	current->next = new_token;
-	// new_token->next = NULL;
+	new_token->next = NULL;
 }
 
 void	tokenize_input(t_ms *shell)
@@ -32,7 +32,8 @@ void	tokenize_input(t_ms *shell)
 			shell->i++;
 		if (shell->input[shell->i] == '|' && lead_pipe)
 		{
-			print_error("minishell: syntax error near unexpected token `|'", shell, 2, 0);
+			ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+			free_tokens(shell);
 			return ;
 		}
 		if (!shell->input[shell->i])

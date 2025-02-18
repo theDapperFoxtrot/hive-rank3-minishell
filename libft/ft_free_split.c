@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 21:06:10 by thedapperfo       #+#    #+#             */
-/*   Updated: 2024/12/17 18:20:24 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/18 19:17:54 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void	free_split(char **split_array)
 	int	i;
 
 	i = 0;
+	if (!split_array)
+		return ;
 	if (split_array != NULL)
 	{
 		while (split_array[i] != NULL)

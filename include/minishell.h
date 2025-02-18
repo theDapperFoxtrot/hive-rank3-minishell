@@ -125,7 +125,7 @@ void		handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token);
 void		handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token);
 void		handle_token_append(t_ms *shell, t_command *cmd, t_token *token);
 char    	*handle_expansions_quotes(t_ms *shell, const char *str);
-int			find_closing_quote(const char *str, char quote_type, int start);
+int			find_closing_quote(t_ms *shell, const char *str, char quote_type, int start);
 int			find_closing_brace(const char *str, int start);
 char		*expand_env_var(t_ms *shell, const char *var_name, int with_braces);
 // void	print_tokens(t_token *tokens);

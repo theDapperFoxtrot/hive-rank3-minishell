@@ -21,7 +21,7 @@ void	add_argument(t_command *cmd, char *arg)
 	cmd->next = NULL;
 }
 
-int	find_closing_quote(const char *str, char quote_type, int start)
+int	find_closing_quote(t_ms *shell, const char *str, char quote_type, int start)
 {
 	int	i;
 
@@ -31,7 +31,12 @@ int	find_closing_quote(const char *str, char quote_type, int start)
 	if (str[i] == quote_type)
 		return (i);
 	else
-		return (-1);
+	{
+		ft_putstr_fd("minishell: syntax error: Missing matching end quote symbol\n", 2);
+		free(shell->exp.result);
+		cleanup(shell, 1);
+		exit(2);
+	}
 	// return (str[i] == quote_type) ? i : -1;
 }
 
@@ -217,11 +222,20 @@ void parse_tokens(t_ms *shell)
 	shell->commands = cmd;
 	token = shell->token;
 	command_input_count = count_cmd_args(shell, token);
-	cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 1));
-	if (!cmd->command_input)
+	if (command_input_count > 0)
 	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
+		cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 1));
+		if (!cmd->command_input)
+		{
+			print_error("Error: malloc failed", shell, 1, 1);
+			exit(shell->exit_code);
+		}
+	}
+	cmd->command_input_index = 0;
+	while (cmd->command_input_index < command_input_count)
+	{
+		cmd->command_input[cmd->command_input_index] = NULL;
+		cmd->command_input_index++;
 	}
 	cmd->command_input_index = 0;
 	while (token)
@@ -244,30 +258,36 @@ void parse_tokens(t_ms *shell)
 			}
 			cmd->next = NULL;
 		}
-		else if (token->type == TOKEN_REDIR_IN)
+		else if (token->type == TOKEN_REDIR_IN && token->next)
 		{
 			handle_token_redir_in(shell, cmd, token);
 			token = token->next;
 		}
-		else if (token->type == TOKEN_HERE_DOC)
+		else if (token->type == TOKEN_HERE_DOC && token->next)
 		{
 			handle_token_heredoc(shell, cmd, token);
 			token = token->next;
 		}
-		else if (token->type == TOKEN_REDIR_OUT)
+		else if (token->type == TOKEN_REDIR_OUT && token->next)
 		{
 			handle_token_redir_out(shell, cmd, token);
 			token = token->next;
 		}
-		else if (token->type == TOKEN_APPEND)
+		else if (token->type == TOKEN_APPEND && token->next)
 		{
 			handle_token_append(shell, cmd, token);
 			token = token->next;
 		}
-		if (!token->next)
+		if (token->next == NULL)
 		{
 			if (cmd->command_input)
 			cmd->command_input[cmd->command_input_index] = NULL;
+			if ((ft_strncmp(token->value, ">", 1) == 0) || (ft_strncmp(token->value, "<", 1) == 0))
+			{
+				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
+				free_tokens(shell);
+				return ;
+			}
 		}
 		token = token->next;
 	}

@@ -141,8 +141,6 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	shell->heredoc_line_count = shell->heredoc_line_count + i;
 	cmd->heredoc_lines[i] = NULL;
 	make_heredoc_one_line(shell, cmd);
-	free(cmd->heredoc_lines);
-	free(cmd->heredoc_delimiter);
 	cmd->heredoc = 1;
 	cmd->command_input_index++;
 }

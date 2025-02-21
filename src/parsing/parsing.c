@@ -258,8 +258,14 @@ void parse_tokens(t_ms *shell)
 			}
 			cmd->next = NULL;
 		}
-		else if (token->type == TOKEN_REDIR_IN && token->next)
+		else if (token->type == TOKEN_REDIR_IN && token->next && token->next->type != TOKEN_ARGS)
 		{
+			if (token->next->type == TOKEN_PIPE)
+			{
+				print_error("minishell: syntax error near unexpected token `|'", shell, 2, 0);
+				shell->token_error = 1;
+				return ;
+			}
 			handle_token_redir_in(shell, cmd, token);
 			token = token->next;
 		}
@@ -268,13 +274,25 @@ void parse_tokens(t_ms *shell)
 			handle_token_heredoc(shell, cmd, token);
 			token = token->next;
 		}
-		else if (token->type == TOKEN_REDIR_OUT && token->next)
+		else if (token->type == TOKEN_REDIR_OUT && token->next && token->next->type != TOKEN_ARGS)
 		{
+			if (token->next->type == TOKEN_PIPE)
+			{
+				print_error("minishell: syntax error near unexpected token `|'", shell, 2, 0);
+				shell->token_error = 1;
+				return ;
+			}
 			handle_token_redir_out(shell, cmd, token);
 			token = token->next;
 		}
-		else if (token->type == TOKEN_APPEND && token->next)
+		else if (token->type == TOKEN_APPEND && token->next && token->next->type != TOKEN_ARGS)
 		{
+			if (token->next->type == TOKEN_PIPE)
+			{
+				print_error("minishell: syntax error near unexpected token `|'", shell, 2, 0);
+				shell->token_error = 1;
+				return ;
+			}
 			handle_token_append(shell, cmd, token);
 			token = token->next;
 		}
@@ -286,6 +304,7 @@ void parse_tokens(t_ms *shell)
 			{
 				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
 				free_tokens(shell);
+				shell->token_error = 1;
 				return ;
 			}
 		}

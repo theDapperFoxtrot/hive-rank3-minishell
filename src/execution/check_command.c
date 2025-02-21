@@ -193,12 +193,10 @@ void handle_input_redirection(t_ms *shell, t_command *command, char *symbol, cha
 				ft_putendl_fd("minishell: write failed", 2);
 				close(pipefd[0]);
 				close(pipefd[1]);
-				free(shell->commands->heredoc_line);
 				cleanup(shell, 1);
 				exit(EXIT_FAILURE);
 			}
             close(pipefd[1]);
-			free(shell->commands->heredoc_line);
 			cleanup(shell, 1);
             exit(EXIT_SUCCESS);
         }
@@ -276,7 +274,8 @@ void check_command(t_ms *shell, t_command *command)
 				close(new_pipe[1]);
 				close(new_pipe[0]);
 			}
-			exec = is_builtin(command->args, shell);
+			if (command->args)
+				exec = is_builtin(command->args, shell);
 			i = 0;
 			while (command->command_input[i] && \
 			(command->heredoc || command->redir_in ||\

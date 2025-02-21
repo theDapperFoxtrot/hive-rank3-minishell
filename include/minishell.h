@@ -85,6 +85,7 @@ typedef struct s_ms
 	pid_t			wpid;
 	int				heredoc_line_count;
 	char 			*prev_pwd;
+	int				token_error;
 }	t_ms;
 
 // signals

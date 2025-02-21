@@ -86,8 +86,11 @@ typedef struct s_ms
 	int				heredoc_line_count;
 	char 			*prev_pwd;
 	int				token_error;
+	char			*pipe_rdl_tokens;
 }	t_ms;
 
+
+void	clear_buffer(t_ms *shell);
 // signals
 void	sig_heredoc(void *func);
 void	sig_ignore(void);

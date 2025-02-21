@@ -274,8 +274,6 @@ void check_command(t_ms *shell, t_command *command)
 				close(new_pipe[1]);
 				close(new_pipe[0]);
 			}
-			if (command->args)
-				exec = is_builtin(command->args, shell);
 			i = 0;
 			while (command->command_input[i] && \
 			(command->heredoc || command->redir_in ||\
@@ -286,7 +284,7 @@ void check_command(t_ms *shell, t_command *command)
 					handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
 				}
 				if (ft_strncmp(command->command_input[i], "<<", 2) == 0)
-					handle_input_redirection(shell, command, command->command_input[i], NULL);
+				handle_input_redirection(shell, command, command->command_input[i], NULL);
 				if (ft_strncmp(command->command_input[i], ">", 1) == 0)
 				{
 					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
@@ -297,6 +295,8 @@ void check_command(t_ms *shell, t_command *command)
 				}
 				i++;
 			}
+			if (command->args)
+				exec = is_builtin(command->args, shell);
 			if (command->args)
 			{
 				if (!exec)

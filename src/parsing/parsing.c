@@ -390,6 +390,8 @@ void parse_tokens(t_ms *shell)
 		else if (token->type == TOKEN_HERE_DOC && token->next)
 		{
 			handle_token_heredoc(shell, cmd, token);
+			if (g_signal == SIGINT)
+				break ;
 			token = token->next;
 		}
 		else if (token->type == TOKEN_REDIR_OUT && token->next)

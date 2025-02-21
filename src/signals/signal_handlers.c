@@ -4,13 +4,14 @@ void	sig_handler_child(int signal)
 {
 	if (signal == SIGINT)
     {
-		write(2, "\n", 2);
-        // rl_replace_line("", 0);
-        // rl_on_new_line();
-        // rl_redisplay();
+        g_signal = signal;
+        write(2, "\n", 2);
     }
 	if (signal == SIGQUIT)
+    {
+        g_signal = signal;
 		ft_putstr_fd("Quit (core dumped)\n", 2);
+    }
 }
 
 void sig_handler_sigint(int signal)

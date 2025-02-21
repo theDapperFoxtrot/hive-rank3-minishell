@@ -81,6 +81,12 @@ void	process_input(t_ms *shell)
 	clear_buffer(shell);
 	if (shell->token_error)
 		return ;
+	if (g_signal == SIGINT)
+	{
+		shell->exit_code = 130;
+		cleanup(shell, 0);
+		return ;
+	}
 	check_command(shell, shell->commands);
 	cleanup(shell, 0);
 }
@@ -102,11 +108,11 @@ int	main(int argc, char *argv[], char *envp[])
 
 	(void)argc;
 	(void)argv;
-	// g_signal = 0;
 	init_shell(&shell, envp);
 	sig_init(&sig_handler_sigint);
 	while (1)
 	{
+		g_signal = 0;
 		shell.token_error = 0;
 		shell.input = readline("minishell> ");
 		if (!shell.input)

@@ -108,7 +108,13 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	i = 0;
 	sig_heredoc(&sig_handler_heredoc);
 	shell->heredoc_line_count++;
-	cmd->heredoc_lines = (char **) malloc(sizeof(char *) * 100000);
+	cmd->heredoc_lines = (char **) malloc(sizeof(char *) * 100);
+	while (i < 100)
+	{
+		cmd->heredoc_lines[i] = NULL;
+		i++;
+	}
+	i = 0;
 	while (1)
 	{
 		sig_heredoc(&sig_handler_heredoc);
@@ -131,10 +137,6 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	}
 	if (g_signal == SIGINT)
 	{
-		free(cmd->heredoc_lines);
-		free(cmd->heredoc_delimiter);
-		shell->exit_code = 130; // Set exit code for SIGINT
-		g_signal = 0; // Reset the global signal flag
 		return ; // Return early to skip further processing
 	}
 	// Check if the loop was exited due to SIGINT

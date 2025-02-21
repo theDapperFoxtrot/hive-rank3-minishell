@@ -22,8 +22,10 @@ void	free_commands(t_command *commands)
 	while (commands)
 	{
 		tmp = commands->next;
-		free_split(commands->args);
-		free_split(commands->heredoc_lines);
+		if (commands->args)
+			free_split(commands->args);
+		if (commands->heredoc_lines)
+			free_split(commands->heredoc_lines);
 		if (commands->heredoc_delimiter)
 			free(commands->heredoc_delimiter);
 		if (commands->heredoc_line)

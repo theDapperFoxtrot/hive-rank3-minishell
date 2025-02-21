@@ -120,7 +120,9 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 		sig_heredoc(&sig_handler_heredoc);
 		cmd->heredoc_lines[i] = readline("> ");
 		if (g_signal == SIGINT)
-			break;
+		{
+			break ;
+		}
 		if (cmd->heredoc_lines[i] == NULL)
 		{
 			ft_putstr_fd("minishell: warning: here-document at line ", 2);

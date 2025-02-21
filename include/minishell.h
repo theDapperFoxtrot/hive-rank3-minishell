@@ -9,6 +9,8 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <signal.h>
+# include <sys/ioctl.h>
+# include <termios.h>
 
 extern int	g_signal;
 

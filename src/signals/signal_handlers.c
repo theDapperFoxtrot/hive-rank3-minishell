@@ -5,7 +5,7 @@ void	sig_handler_child(int signal)
 	if (signal == SIGINT)
     {
         g_signal = signal;
-        write(2, "\n", 2);
+        write(1, "\n", 1);
     }
 	if (signal == SIGQUIT)
     {
@@ -18,8 +18,9 @@ void sig_handler_sigint(int signal)
 {
     if (signal == SIGINT)
     {
-        g_signal = signal;
-        write(2, "\n", 2);
+        g_signal = SIGINT;
+        ioctl(STDIN_FILENO, TIOCSTI, "\n"); // Inject a newline to break readline
+        write(1, "\033[1A", 4);
     }
 }
 
@@ -27,10 +28,9 @@ void sig_handler_heredoc(int signal)
 {
     if (signal == SIGINT)
     {
-        g_signal = signal;
-        write(2, "\n", 2);
-        rl_replace_line("", 0);
-        rl_on_new_line();
+        g_signal = SIGINT;
+        ioctl(STDIN_FILENO, TIOCSTI, "\n"); // Inject a newline to break readline
+        write(1, "\033[1A", 4);
         rl_done = 1;
     }
 }

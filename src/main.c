@@ -1,5 +1,6 @@
 #include "../include/minishell.h"
 #include <signal.h>
+#include <termios.h>
 
 int g_signal = 0;
 
@@ -85,6 +86,7 @@ void	process_input(t_ms *shell)
 	{
 		shell->exit_code = 130;
 		cleanup(shell, 0);
+		g_signal = 0;
 		return ;
 	}
 	check_command(shell, shell->commands);
@@ -105,24 +107,34 @@ static void	init_shell(t_ms *shell, char **envp)
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_ms	shell;
+	struct termios original_term;
 
 	(void)argc;
 	(void)argv;
 	init_shell(&shell, envp);
+	tcgetattr(STDIN_FILENO, &original_term);
 	sig_init(&sig_handler_sigint);
+	g_signal = 0;
 	while (1)
 	{
-		g_signal = 0;
 		shell.token_error = 0;
 		shell.input = readline("minishell> ");
+		if (g_signal == SIGINT)
+        {
+            g_signal = 0;
+			shell.exit_code = 130;
+        }
 		if (!shell.input)
 		{
-				printf("exit\n");
-				break ;
+			printf("exit\n");
+			break ;
 		}
 		if (*(shell.input))
 			add_history(shell.input);
 		process_input(&shell);
+		tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
+		rl_replace_line("", 0);
+		// rl_redisplay();
 	}
 	rl_clear_history();
 	cleanup(&shell, 1);

@@ -258,7 +258,7 @@ void parse_tokens(t_ms *shell)
 			}
 			cmd->next = NULL;
 		}
-		else if (token->type == TOKEN_REDIR_IN && token->next && token->next->type != TOKEN_ARGS)
+		else if (token->type == TOKEN_REDIR_IN && token->next)
 		{
 			if (token->next->type == TOKEN_PIPE)
 			{
@@ -274,7 +274,7 @@ void parse_tokens(t_ms *shell)
 			handle_token_heredoc(shell, cmd, token);
 			token = token->next;
 		}
-		else if (token->type == TOKEN_REDIR_OUT && token->next && token->next->type != TOKEN_ARGS)
+		else if (token->type == TOKEN_REDIR_OUT && token->next)
 		{
 			if (token->next->type == TOKEN_PIPE)
 			{
@@ -285,7 +285,7 @@ void parse_tokens(t_ms *shell)
 			handle_token_redir_out(shell, cmd, token);
 			token = token->next;
 		}
-		else if (token->type == TOKEN_APPEND && token->next && token->next->type != TOKEN_ARGS)
+		else if (token->type == TOKEN_APPEND && token->next)
 		{
 			if (token->next->type == TOKEN_PIPE)
 			{

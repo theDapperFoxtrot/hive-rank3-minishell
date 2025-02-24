@@ -32,7 +32,8 @@ void	free_commands(t_command *commands)
 			free(commands->heredoc_line);
 		if (commands->command_input)
 			free_split(commands->command_input);
-		free(commands);
+		if (commands)
+			free(commands);
 		commands = tmp;
 	}
 	commands = NULL;

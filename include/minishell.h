@@ -89,6 +89,7 @@ typedef struct s_ms
 	char 			*prev_pwd;
 	int				token_error;
 	char			*pipe_rdl_tokens;
+	int				exit_error_flag;
 }	t_ms;
 
 

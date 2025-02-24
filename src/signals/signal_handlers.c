@@ -29,8 +29,7 @@ void sig_handler_heredoc(int signal)
     if (signal == SIGINT)
     {
         g_signal = SIGINT;
-        ioctl(STDIN_FILENO, TIOCSTI, "\n"); // Inject a newline to break readline
-        write(1, "\033[1A", 4);
+        rl_replace_line("\n", 0);
         rl_done = 1;
     }
 }

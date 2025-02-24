@@ -90,6 +90,11 @@ void	make_heredoc_one_line(t_ms *shell, t_command *cmd)
 	}
 }
 
+int event(void)
+{
+	return (0);
+}
+
 void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 {
 	int			i;
@@ -115,6 +120,8 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 		i++;
 	}
 	i = 0;
+	rl_done = 0;
+	rl_event_hook = event;
 	while (1)
 	{
 		sig_heredoc(&sig_handler_heredoc);
@@ -123,7 +130,7 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 		{
 			break ;
 		}
-		if (cmd->heredoc_lines[i] == NULL)
+		if (*cmd->heredoc_lines[i] == '\n')
 		{
 			ft_putstr_fd("minishell: warning: here-document at line ", 2);
 			ft_putnbr_fd(shell->heredoc_line_count, 2);

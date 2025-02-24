@@ -2,17 +2,23 @@
 
 void	cleanup(t_ms *shell, int clean_shell)
 {
-	if (shell->input)
-	{
-		free(shell->input);
-		shell->input = NULL;
-	}
-	if (shell->token)
-		free_tokens(shell);
-	if (shell->commands)
-		free_commands(shell->commands);
-	if (clean_shell)
-		free_env(shell);
+    if (shell->input)
+    {
+        free(shell->input);
+        shell->input = NULL;
+    }
+    if (shell->token)
+    {
+        free_tokens(shell);
+        shell->token = NULL;
+    }
+    if (shell->commands)
+    {
+        free_commands(shell->commands);
+        shell->commands = NULL;
+    }
+    if (clean_shell)
+        free_env(shell);
 }
 
 void	free_commands(t_command *commands)

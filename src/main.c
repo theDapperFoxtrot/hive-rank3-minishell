@@ -126,7 +126,7 @@ int	main(int argc, char *argv[], char *envp[])
         }
 		if (!shell.input)
 		{
-			printf("exit\n");
+			ft_putstr_fd("exit\n", 2);
 			break ;
 		}
 		if (*(shell.input))

@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:33:02 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/24 16:05:23 by smishos          ###   ########.fr       */
+/*   Updated: 2025/02/25 16:12:35 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ static void	check_numeric(char **command, t_ms *shell)
 	if (command[1][i] == '#')
 	{
 		shell->exit_code = 0;
-		// printf("exit\n");
 		ft_putstr_fd("exit\n", 2);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
@@ -93,7 +92,15 @@ static void	check_numeric(char **command, t_ms *shell)
 	{
 		if (ft_isalpha(command[1][i]) == 1)
 		{
-			print_error("exit: numeric argument required", shell, 2, 1);
+			shell->exit_code = 2;
+			ft_putstr_fd("minishell: exit: ", 2);
+			ft_putstr_fd(command[1], 2);
+			ft_putstr_fd(": numeric argument required\n", 2);
+			if (ft_strncmp(command[1], "false", 5) == 0)
+				shell->exit_code = 1;
+			if (ft_strncmp(command[1], "true", 4) == 0)
+				shell->exit_code = 0;
+			cleanup(shell, 1);
 			exit(shell->exit_code);
 		}
 		i++;
@@ -126,10 +133,7 @@ void	ft_exit(char **command, t_ms *shell)
 	}
 	else if (command[1])
 		shell->exit_code = ft_atoi(command[1]);
-	// printf("exit\n");
 	ft_putstr_fd("exit\n", 2);
-	// if (shell->prev_pwd)
-	// 	free(shell->prev_pwd);
 	cleanup(shell, 1);
 	exit(shell->exit_code);
 }

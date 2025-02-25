@@ -32,6 +32,12 @@ void	tokenize_input(t_ms *shell)
 			shell->i++;
 		if (shell->input[shell->i] == '|' && lead_pipe)
 		{
+			if (shell->input[shell->i] == '|' && shell->input[shell->i + 1] == '|')
+			{
+				ft_putstr_fd("minishell: syntax error near unexpected token `||'\n", 2);
+				free_tokens(shell);
+				return ;
+			}
 			ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
 			free_tokens(shell);
 			return ;

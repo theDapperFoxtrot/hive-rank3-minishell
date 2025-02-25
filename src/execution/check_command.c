@@ -155,8 +155,7 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 		return (NULL);
 	}
 	envp = shell->env_list;
-		get_path = find_path(command->args[0], envp);
-	find_path(command->args[0], envp);
+	get_path = find_path(command->args[0], envp);
 	if (get_path == NULL)
 		return (NULL);
 	path_directory = ft_split(get_path, ':');

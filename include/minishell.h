@@ -11,7 +11,7 @@
 # include <signal.h>
 # include <sys/ioctl.h>
 # include <termios.h>
-
+# define EXP_BUFFER_SIZE 100000
 extern int	g_signal;
 
 // Simplified token types
@@ -77,7 +77,7 @@ typedef struct s_ms
 	t_command		*commands;
 	t_exp			exp;
 	int				i;
-	char			buffer[100000];
+	char			buffer[EXP_BUFFER_SIZE];
 	int				buf_i;
 	int				type;
 	int				equal_found;

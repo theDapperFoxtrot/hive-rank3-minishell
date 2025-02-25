@@ -97,14 +97,13 @@ char	*expand_env_var(t_ms *shell, const char *var_name, int with_braces)
 	char *temp_name = ft_substr(var_name, 0, name_len);
 	if (!temp_name)
 		return ft_strdup("");
-
 	while (shell->env_list[i])
 	{
 		if (ft_strncmp(shell->env_list[i], temp_name, ft_strlen(temp_name)) == 0
 			&& shell->env_list[i][ft_strlen(temp_name)] == '=')
 		{
 			value = ft_strdup(shell->env_list[i] + ft_strlen(temp_name) + 1);
-			break;
+			break ;
 		}
 		i++;
 	}
@@ -114,7 +113,6 @@ char	*expand_env_var(t_ms *shell, const char *var_name, int with_braces)
 		return (value);
 	else
 		return (ft_strdup(""));
-	// return value ? value : ft_strdup("");
 }
 
 // Function to handle expansions within a string
@@ -122,7 +120,7 @@ char	*handle_expansions(t_ms *shell, const char *str)
 {
 	shell->exp.i = 0;
 	shell->exp.j = 0;
-	shell->exp.result = malloc(10000);  // Adjust size as needed
+	shell->exp.result = malloc(EXP_BUFFER_SIZE);
 	if (!(shell->exp.result))
 		return NULL;
 	while (str[shell->exp.i])
@@ -138,7 +136,7 @@ char	*handle_expansions(t_ms *shell, const char *str)
 				{
 					shell->exp.var_name = ft_substr(str, shell->exp.i, shell->exp.closing_brace - shell->exp.i + 1);
 					shell->exp.value = expand_env_var(shell, shell->exp.var_name, 1);
-					ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, 10000 - shell->exp.j);
+					ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, EXP_BUFFER_SIZE - shell->exp.j);
 					shell->exp.j += ft_strlen(shell->exp.value);
 					free(shell->exp.var_name);
 					free(shell->exp.value);
@@ -159,7 +157,7 @@ char	*handle_expansions(t_ms *shell, const char *str)
 				{
 					shell->exp.var_name = ft_substr(str, shell->exp.var_start, shell->exp.var_len);
 					shell->exp.value = expand_env_var(shell, shell->exp.var_name, 0);
-					ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, 10000 - shell->exp.j);
+					ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, EXP_BUFFER_SIZE - shell->exp.j);
 					shell->exp.j += ft_strlen(shell->exp.value);
 					free(shell->exp.var_name);
 					free(shell->exp.value);
@@ -351,6 +349,16 @@ void parse_tokens(t_ms *shell)
 	cmd->command_input_index = 0;
 	while (token)
 	{
+		if ((ft_strlen(token->value) > 255) && token->type == TOKEN_ARGS)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(token->value, 2);
+			ft_putstr_fd(": command not found\n", 2);
+			shell->exit_code = 1;
+			shell->token_error = 1;
+			cleanup(shell, 0);
+			return ;
+		}
 		if (token->type == TOKEN_ARGS)
 			handle_token_args(shell, cmd, token);
 		else if (token->type == TOKEN_PIPE)

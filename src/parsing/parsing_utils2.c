@@ -21,7 +21,7 @@ char    *handle_expansions_quotes(t_ms *shell, const char *str)
                 {
                     shell->exp.var_name = ft_substr(str, shell->exp.i, shell->exp.closing_brace - shell->exp.i + 1);
                     shell->exp.value = expand_env_var(shell, shell->exp.var_name, 1);
-                    ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, 10000 - shell->exp.j);
+                    ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, EXP_BUFFER_SIZE - shell->exp.j);
                     shell->exp.j += ft_strlen(shell->exp.value);
                     free(shell->exp.var_name);
                     free(shell->exp.value);
@@ -42,7 +42,7 @@ char    *handle_expansions_quotes(t_ms *shell, const char *str)
                 {
                     shell->exp.var_name = ft_substr(str, shell->exp.var_start, shell->exp.var_len);
                     shell->exp.value = expand_env_var(shell, shell->exp.var_name, 0);
-                    ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, 10000 - shell->exp.j);
+                    ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, EXP_BUFFER_SIZE - shell->exp.j);
                     shell->exp.j += ft_strlen(shell->exp.value);
                     free(shell->exp.var_name);
                     free(shell->exp.value);

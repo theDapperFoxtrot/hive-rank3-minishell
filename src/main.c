@@ -9,7 +9,7 @@ void	clear_buffer(t_ms *shell)
 	int	i;
 
 	i = 0;
-	while (i < 10000)
+	while (i < EXP_BUFFER_SIZE)
 	{
 		shell->buffer[i] = '\0';
 		i++;
@@ -134,7 +134,7 @@ int	main(int argc, char *argv[], char *envp[])
 		process_input(&shell);
 		tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
 		rl_replace_line("", 0);
-		// rl_redisplay();
+		rl_done = 1;
 	}
 	rl_clear_history();
 	cleanup(&shell, 1);

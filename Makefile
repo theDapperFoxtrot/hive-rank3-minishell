@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -Werror -g
 INCLUDE = -I ./libft
 SRCS = 	src/main.c \
 		src/utils.c \

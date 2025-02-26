@@ -77,7 +77,9 @@ typedef struct s_ms
 	t_command		*commands;
 	t_exp			exp;
 	int				i;
-	char			buffer[EXP_BUFFER_SIZE];
+	char			*buffer;
+	char			*new_buffer;
+	int				buf_count;
 	int				buf_i;
 	int				type;
 	int				equal_found;
@@ -143,6 +145,7 @@ void	write_token_args(t_ms *shell);
 void	if_is_operator(t_ms *shell);
 void	create_token(t_ms *shell);
 void	add_token(t_ms *shell, t_token *new_token);
+void	realloc_buffer(t_ms *shell);
 // file helpers
 void	safe_dup2(int fd, int fd2);
 void	read_file(t_ms *shell, char *file);

@@ -24,6 +24,7 @@ void	if_is_operator(t_ms *shell)
 	{
 		if (shell->input[shell->i + 1] == '<')
 		{
+			realloc_buffer(shell);
 			shell->buffer[1] = '<';
 			shell->buffer[2] = '\0';
 			shell->i++;
@@ -38,7 +39,10 @@ void	if_is_operator(t_ms *shell)
 	else if (shell->buffer[0] == '>')
 	{
 		if (shell->input[shell->i + 1] == '>')
+		{
 			check_for_append(shell);
+			realloc_buffer(shell);
+		}
 		else
 		{
 			shell->type = TOKEN_REDIR_OUT;
@@ -70,7 +74,17 @@ void	create_token(t_ms *shell)
 	new_token->next = NULL;
 	add_token(shell, new_token);
 }
-
+void realloc_buffer(t_ms *shell)
+{
+	shell->new_buffer = ft_realloc(shell->buffer, shell->buf_count, shell->buf_count + 1);
+	if (!shell->new_buffer)
+	{
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
+	}
+	shell->buffer = shell->new_buffer;
+	shell->buf_count++;
+}
 // Function to check if character is a special shell character
 void	write_token_args(t_ms *shell)
 {
@@ -78,22 +92,40 @@ void	write_token_args(t_ms *shell)
 
 	shell->buf_i = 0;
 	while (shell->input[shell->i] && \
-	!isspace(shell->input[shell->i]) && \
+	!ft_isspace(shell->input[shell->i]) && \
 	!is_operator(shell->input[shell->i]))
 	{
+		realloc_buffer(shell);
 		if (shell->input[shell->i] == '"' || shell->input[shell->i] == '\'')
 		{
 			quote = shell->input[shell->i];
+			realloc_buffer(shell);
 			shell->buffer[shell->buf_i++] = shell->input[shell->i++];
 			while (shell->input[shell->i] && shell->input[shell->i] != quote)
+			{
+				realloc_buffer(shell);
 				shell->buffer[shell->buf_i++] = shell->input[shell->i++];
+			}
 			if (shell->input[shell->i] == quote)
+			{
+				realloc_buffer(shell);
 				shell->buffer[shell->buf_i++] = shell->input[shell->i++];
+			}
 		}
 		else
+		{
 			shell->buffer[shell->buf_i++] = shell->input[shell->i++];
+		}
 	}
 	shell->buffer[shell->buf_i] = '\0';
 	if (shell->buf_i > 0)
 		create_token(shell);
+	shell->new_buffer = ft_realloc(shell->buffer, ft_strlen(shell->buffer), 1);
+	if (!shell->new_buffer)
+	{
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
+	}
+	shell->new_buffer[0] = '\0';
+	shell->buffer = shell->new_buffer;
 }

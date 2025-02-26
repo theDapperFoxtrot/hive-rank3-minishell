@@ -74,9 +74,11 @@ void	create_token(t_ms *shell)
 	new_token->next = NULL;
 	add_token(shell, new_token);
 }
-void realloc_buffer(t_ms *shell)
+
+void	realloc_buffer(t_ms *shell)
 {
-	shell->new_buffer = ft_realloc(shell->buffer, shell->buf_count, shell->buf_count + 1);
+	shell->new_buffer = ft_realloc(shell->buffer, shell->buf_count, \
+		shell->buf_count + 1);
 	if (!shell->new_buffer)
 	{
 		print_error("Error: malloc failed", shell, 1, 1);
@@ -85,11 +87,29 @@ void realloc_buffer(t_ms *shell)
 	shell->buffer = shell->new_buffer;
 	shell->buf_count++;
 }
-// Function to check if character is a special shell character
-void	write_token_args(t_ms *shell)
+
+void	if_quotes(t_ms *shell)
 {
 	char	quote;
 
+	quote = shell->input[shell->i];
+	realloc_buffer(shell);
+	shell->buffer[shell->buf_i++] = shell->input[shell->i++];
+	while (shell->input[shell->i] && shell->input[shell->i] != quote)
+	{
+		realloc_buffer(shell);
+		shell->buffer[shell->buf_i++] = shell->input[shell->i++];
+	}
+	if (shell->input[shell->i] == quote)
+	{
+		realloc_buffer(shell);
+		shell->buffer[shell->buf_i++] = shell->input[shell->i++];
+	}
+}
+
+// Function to check if character is a special shell character
+void	write_token_args(t_ms *shell)
+{
 	shell->buf_i = 0;
 	while (shell->input[shell->i] && \
 	!ft_isspace(shell->input[shell->i]) && \
@@ -97,25 +117,9 @@ void	write_token_args(t_ms *shell)
 	{
 		realloc_buffer(shell);
 		if (shell->input[shell->i] == '"' || shell->input[shell->i] == '\'')
-		{
-			quote = shell->input[shell->i];
-			realloc_buffer(shell);
-			shell->buffer[shell->buf_i++] = shell->input[shell->i++];
-			while (shell->input[shell->i] && shell->input[shell->i] != quote)
-			{
-				realloc_buffer(shell);
-				shell->buffer[shell->buf_i++] = shell->input[shell->i++];
-			}
-			if (shell->input[shell->i] == quote)
-			{
-				realloc_buffer(shell);
-				shell->buffer[shell->buf_i++] = shell->input[shell->i++];
-			}
-		}
+			if_quotes(shell);
 		else
-		{
 			shell->buffer[shell->buf_i++] = shell->input[shell->i++];
-		}
 	}
 	shell->buffer[shell->buf_i] = '\0';
 	if (shell->buf_i > 0)

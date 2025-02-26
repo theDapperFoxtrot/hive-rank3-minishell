@@ -95,7 +95,6 @@ typedef struct s_ms
 }	t_ms;
 
 
-void	clear_buffer(t_ms *shell);
 // signals
 void	sig_heredoc(void *func);
 void	sig_ignore(void);

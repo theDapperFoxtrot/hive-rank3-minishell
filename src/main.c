@@ -2,24 +2,12 @@
 #include <signal.h>
 #include <termios.h>
 
-int g_signal = 0;
-
-void	clear_buffer(t_ms *shell)
+int	g_signal = 0;
+// REMOVE THESE DEBUGGER FUNCTIONS WHEN SUBMITTING!!!
+void	print_commands(t_command *cmd)
 {
 	int	i;
-
-	i = 0;
-	while (i < EXP_BUFFER_SIZE)
-	{
-		shell->buffer[i] = '\0';
-		i++;
-	}
-}
-
-void print_commands(t_command *cmd)
-{
-	int	i;
-	int j;
+	int	j;
 
 	j = 0;
 	i = 0;
@@ -37,7 +25,7 @@ void print_commands(t_command *cmd)
 	}
 	printf("----[End of Structure]----\n");
 }
-void print_redirections(t_command *cmd)
+void	print_redirections(t_command *cmd)
 {
 	while (cmd)
 	{
@@ -48,24 +36,25 @@ void print_redirections(t_command *cmd)
 		cmd = cmd->next;
 	}
 }
+// REMOVE THESE DEBUGGER FUNCTIONS WHEN SUBMITTING!!!
 
 int	invalid_input(char *input)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (input[i])
-    {
-        if (input[i] != ' ' \
+	i = 0;
+	while (input[i])
+	{
+		if (input[i] != ' ' \
 		&& input[i] != '\t' \
 		&& input[i] != '\n' \
 		&& input[i] != '\v' \
 		&& input[i] != '\f' \
 		&& input[i] != '\r')
-            return (0);
-        i++;
-    }
-    return (1);
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 void	process_input(t_ms *shell)
@@ -79,7 +68,6 @@ void	process_input(t_ms *shell)
 	free_tokens(shell);
 	// print_commands(shell->commands);
 	// print_redirections(shell->commands);
-	// clear_buffer(shell);
 	if (shell->token_error)
 		return ;
 	if (g_signal == SIGINT)
@@ -118,10 +106,10 @@ void input_loop(t_ms *shell, struct termios *original_term)
 		shell->token_error = 0;
 		shell->input = readline("minishell> ");
 		if (g_signal == SIGINT)
-        {
-            g_signal = 0;
+		{
+			g_signal = 0;
 			shell->exit_code = 130;
-        }
+		}
 		if (!shell->input)
 		{
 			ft_putstr_fd("exit\n", 2);
@@ -138,15 +126,14 @@ void input_loop(t_ms *shell, struct termios *original_term)
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	t_ms	shell;
-	struct termios original_term;
+	t_ms			shell;
+	struct termios	original_term;
 
 	(void)argc;
 	(void)argv;
 	init_shell(&shell, envp);
 	tcgetattr(STDIN_FILENO, &original_term);
 	sig_init(&sig_handler_sigint);
-	g_signal = 0;
 	input_loop(&shell, &original_term);
 	tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
 	rl_clear_history();

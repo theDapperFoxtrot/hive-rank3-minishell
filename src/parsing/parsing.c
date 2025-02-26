@@ -377,7 +377,6 @@ void parse_tokens(t_ms *shell)
 			}
 			if (!token->next)
 			{
-				clear_buffer(shell);
 				shell->pipe_rdl_tokens = readline("> ");
 				tokenize_input_lm(shell);
 				free(shell->pipe_rdl_tokens);

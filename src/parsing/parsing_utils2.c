@@ -20,7 +20,7 @@ char    *handle_expansions_quotes(t_ms *shell, const char *str)
                 if (shell->exp.closing_brace != -1)
                 {
                     shell->exp.var_name = ft_substr(str, shell->exp.i, shell->exp.closing_brace - shell->exp.i + 1);
-                    shell->exp.value = expand_env_var(shell, 1);
+                    expand_env_var(shell, 1);
                     shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + ft_strlen(shell->exp.value) + 1);
                     ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, ft_strlen(shell->exp.value) + 1);
                     shell->exp.j += ft_strlen(shell->exp.value);
@@ -40,7 +40,7 @@ char    *handle_expansions_quotes(t_ms *shell, const char *str)
                 if (shell->exp.var_len > 0)
                 {
                     shell->exp.var_name = ft_substr(str, shell->exp.var_start, shell->exp.var_len);
-                    shell->exp.value = expand_env_var(shell, 0);
+                    expand_env_var(shell, 0);
                     shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + ft_strlen(shell->exp.value) + 1);
                     ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, ft_strlen(shell->exp.value) + 1);
                     shell->exp.j += ft_strlen(shell->exp.value);
@@ -49,6 +49,7 @@ char    *handle_expansions_quotes(t_ms *shell, const char *str)
                 }
             }
         }
+        shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
         shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
     }
     shell->exp.i = shell->exp.closing_quote + 1;

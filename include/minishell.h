@@ -94,7 +94,6 @@ typedef struct s_ms
 	char			*pipe_rdl_tokens;
 	int				exit_error_flag;
 	// expansion stuff
-	char			*exp_value;
 	int				exp_i;
 	int				exp_name_len;
 	char			*exp_temp_name;
@@ -149,7 +148,7 @@ int				find_closing_quote(t_ms *shell, \
 				const char *str, char quote_type, int start);
 int				find_closing_brace(const char *str, \
 				int start);
-char			*expand_env_var(t_ms *shell, \
+void			expand_env_var(t_ms *shell, \
 				int with_braces);
 // tokens folder
 void			tokenize_input(t_ms *shell);

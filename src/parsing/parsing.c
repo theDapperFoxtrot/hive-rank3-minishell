@@ -32,19 +32,19 @@ int	find_closing_quote(t_ms *shell, const char *str, char quote_type, int start)
 		return (i);
 	else
 	{
-		ft_putstr_fd("minishell: syntax error: Missing matching end quote symbol\n", 2);
+		ft_putstr_fd(\
+			"minishell: syntax error: Missing matching end quote symbol\n", 2);
 		free(shell->exp.result);
 		cleanup(shell, 1);
 		exit(2);
 	}
-	// return (str[i] == quote_type) ? i : -1;
 }
 
 // Helper function to find closing brace
 int	find_closing_brace(const char *str, int start)
 {
 	int	i;
-	int brace_count;
+	int	brace_count;
 
 	i = start;
 	brace_count = 1;
@@ -60,57 +60,86 @@ int	find_closing_brace(const char *str, int start)
 		return (i);
 	else
 		return (-1);
-	// return (brace_count == 0) ? i : -1;
+}
+
+char	*qmark_check(t_ms *shell, int with_braces)
+{
+	char	*temp;
+	char	*temp_var;
+
+	temp_var = shell->exp.var_name;
+	if (temp_var[0] == '$')
+		temp_var++;
+	if (with_braces && temp_var[0] == '{')
+		temp_var++;
+	if (temp_var[0] == '?' && \
+	(!with_braces || temp_var[1] == '}'))
+	{
+		shell->exp_value = ft_itoa(shell->exit_code);
+		temp_var++;
+		if (ft_isalnum(temp_var[0]))
+		{
+			temp = shell->exp_value;
+			shell->exp_value = ft_strjoin(temp, temp_var);
+			free(temp);
+		}
+	}
+	return (shell->exp_value);
+}
+
+void	get_var_name_len(t_ms *shell, int with_braces)
+{
+	while (shell->exp.var_name[shell->exp_name_len] && \
+	((!with_braces && \
+	(ft_isalnum(shell->exp.var_name[shell->exp_name_len]) || \
+	shell->exp.var_name[shell->exp_name_len] == '_')) || \
+	(with_braces && \
+	shell->exp.var_name[shell->exp_name_len] != '}')))
+		shell->exp_name_len++;
+}
+
+void	get_var_value(t_ms *shell)
+{
+	while (shell->env_list[shell->exp_i])
+	{
+		if (ft_strncmp(shell->env_list[shell->exp_i], shell->exp_temp_name, \
+		ft_strlen(shell->exp_temp_name)) == 0 && \
+		shell->env_list[shell->exp_i][ft_strlen(shell->exp_temp_name)] == '=')
+		{
+			shell->exp_value = \
+			ft_strdup(shell->env_list[shell->exp_i] + \
+			ft_strlen(shell->exp_temp_name) + 1);
+			break ;
+		}
+		shell->exp_i++;
+	}
 }
 
 // Helper function to expand environment variables
-char	*expand_env_var(t_ms *shell, const char *var_name, int with_braces)
+char	*expand_env_var(t_ms *shell, int with_braces)
 {
-	char *value = NULL;
-	int i = 0;
+	char	*result;
 
-	// Skip the '$' and optional '{' characters
-	if (var_name[0] == '$')
-		var_name++;
-	if (with_braces && var_name[0] == '{')
-		var_name++;
-
-	// Handle special case for $?
-	if (var_name[0] == '?' && (!with_braces || var_name[1] == '}'))
+	shell->exp_value = NULL;
+	shell->exp_i = 0;
+	shell->exp_name_len = 0;
+	shell->exp_value = qmark_check(shell, with_braces);
+	get_var_name_len(shell, with_braces);
+	shell->exp_temp_name = ft_substr(shell->exp.var_name, \
+	0, shell->exp_name_len);
+	free(shell->exp.var_name);
+	shell->exp.var_name = NULL;
+	if (!shell->exp_temp_name)
+		return (ft_strdup(""));
+	get_var_value(shell);
+	free(shell->exp_temp_name);
+	if (shell->exp_value)
 	{
-		value = ft_itoa(shell->exit_code);
-		var_name++;
-		if (ft_isalnum(var_name[0]))
-			value = ft_strjoin(value, var_name);
+		result = ft_strdup(shell->exp_value);
+		free(shell->exp_value);
+		shell->exp_value = NULL;
+		return (result);
 	}
-
-	// Find the actual variable name length (up to '}' if in braces)
-	int name_len = 0;
-	while (var_name[name_len] &&
-		((!with_braces && (ft_isalnum(var_name[name_len]) || var_name[name_len] == '_')) ||
-			(with_braces && var_name[name_len] != '}')))
-	{
-		name_len++;
-	}
-
-	// Create temporary variable name for lookup
-	char *temp_name = ft_substr(var_name, 0, name_len);
-	if (!temp_name)
-		return ft_strdup("");
-	while (shell->env_list[i])
-	{
-		if (ft_strncmp(shell->env_list[i], temp_name, ft_strlen(temp_name)) == 0
-			&& shell->env_list[i][ft_strlen(temp_name)] == '=')
-		{
-			value = ft_strdup(shell->env_list[i] + ft_strlen(temp_name) + 1);
-			break ;
-		}
-		i++;
-	}
-
-	free(temp_name);
-	if (value)
-		return (value);
 	else
 		return (ft_strdup(""));
 }
@@ -120,9 +149,9 @@ char	*handle_expansions(t_ms *shell, const char *str)
 {
 	shell->exp.i = 0;
 	shell->exp.j = 0;
-	shell->exp.result = malloc(EXP_BUFFER_SIZE);
+	shell->exp.result = ft_strdup("");
 	if (!(shell->exp.result))
-		return NULL;
+		return (NULL);
 	while (str[shell->exp.i])
 	{
 		if (str[shell->exp.i] == '\'' || str[shell->exp.i] == '\"')
@@ -135,13 +164,12 @@ char	*handle_expansions(t_ms *shell, const char *str)
 				if (shell->exp.closing_brace != -1)
 				{
 					shell->exp.var_name = ft_substr(str, shell->exp.i, shell->exp.closing_brace - shell->exp.i + 1);
-					shell->exp.value = expand_env_var(shell, shell->exp.var_name, 1);
-					ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, EXP_BUFFER_SIZE - shell->exp.j);
+					shell->exp.value = expand_env_var(shell, 1);
+					shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + ft_strlen(shell->exp.value) + 1);
+					ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, ft_strlen(shell->exp.value) + 1);
 					shell->exp.j += ft_strlen(shell->exp.value);
-					free(shell->exp.var_name);
-					free(shell->exp.value);
 					shell->exp.i = shell->exp.closing_brace + 1;
-					continue;
+					continue ;
 				}
 			}
 			else
@@ -156,21 +184,31 @@ char	*handle_expansions(t_ms *shell, const char *str)
 				if (shell->exp.var_len > 0)
 				{
 					shell->exp.var_name = ft_substr(str, shell->exp.var_start, shell->exp.var_len);
-					shell->exp.value = expand_env_var(shell, shell->exp.var_name, 0);
-					ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, EXP_BUFFER_SIZE - shell->exp.j);
+					shell->exp.value = expand_env_var(shell, 0);
+					shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + ft_strlen(shell->exp.value) + 1);
+					ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, ft_strlen(shell->exp.value) + 1);
 					shell->exp.j += ft_strlen(shell->exp.value);
-					free(shell->exp.var_name);
-					free(shell->exp.value);
 					shell->exp.i = shell->exp.var_start + shell->exp.var_len;
-					continue;
+					continue ;
 				}
 				else
+				{
+					shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
 					shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
+				}
 			}
 		}
 		else
+		{
+			shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
 			shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
+		}
 	}
+	// if (shell->exp.var_name)
+	// 	free(shell->exp.var_name);
+	// if (shell->exp.value)
+	// 	free(shell->exp.value);
+	shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
 	shell->exp.result[shell->exp.j] = '\0';
 	return (shell->exp.result);
 }
@@ -438,3 +476,4 @@ void parse_tokens(t_ms *shell)
 		token = token->next;
 	}
 }
+

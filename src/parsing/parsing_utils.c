@@ -83,11 +83,13 @@ void	make_heredoc_one_line(t_ms *shell, t_command *cmd)
 		}
 		free(cmd->heredoc_lines[i]);
 		temp = cmd->heredoc_line;
-		cmd->heredoc_line = ft_strjoin(cmd->heredoc_line, line);
+		cmd->heredoc_line = ft_strjoin(temp, line);
 		free(temp);
         free(line);
 		i++;
 	}
+	free(cmd->heredoc_lines);
+	cmd->heredoc_lines = NULL;
 }
 
 int event(void)

@@ -334,6 +334,7 @@ void check_command(t_ms *shell, t_command *command)
 	if (prev_pipe_in != -1)
 		close(prev_pipe_in);
 	// wait for all children to finish IN ORDER
+	printf("child count: %d\n", shell->child_count);
 	while (shell->child_count-- > 0)
 	{
 		shell->wpid = waitpid(-1, &status, 0);

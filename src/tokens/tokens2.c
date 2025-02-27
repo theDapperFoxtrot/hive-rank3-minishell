@@ -7,10 +7,20 @@ int	is_operator(char c)
 
 void	check_for_append(t_ms *shell)
 {
+	realloc_buffer(shell);
 	shell->buffer[1] = '>';
 	shell->buffer[2] = '\0';
 	shell->i++;
 	shell->type = TOKEN_APPEND;
+}
+
+void heredoc_case(t_ms *shell)
+{
+	realloc_buffer(shell);
+	shell->buffer[1] = '<';
+	shell->buffer[2] = '\0';
+	shell->i++;
+	shell->type = TOKEN_HERE_DOC;
 }
 
 void	if_is_operator(t_ms *shell)
@@ -23,13 +33,7 @@ void	if_is_operator(t_ms *shell)
 	else if (shell->buffer[0] == '<')
 	{
 		if (shell->input[shell->i + 1] == '<')
-		{
-			realloc_buffer(shell);
-			shell->buffer[1] = '<';
-			shell->buffer[2] = '\0';
-			shell->i++;
-			shell->type = TOKEN_HERE_DOC;
-		}
+			heredoc_case(shell);
 		else
 		{
 			shell->type = TOKEN_REDIR_IN;
@@ -39,10 +43,7 @@ void	if_is_operator(t_ms *shell)
 	else if (shell->buffer[0] == '>')
 	{
 		if (shell->input[shell->i + 1] == '>')
-		{
 			check_for_append(shell);
-			realloc_buffer(shell);
-		}
 		else
 		{
 			shell->type = TOKEN_REDIR_OUT;

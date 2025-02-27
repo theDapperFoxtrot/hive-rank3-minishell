@@ -31,7 +31,7 @@ void	free_commands(t_command *commands)
 		if (commands->args)
 			free_split(commands->args);
 		if (commands->heredoc_lines)
-			free_split(commands->heredoc_lines);
+			free(commands->heredoc_lines);
 		if (commands->heredoc_delimiter)
 			free(commands->heredoc_delimiter);
 		if (commands->heredoc_line)

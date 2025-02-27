@@ -12,6 +12,7 @@
 # include <sys/ioctl.h>
 # include <termios.h>
 # define EXP_BUFFER_SIZE 100000
+
 extern int	g_signal;
 
 // Simplified token types
@@ -88,71 +89,85 @@ typedef struct s_ms
 	pid_t			last_pid;
 	pid_t			wpid;
 	int				heredoc_line_count;
-	char 			*prev_pwd;
+	char			*prev_pwd;
 	int				token_error;
 	char			*pipe_rdl_tokens;
 	int				exit_error_flag;
+	// expansion stuff
+	char			*exp_value;
+	int				exp_i;
+	int				exp_name_len;
+	char			*exp_temp_name;
+
 }	t_ms;
 
-
 // signals
-void	sig_heredoc(void *func);
-void	sig_ignore(void);
-void	sig_child(void *func);
-void	sig_init(void *func);
-void	sig_handler_child(int signal);
-void	sig_handler_sigint(int signal);
-void	sig_handler_heredoc(int signal);
+void			sig_heredoc(void *func);
+void			sig_ignore(void);
+void			sig_child(void *func);
+void			sig_init(void *func);
+void			sig_handler_child(int signal);
+void			sig_handler_sigint(int signal);
+void			sig_handler_heredoc(int signal);
 
 //utils.c
-void	free_args(char **commands);
-void	free_env(t_ms *shell);
-void	print_error(char *message, t_ms *shell, unsigned char status, int clean_shell);
-int		count_args(char **command);
+void			free_args(char **commands);
+void			free_env(t_ms *shell);
+void			print_error(char *message, t_ms *shell, \
+				unsigned char status, int clean_shell);
+int				count_args(char **command);
 //builtin
-void	check_command(t_ms *shell, t_command *command);
-void	ft_echo(char **command, t_ms *shell);
-void	ft_pwd(char **command, t_ms *shell);
-void	ft_exit(char **command, t_ms *shell);
-void	ft_env(char **command, t_ms *shell);
-void	ft_cd(char **command, t_ms *shell);
-void	create_env(t_ms *shell, char **envp);
-int		update_pwd(t_ms *shell, char *string, char *value);
-int		env_list_size(char **envp);
-void	ft_export(char **command, t_ms *shell);
-void	quicksort(char **arr, int low, int high);
-void	ft_unset(char **command, t_ms *shell);
+void			check_command(t_ms *shell, t_command *command);
+void			ft_echo(char **command, t_ms *shell);
+void			ft_pwd(char **command, t_ms *shell);
+void			ft_exit(char **command, t_ms *shell);
+void			ft_env(char **command, t_ms *shell);
+void			ft_cd(char **command, t_ms *shell);
+void			create_env(t_ms *shell, char **envp);
+int				update_pwd(t_ms *shell, char *string, char *value);
+int				env_list_size(char **envp);
+void			ft_export(char **command, t_ms *shell);
+void			quicksort(char **arr, int low, int high);
+void			ft_unset(char **command, t_ms *shell);
 // parser
-void		parse_tokens(t_ms *shell);
-void		add_argument(t_command *cmd, char *arg);
-char		*handle_expansions(t_ms *shell, const char *str);
-void    	handle_token_args(t_ms *shell, t_command *cmd, t_token *token);
-t_command	*handle_token_pipe(t_ms *shell);
-void		handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token);
-void		handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token);
-void		handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token);
-void		handle_token_append(t_ms *shell, t_command *cmd, t_token *token);
-char    	*handle_expansions_quotes(t_ms *shell, const char *str);
-int			find_closing_quote(t_ms *shell, const char *str, char quote_type, int start);
-int			find_closing_brace(const char *str, int start);
-char		*expand_env_var(t_ms *shell, const char *var_name, int with_braces);
-// void	print_tokens(t_token *tokens);
+void			parse_tokens(t_ms *shell);
+void			add_argument(t_command *cmd, char *arg);
+char			*handle_expansions(t_ms *shell, const char *str);
+void			handle_token_args(t_ms *shell, t_command *cmd, t_token *token);
+t_command		*handle_token_pipe(t_ms *shell);
+void			handle_token_redir_in(t_ms *shell, \
+				t_command *cmd, t_token *token);
+void			handle_token_heredoc(t_ms *shell, \
+				t_command *cmd, t_token *token);
+void			handle_token_redir_out(t_ms *shell, \
+				t_command *cmd, t_token *token);
+void			handle_token_append(t_ms *shell, \
+				t_command *cmd, t_token *token);
+char			*handle_expansions_quotes(t_ms *shell, \
+				const char *str);
+int				find_closing_quote(t_ms *shell, \
+				const char *str, char quote_type, int start);
+int				find_closing_brace(const char *str, \
+				int start);
+char			*expand_env_var(t_ms *shell, \
+				int with_braces);
 // tokens folder
-void	tokenize_input(t_ms *shell);
-int		is_operator(char c);
-void	write_token_args(t_ms *shell);
-void	if_is_operator(t_ms *shell);
-void	create_token(t_ms *shell);
-void	add_token(t_ms *shell, t_token *new_token);
-void	realloc_buffer(t_ms *shell);
+void			tokenize_input(t_ms *shell);
+int				is_operator(char c);
+void			write_token_args(t_ms *shell);
+void			if_is_operator(t_ms *shell);
+void			create_token(t_ms *shell);
+void			add_token(t_ms *shell, t_token *new_token);
+void			realloc_buffer(t_ms *shell);
+void			if_quotes(t_ms *shell);
 // file helpers
-void	safe_dup2(int fd, int fd2);
-void	read_file(t_ms *shell, char *file);
-void	write_file(t_ms *shell, char *file);
-void	append_file(t_ms *shell, char *file);
-void	read_heredoc(t_command *cmd);
+void			safe_dup2(int fd, int fd2);
+void			read_file(t_ms *shell, char *file);
+void			write_file(t_ms *shell, char *file);
+void			append_file(t_ms *shell, char *file);
+void			read_heredoc(t_command *cmd);
 // errors and cleanup
-void	cleanup(t_ms *shell, int clean_shell);
-void	free_commands(t_command *commands);
-void	free_tokens(t_ms *shell);
+void			cleanup(t_ms *shell, int clean_shell);
+void			free_commands(t_command *commands);
+void			free_tokens(t_ms *shell);
 #endif

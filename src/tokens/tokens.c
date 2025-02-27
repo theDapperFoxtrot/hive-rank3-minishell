@@ -93,3 +93,30 @@ void	tokenize_input(t_ms *shell)
 		shell->buffer = NULL;
 	}
 }
+
+// Function to check if character is a special shell character
+void	write_token_args(t_ms *shell)
+{
+	shell->buf_i = 0;
+	while (shell->input[shell->i] && \
+	!ft_isspace(shell->input[shell->i]) && \
+	!is_operator(shell->input[shell->i]))
+	{
+		realloc_buffer(shell);
+		if (shell->input[shell->i] == '"' || shell->input[shell->i] == '\'')
+			if_quotes(shell);
+		else
+			shell->buffer[shell->buf_i++] = shell->input[shell->i++];
+	}
+	shell->buffer[shell->buf_i] = '\0';
+	if (shell->buf_i > 0)
+		create_token(shell);
+	shell->new_buffer = ft_realloc(shell->buffer, ft_strlen(shell->buffer), 1);
+	if (!shell->new_buffer)
+	{
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
+	}
+	shell->new_buffer[0] = '\0';
+	shell->buffer = shell->new_buffer;
+}

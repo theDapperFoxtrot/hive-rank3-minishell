@@ -15,6 +15,7 @@ SRCS = 	src/main.c \
 		src/builtin/unset.c \
 		src/tokens/tokens.c \
 		src/tokens/tokens2.c \
+		src/tokens/tokens3.c \
 		src/parsing/parsing.c \
 		src/parsing/parsing_utils.c \
 		src/parsing/parsing_utils2.c \

@@ -279,19 +279,13 @@ void check_command(t_ms *shell, t_command *command)
 			command->redir_out || command->append_mode))
 			{
 				if (ft_strncmp(command->command_input[i], "<", 1) == 0)
-				{
 					handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
-				}
 				if (ft_strncmp(command->command_input[i], "<<", 2) == 0)
-				handle_input_redirection(shell, command, command->command_input[i], NULL);
+					handle_input_redirection(shell, command, command->command_input[i], NULL);
 				if (ft_strncmp(command->command_input[i], ">", 1) == 0)
-				{
 					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
-				}
 				if (ft_strncmp(command->command_input[i], ">>", 2) == 0)
-				{
 					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
-				}
 				i++;
 			}
 			if (command->args)
@@ -334,7 +328,6 @@ void check_command(t_ms *shell, t_command *command)
 	if (prev_pipe_in != -1)
 		close(prev_pipe_in);
 	// wait for all children to finish IN ORDER
-	printf("child count: %d\n", shell->child_count);
 	while (shell->child_count-- > 0)
 	{
 		shell->wpid = waitpid(-1, &status, 0);

@@ -14,7 +14,7 @@ void	check_for_append(t_ms *shell)
 	shell->type = TOKEN_APPEND;
 }
 
-void heredoc_case(t_ms *shell)
+void	heredoc_case(t_ms *shell)
 {
 	realloc_buffer(shell);
 	shell->buffer[1] = '<';
@@ -74,63 +74,4 @@ void	create_token(t_ms *shell)
 	new_token->type = shell->type;
 	new_token->next = NULL;
 	add_token(shell, new_token);
-}
-
-void	realloc_buffer(t_ms *shell)
-{
-	shell->new_buffer = ft_realloc(shell->buffer, shell->buf_count, \
-		shell->buf_count + 1);
-	if (!shell->new_buffer)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
-	shell->buffer = shell->new_buffer;
-	shell->buf_count++;
-}
-
-void	if_quotes(t_ms *shell)
-{
-	char	quote;
-
-	quote = shell->input[shell->i];
-	realloc_buffer(shell);
-	shell->buffer[shell->buf_i++] = shell->input[shell->i++];
-	while (shell->input[shell->i] && shell->input[shell->i] != quote)
-	{
-		realloc_buffer(shell);
-		shell->buffer[shell->buf_i++] = shell->input[shell->i++];
-	}
-	if (shell->input[shell->i] == quote)
-	{
-		realloc_buffer(shell);
-		shell->buffer[shell->buf_i++] = shell->input[shell->i++];
-	}
-}
-
-// Function to check if character is a special shell character
-void	write_token_args(t_ms *shell)
-{
-	shell->buf_i = 0;
-	while (shell->input[shell->i] && \
-	!ft_isspace(shell->input[shell->i]) && \
-	!is_operator(shell->input[shell->i]))
-	{
-		realloc_buffer(shell);
-		if (shell->input[shell->i] == '"' || shell->input[shell->i] == '\'')
-			if_quotes(shell);
-		else
-			shell->buffer[shell->buf_i++] = shell->input[shell->i++];
-	}
-	shell->buffer[shell->buf_i] = '\0';
-	if (shell->buf_i > 0)
-		create_token(shell);
-	shell->new_buffer = ft_realloc(shell->buffer, ft_strlen(shell->buffer), 1);
-	if (!shell->new_buffer)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
-	shell->new_buffer[0] = '\0';
-	shell->buffer = shell->new_buffer;
 }

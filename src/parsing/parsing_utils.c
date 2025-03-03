@@ -132,7 +132,7 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 		{
 			break ;
 		}
-		if (*cmd->heredoc_lines[i] == '\n')
+		if (!cmd->heredoc_lines[i])
 		{
 			ft_putstr_fd("minishell: warning: here-document at line ", 2);
 			ft_putnbr_fd(shell->heredoc_line_count, 2);

@@ -122,18 +122,12 @@ void	expand_env_var(t_ms *shell, int with_braces)
 	shell->exp.value = qmark_check(shell, with_braces);
 	get_var_name_len(shell, with_braces);
 	shell->exp_temp_name = ft_substr(shell->exp.var_name, 0, shell->exp_name_len);
-	free(shell->exp.var_name);  // Free var_name here
+	free(shell->exp.var_name);
 	shell->exp.var_name = NULL;
 	if (!shell->exp_temp_name)
 		return ;
 	get_var_value(shell);
 	free(shell->exp_temp_name);
-	// if (shell->exp.value)
-	// {
-	// 	ft_strdup(shell->exp.value);
-	// 	free(shell->exp.value);  // Free exp.value here
-	// 	shell->exp.value = NULL;
-	// }
 }
 
 // Function to handle expansions within a string

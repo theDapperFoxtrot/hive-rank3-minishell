@@ -342,6 +342,40 @@ void print_tokens(t_token *token)
 	}
 }
 
+int	pipe_syntax_check(t_ms *shell, t_token *token)
+{
+	if (token->next->type == TOKEN_PIPE)
+	{
+		print_error("minishell: syntax error near unexpected token `|'", shell, 2, 0);
+		shell->token_error = 1;
+		return (1);
+	}
+	return (0);
+}
+t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token, int command_input_count)
+{
+		if (cmd->command_input)
+		cmd->command_input[cmd->command_input_index] = NULL;
+		cmd->next = handle_token_pipe(shell);
+		cmd = cmd->next;
+		cmd->command_input_index = 0;
+		command_input_count = count_cmd_args(shell, shell->next_start);
+		cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 1));
+		if (!cmd->command_input)
+		{
+			print_error("Error: malloc failed", shell, 1, 1);
+			exit(shell->exit_code);
+		}
+		if (!token->next)
+		{
+			shell->pipe_rdl_tokens = readline("> ");
+			tokenize_input_lm(shell);
+			free(shell->pipe_rdl_tokens);
+		}
+		cmd->next = NULL;
+	return (cmd);
+}
+
 void parse_tokens(t_ms *shell)
 {
 	t_token		*token;
@@ -373,48 +407,14 @@ void parse_tokens(t_ms *shell)
 	cmd->command_input_index = 0;
 	while (token)
 	{
-		if ((ft_strlen(token->value) > 255) && token->type == TOKEN_ARGS)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(token->value, 2);
-			ft_putstr_fd(": command not found\n", 2);
-			shell->exit_code = 1;
-			shell->token_error = 1;
-			cleanup(shell, 0);
-			return ;
-		}
 		if (token->type == TOKEN_ARGS)
 			handle_token_args(shell, cmd, token);
 		else if (token->type == TOKEN_PIPE)
-		{
-			if (cmd->command_input)
-			cmd->command_input[cmd->command_input_index] = NULL;
-			cmd->next = handle_token_pipe(shell);
-			cmd = cmd->next;
-			cmd->command_input_index = 0;
-			command_input_count = count_cmd_args(shell, shell->next_start);
-			cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 1));
-			if (!cmd->command_input)
-			{
-				print_error("Error: malloc failed", shell, 1, 1);
-				exit(shell->exit_code);
-			}
-			if (!token->next)
-			{
-				shell->pipe_rdl_tokens = readline("> ");
-				tokenize_input_lm(shell);
-				free(shell->pipe_rdl_tokens);
-			}
-			cmd->next = NULL;
-		}
+			cmd = new_command(shell, cmd, token, command_input_count);
 		else if (token->type == TOKEN_REDIR_IN && token->next)
 		{
-			if (token->next->type == TOKEN_PIPE)
-			{
-				print_error("minishell: syntax error near unexpected token `|'", shell, 2, 0);
-				shell->token_error = 1;
+			if (pipe_syntax_check(shell, token))
 				return ;
-			}
 			handle_token_redir_in(shell, cmd, token);
 			token = token->next;
 		}
@@ -427,23 +427,15 @@ void parse_tokens(t_ms *shell)
 		}
 		else if (token->type == TOKEN_REDIR_OUT && token->next)
 		{
-			if (token->next->type == TOKEN_PIPE)
-			{
-				print_error("minishell: syntax error near unexpected token `|'", shell, 2, 0);
-				shell->token_error = 1;
+			if (pipe_syntax_check(shell, token))
 				return ;
-			}
 			handle_token_redir_out(shell, cmd, token);
 			token = token->next;
 		}
 		else if (token->type == TOKEN_APPEND && token->next)
 		{
-			if (token->next->type == TOKEN_PIPE)
-			{
-				print_error("minishell: syntax error near unexpected token `|'", shell, 2, 0);
-				shell->token_error = 1;
+			if (pipe_syntax_check(shell, token))
 				return ;
-			}
 			handle_token_append(shell, cmd, token);
 			token = token->next;
 		}

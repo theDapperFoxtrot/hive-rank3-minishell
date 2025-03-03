@@ -115,23 +115,28 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	i = 0;
 	sig_heredoc(&sig_handler_heredoc);
 	shell->heredoc_line_count++;
-	cmd->heredoc_lines = (char **) malloc(sizeof(char *) * 100);
-	while (i < 100)
+	cmd->heredoc_lines = (char **) malloc(sizeof(char *));
+	if (!cmd->heredoc_lines)
 	{
-		cmd->heredoc_lines[i] = NULL;
-		i++;
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
 	}
+	cmd->heredoc_lines[0] = NULL;
 	i = 0;
 	rl_done = 0;
 	rl_event_hook = event;
 	while (1)
 	{
 		sig_heredoc(&sig_handler_heredoc);
+		cmd->heredoc_lines = ft_realloc(cmd->heredoc_lines, sizeof(char *) * i, sizeof(char *) * (i + 2));
+		if (!cmd->heredoc_lines)
+		{
+			print_error("Error: malloc failed", shell, 1, 1);
+			exit(shell->exit_code);
+		}
 		cmd->heredoc_lines[i] = readline("> ");
 		if (g_signal == SIGINT)
-		{
-			break ;
-		}
+			return ;
 		if (!cmd->heredoc_lines[i])
 		{
 			ft_putstr_fd("minishell: warning: here-document at line ", 2);
@@ -146,11 +151,6 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 		break ;
 		i++;
 	}
-	if (g_signal == SIGINT)
-	{
-		return ; // Return early to skip further processing
-	}
-	// Check if the loop was exited due to SIGINT
 	shell->heredoc_line_count = shell->heredoc_line_count + i;
 	cmd->heredoc_lines[i] = NULL;
 	make_heredoc_one_line(shell, cmd);

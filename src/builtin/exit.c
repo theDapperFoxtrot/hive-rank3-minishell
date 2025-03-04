@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:33:02 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/25 16:12:35 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/04 19:14:22 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,39 +73,39 @@ long long	exit_error_check(t_ms *shell, char **cmd)
 }
 
 
-static void	check_numeric(char **command, t_ms *shell)
+static void	check_numeric(t_command *command, t_ms *shell)
 {
 	int	i;
 	long long ret_value;
 
 	i = 0;
-	if (!command[1])
+	if (!command->args[1])
 		return ;
-	if (command[1][i] == '#')
+	if (command->args[1][i] == '#')
 	{
 		shell->exit_code = 0;
 		ft_putstr_fd("exit\n", 2);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}
-	while (command[1][i])
+	while (command->args[1][i])
 	{
-		if (ft_isalpha(command[1][i]) == 1)
+		if (ft_isalpha(command->args[1][i]) == 1)
 		{
 			shell->exit_code = 2;
 			ft_putstr_fd("minishell: exit: ", 2);
-			ft_putstr_fd(command[1], 2);
+			ft_putstr_fd(command->args[1], 2);
 			ft_putstr_fd(": numeric argument required\n", 2);
-			if (ft_strncmp(command[1], "false", 5) == 0)
+			if (ft_strncmp(command->args[1], "false", 5) == 0)
 				shell->exit_code = 1;
-			if (ft_strncmp(command[1], "true", 4) == 0)
+			if (ft_strncmp(command->args[1], "true", 4) == 0)
 				shell->exit_code = 0;
 			cleanup(shell, 1);
 			exit(shell->exit_code);
 		}
 		i++;
 	}
-	ret_value = exit_error_check(shell, command);
+	ret_value = exit_error_check(shell, command->args);
 	if (ret_value && shell->exit_error_flag == 1)
 	{
 		print_error("exit: too many arguments", shell, 2, 1);
@@ -113,27 +113,26 @@ static void	check_numeric(char **command, t_ms *shell)
 	}
 }
 
-void	ft_exit(char **command, t_ms *shell)
+void	ft_exit(t_command *command, t_ms *shell)
 {
-	if (!command[1])
+	if (!command->args[1] && !command->next)
 	{
-		// printf("exit\n");
 		ft_putstr_fd("exit\n", 2);
-		// if (shell->prev_pwd)
-		// 	free(shell->prev_pwd);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}
 	check_numeric(command, shell);
-	if (command[2])
+	if (command->arg_count > 2)
 	{
 		ft_putstr_fd("exit: too many arguments\n", 2);
 		shell->exit_code = 1;
 		return ;
 	}
-	else if (command[1])
-		shell->exit_code = ft_atoi(command[1]);
-	ft_putstr_fd("exit\n", 2);
-	cleanup(shell, 1);
-	exit(shell->exit_code);
+	else if (command->args[1] && !command->next)
+	{
+		shell->exit_code = ft_atoi(command->args[1]);
+		ft_putstr_fd("exit\n", 2);
+		cleanup(shell, 1);
+		exit(shell->exit_code);
+	}
 }

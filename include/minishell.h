@@ -119,7 +119,7 @@ int				count_args(char **command);
 void			check_command(t_ms *shell, t_command *command);
 void			ft_echo(char **command, t_ms *shell);
 void			ft_pwd(char **command, t_ms *shell);
-void			ft_exit(char **command, t_ms *shell);
+void			ft_exit(t_command *command, t_ms *shell);
 void			ft_env(char **command, t_ms *shell);
 void			ft_cd(char **command, t_ms *shell);
 void			create_env(t_ms *shell, char **envp);

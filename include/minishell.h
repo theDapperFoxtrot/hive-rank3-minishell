@@ -133,7 +133,7 @@ void			parse_tokens(t_ms *shell);
 void			add_argument(t_command *cmd, char *arg);
 char			*handle_expansions(t_ms *shell, const char *str);
 void			handle_token_args(t_ms *shell, t_command *cmd, t_token *token);
-t_command		*handle_token_pipe(t_ms *shell);
+t_command		*new_cmd_struct(t_ms *shell);
 void			handle_token_redir_in(t_ms *shell, \
 				t_command *cmd, t_token *token);
 void			handle_token_heredoc(t_ms *shell, \
@@ -159,6 +159,7 @@ void			create_token(t_ms *shell);
 void			add_token(t_ms *shell, t_token *new_token);
 void			realloc_buffer(t_ms *shell);
 void			if_quotes(t_ms *shell);
+int				lead_pipe_check(t_ms *shell, int lead_pipe);
 // file helpers
 void			safe_dup2(int fd, int fd2);
 void			read_file(t_ms *shell, char *file);

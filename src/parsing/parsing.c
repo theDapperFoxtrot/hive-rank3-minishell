@@ -34,6 +34,7 @@ int	find_closing_quote(t_ms *shell, const char *str, char quote_type, int start)
 	{
 		ft_putstr_fd(\
 			"minishell: syntax error: Missing matching end quote symbol\n", 2);
+		free(shell->exp.result);
 		cleanup(shell, 1);
 		exit(2);
 	}
@@ -230,38 +231,46 @@ int	count_cmd_args(t_ms *shell, t_token *token)
 	}
 	return (command_input_count);
 }
+
 void	check_for_append_lm(t_ms *shell)
 {
-	shell->buffer[1] = '>';
-	shell->buffer[2] = '\0';
-	shell->i++;
-	shell->type = TOKEN_APPEND;
+    // Ensure buffer has enough space
+    shell->buffer = ft_realloc(shell->buffer, shell->buf_count, shell->buf_count + 1);
+    if (!shell->buffer)
+    {
+        print_error("Error: malloc failed", shell, 1, 1);
+        exit(shell->exit_code);
+    }
+    shell->buffer[1] = '>';
+    shell->buffer[2] = '\0';
+    shell->i++;
+    shell->type = TOKEN_APPEND;
 }
 
 void	write_token_args_lm(t_ms *shell)
 {
-	char	quote;
-
 	shell->buf_i = 0;
 	while (shell->pipe_rdl_tokens[shell->i] && \
 	!isspace(shell->pipe_rdl_tokens[shell->i]) && \
 	!is_operator(shell->pipe_rdl_tokens[shell->i]))
 	{
+		realloc_buffer(shell);
 		if (shell->pipe_rdl_tokens[shell->i] == '"' || shell->pipe_rdl_tokens[shell->i] == '\'')
-		{
-			quote = shell->pipe_rdl_tokens[shell->i];
-			shell->buffer[shell->buf_i++] = shell->pipe_rdl_tokens[shell->i++];
-			while (shell->pipe_rdl_tokens[shell->i] && shell->pipe_rdl_tokens[shell->i] != quote)
-				shell->buffer[shell->buf_i++] = shell->pipe_rdl_tokens[shell->i++];
-			if (shell->pipe_rdl_tokens[shell->i] == quote)
-				shell->buffer[shell->buf_i++] = shell->pipe_rdl_tokens[shell->i++];
-		}
+			if_quotes(shell);
 		else
 			shell->buffer[shell->buf_i++] = shell->pipe_rdl_tokens[shell->i++];
 	}
 	shell->buffer[shell->buf_i] = '\0';
 	if (shell->buf_i > 0)
 		create_token(shell);
+	shell->new_buffer = ft_realloc(shell->buffer, ft_strlen(shell->buffer), 1);
+	if (!shell->new_buffer)
+	{
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
+	}
+	shell->new_buffer[0] = '\0';
+	shell->buffer = shell->new_buffer;
 }
 
 
@@ -299,38 +308,90 @@ void	if_is_operator_lm(t_ms *shell)
 	}
 }
 
-
-void	tokenize_input_lm(t_ms *shell)
+int is_operator_true_lm(t_ms *shell)
 {
-	int		lead_pipe;
+    if (is_operator(shell->pipe_rdl_tokens[shell->i]))
+    {
+        // Allocate space for up to 2 chars plus null terminator
+        shell->buffer = ft_realloc(shell->buffer, shell->buf_count, shell->buf_count + 2);
+        if (!shell->buffer)
+        {
+            print_error("Error: malloc failed", shell, 1, 1);
+            exit(shell->exit_code);
+        }
+        
+        shell->buffer[0] = shell->pipe_rdl_tokens[shell->i];
+        shell->buffer[1] = '\0';  // Ensure null termination
+        
+        if_is_operator_lm(shell);
+        create_token(shell);
+        shell->type = TOKEN_ARGS;
+        shell->i++;
+        
+        // Allocate new buffer with proper size
+        shell->new_buffer = ft_realloc(NULL, 0, 1);
+        if (!shell->new_buffer)
+        {
+            print_error("Error: malloc failed", shell, 1, 1);
+            exit(shell->exit_code);
+        }
+        
+        free(shell->buffer);  // Free old buffer before reassignment
+        shell->buffer = shell->new_buffer;
+        shell->buffer[0] = '\0';
+        shell->buf_count = 1;
+        return (1);
+    }
+    return (0);
+}
 
-	lead_pipe = 1;
-	shell->i = 0;
-	while (shell->pipe_rdl_tokens[shell->i])
+int	lead_pipe_check_lm(t_ms *shell, int lead_pipe)
+{
+	if (shell->pipe_rdl_tokens[shell->i] == '|' && lead_pipe)
 	{
-		while (shell->pipe_rdl_tokens[shell->i] && ft_isspace(shell->pipe_rdl_tokens[shell->i]))
-			shell->i++;
-		if (shell->pipe_rdl_tokens[shell->i] == '|' && lead_pipe)
+		if (shell->pipe_rdl_tokens[shell->i] == '|' && shell->pipe_rdl_tokens[shell->i + 1] == '|')
 		{
-			ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token `||'\n" \
+				, 2);
 			free_tokens(shell);
-			return ;
+			return (1);
 		}
-		if (!shell->pipe_rdl_tokens[shell->i])
-			break ;
-		lead_pipe = 0;
-		if (is_operator(shell->pipe_rdl_tokens[shell->i]))
-		{
-			shell->buffer[0] = shell->pipe_rdl_tokens[shell->i];
-			shell->buffer[1] = '\0';
-			if_is_operator_lm(shell);
-			create_token(shell);
-			shell->type = TOKEN_ARGS;
-			shell->i++;
-			continue ;
-		}
-		write_token_args_lm(shell);
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+		free_tokens(shell);
+		return (1);
 	}
+	return (0);
+}
+
+
+void tokenize_input_lm(t_ms *shell)
+{
+    int lead_pipe;
+
+    lead_pipe = 1;
+    shell->i = 0;
+    shell->buf_count = 1;
+    shell->buffer = NULL;  // Initialize to NULL
+    while (shell->pipe_rdl_tokens[shell->i])
+    {
+        while (shell->pipe_rdl_tokens[shell->i] &&
+            ft_isspace(shell->pipe_rdl_tokens[shell->i]))
+            shell->i++;
+        if (lead_pipe_check_lm(shell, lead_pipe))
+            return;
+        if (!shell->pipe_rdl_tokens[shell->i])
+            break;
+        lead_pipe = 0;
+        if (is_operator_true_lm(shell))
+            continue;
+        write_token_args_lm(shell);
+        shell->buf_count = 1;
+    }
+    if (shell->buffer)
+    {
+        free(shell->buffer);
+        shell->buffer = NULL;
+    }
 }
 
 void print_tokens(t_token *token)
@@ -354,27 +415,100 @@ int	pipe_syntax_check(t_ms *shell, t_token *token)
 }
 t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token, int command_input_count)
 {
-		if (cmd->command_input)
+	t_command	*new_cmd;
+
+	if (cmd && cmd->command_input && cmd->command_input_index >= 0)
 		cmd->command_input[cmd->command_input_index] = NULL;
-		cmd->next = handle_token_pipe(shell);
-		cmd = cmd->next;
-		cmd->command_input_index = 0;
-		command_input_count = count_cmd_args(shell, shell->next_start);
-		cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 1));
+	new_cmd = new_cmd_struct(shell);
+	cmd->next = new_cmd;
+	cmd->next->command_input = cmd->command_input;
+	cmd = new_cmd;
+	cmd->command_input_index = 0;
+	cmd->next = NULL;
+	command_input_count = count_cmd_args(shell, shell->next_start);
+	// printf("input count : %d\n", command_input_count);
+	if (command_input_count >= 0)
+	{
+		cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 2));
 		if (!cmd->command_input)
 		{
 			print_error("Error: malloc failed", shell, 1, 1);
 			exit(shell->exit_code);
 		}
-		if (!token->next)
+		// printf("command_input_count: %p\n", cmd->command_input);
+		while (cmd->command_input_index < command_input_count)
 		{
-			shell->pipe_rdl_tokens = readline("> ");
-			tokenize_input_lm(shell);
-			free(shell->pipe_rdl_tokens);
+			cmd->command_input[cmd->command_input_index] = NULL;
+			cmd->command_input_index++;
 		}
-		cmd->next = NULL;
+		cmd->command_input_index = 0;
+	}
+	else
+		cmd->command_input = NULL;
+	if (!token->next)
+	{
+		shell->pipe_rdl_tokens = readline("> ");
+		add_history(shell->pipe_rdl_tokens);
+		tokenize_input_lm(shell);
+		free(shell->pipe_rdl_tokens);
+		shell->pipe_rdl_tokens = NULL;
+	}
 	return (cmd);
 }
+
+int	setup_command_input_count(t_ms *shell, t_command *cmd, t_token *token, int command_input_count)
+{
+	command_input_count = count_cmd_args(shell, token);
+	if (command_input_count > 0)
+	{
+		cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 2));
+		if (!cmd->command_input)
+		{
+			print_error("Error: malloc failed", shell, 1, 1);
+			exit(shell->exit_code);
+		}
+	}
+	cmd->command_input_index = 0;
+	while (cmd->command_input_index < command_input_count)
+	{
+		cmd->command_input[cmd->command_input_index] = NULL;
+		cmd->command_input_index++;
+	}
+	return (command_input_count);
+}
+
+t_token	*check_token_redir(t_ms *shell, t_command *cmd, t_token *token)
+{
+	if (token->type == TOKEN_REDIR_IN && token->next)
+		{
+			if (pipe_syntax_check(shell, token))
+				return (NULL);
+			handle_token_redir_in(shell, cmd, token);
+			token = token->next;
+		}
+		else if (token->type == TOKEN_HERE_DOC && token->next)
+		{
+			handle_token_heredoc(shell, cmd, token);
+			if (g_signal == SIGINT)
+				return (NULL);
+			token = token->next;
+		}
+		else if (token->type == TOKEN_REDIR_OUT && token->next)
+		{
+			if (pipe_syntax_check(shell, token))
+				return (NULL);
+			handle_token_redir_out(shell, cmd, token);
+			token = token->next;
+		}
+		else if (token->type == TOKEN_APPEND && token->next)
+		{
+			if (pipe_syntax_check(shell, token))
+				return (NULL);
+			handle_token_append(shell, cmd, token);
+			token = token->next;
+		}
+		return (token);
+	}
 
 void parse_tokens(t_ms *shell)
 {
@@ -388,22 +522,8 @@ void parse_tokens(t_ms *shell)
 	ft_bzero(cmd, sizeof(t_command));
 	shell->commands = cmd;
 	token = shell->token;
-	command_input_count = count_cmd_args(shell, token);
-	if (command_input_count > 0)
-	{
-		cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 1));
-		if (!cmd->command_input)
-		{
-			print_error("Error: malloc failed", shell, 1, 1);
-			exit(shell->exit_code);
-		}
-	}
-	cmd->command_input_index = 0;
-	while (cmd->command_input_index < command_input_count)
-	{
-		cmd->command_input[cmd->command_input_index] = NULL;
-		cmd->command_input_index++;
-	}
+	command_input_count = 0;
+	command_input_count = setup_command_input_count(shell, cmd, token, command_input_count);
 	cmd->command_input_index = 0;
 	while (token)
 	{
@@ -411,33 +531,13 @@ void parse_tokens(t_ms *shell)
 			handle_token_args(shell, cmd, token);
 		else if (token->type == TOKEN_PIPE)
 			cmd = new_command(shell, cmd, token, command_input_count);
-		else if (token->type == TOKEN_REDIR_IN && token->next)
+		else
 		{
-			if (pipe_syntax_check(shell, token))
-				return ;
-			handle_token_redir_in(shell, cmd, token);
-			token = token->next;
-		}
-		else if (token->type == TOKEN_HERE_DOC && token->next)
-		{
-			handle_token_heredoc(shell, cmd, token);
+			token = check_token_redir(shell, cmd, token);
 			if (g_signal == SIGINT)
-				break ;
-			token = token->next;
-		}
-		else if (token->type == TOKEN_REDIR_OUT && token->next)
-		{
-			if (pipe_syntax_check(shell, token))
 				return ;
-			handle_token_redir_out(shell, cmd, token);
-			token = token->next;
-		}
-		else if (token->type == TOKEN_APPEND && token->next)
-		{
-			if (pipe_syntax_check(shell, token))
+			if (!token)
 				return ;
-			handle_token_append(shell, cmd, token);
-			token = token->next;
 		}
 		if (token->next == NULL)
 		{

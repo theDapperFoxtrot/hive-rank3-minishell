@@ -321,6 +321,7 @@ void check_command(t_ms *shell, t_command *command)
 			{
 				close(new_pipe[1]);
 				prev_pipe_in = new_pipe[0];
+				// close(new_pipe[0]);
 			}
 			command = command->next;
 		}

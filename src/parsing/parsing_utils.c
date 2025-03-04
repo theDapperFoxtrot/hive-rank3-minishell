@@ -25,7 +25,8 @@ void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token)
 	cmd->arg_count++;
 	free(expanded_value);
 }
-t_command	*handle_token_pipe(t_ms *shell)
+
+t_command	*new_cmd_struct(t_ms *shell)
 {
 	t_command	*new_cmd;
 
@@ -39,6 +40,7 @@ t_command	*handle_token_pipe(t_ms *shell)
 	ft_bzero(new_cmd, sizeof(t_command));
 	return (new_cmd);
 }
+
 void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token)
 {
 	char        *expanded_value;
@@ -164,9 +166,9 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	sig_heredoc(&sig_handler_heredoc);
 	shell->heredoc_line_count++;
 	allocate_heredoc_lines(shell, cmd);
-	i = 0;
 	rl_done = 0;
 	rl_event_hook = event;
+	i = 0;
 	i = heredoc_loop(shell, cmd, i);
 	if (g_signal == SIGINT)
 		return ;

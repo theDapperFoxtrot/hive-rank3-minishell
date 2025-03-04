@@ -70,9 +70,9 @@ void	tokenize_input(t_ms *shell)
 	int		lead_pipe;
 
 	lead_pipe = 1;
-	shell->token = NULL;
 	shell->i = 0;
 	shell->buf_count = 1;
+	shell->token = NULL;
 	while (shell->input[shell->i])
 	{
 		while (shell->input[shell->i] && ft_isspace(shell->input[shell->i]))

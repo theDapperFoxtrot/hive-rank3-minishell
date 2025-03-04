@@ -98,9 +98,42 @@ int	event(void)
 {
 	return (0);
 }
+char	*parse_quotes(char *str)
+{
+	int		i;
+	int		j;
+	char	*parsed;
+
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] != 34 || str[i] != 39)
+			j++;
+		i++;
+	}
+	parsed = malloc((j + 1) * sizeof(char));
+	if (parsed == NULL)
+		return (NULL);
+	j = 0;
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] != 34 && str[i] != 39)
+			parsed[j++] = str[i];
+		i++;
+	}
+	parsed[j] = '\0';
+	return (parsed);
+}
+
 void	setup_delim(t_ms *shell, t_command *cmd, t_token *token)
 {
-	cmd->heredoc_delimiter = ft_strdup(token->value);
+	char	*stripped;
+
+	stripped = parse_quotes(token->value);
+	cmd->heredoc_delimiter = ft_strdup(stripped);
+	free(stripped);
 	if (!cmd->heredoc_delimiter)
 		malloc_error(shell);
 }

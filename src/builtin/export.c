@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 12:43:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/12 18:28:10 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/04 20:14:24 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,11 @@ void	set_env_variable(t_ms *shell, char *key, char *value, char *equal_sign)
 			free(shell->env_list[i]);
 			if (ft_strlen(value) > 0)
 			{
-				temp = ft_strjoin(key, "=");
+				temp = ft_strjoin(key, "=\"");
 				shell->env_list[i] = ft_strjoin(temp, value);
+				free(temp);
+				temp = shell->env_list[i];
+				shell->env_list[i] = ft_strjoin(temp, "\"");
 				free(temp);
 			}
 			else if (shell->equal_found)

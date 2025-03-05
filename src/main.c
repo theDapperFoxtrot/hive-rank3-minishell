@@ -112,7 +112,7 @@ void input_loop(t_ms *shell, struct termios *original_term)
 		}
 		if (!shell->input)
 		{
-			ft_putstr_fd("exit\n", 2);
+			ft_putstr_fd("exit\n", 1);
 			break ;
 		}
 		if (*(shell->input))
@@ -138,7 +138,5 @@ int	main(int argc, char *argv[], char *envp[])
 	tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
 	rl_clear_history();
 	cleanup(&shell, 1);
-	if (shell.prev_pwd)
-		free(shell.prev_pwd);
 	return (shell.exit_code);
 }

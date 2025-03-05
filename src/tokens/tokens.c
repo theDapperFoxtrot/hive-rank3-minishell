@@ -29,10 +29,12 @@ int	lead_pipe_check(t_ms *shell, int lead_pipe)
 		{
 			ft_putstr_fd("minishell: syntax error near unexpected token `||'\n" \
 				, 2);
+				shell->exit_code = 2;
 			free_tokens(shell);
 			return (1);
 		}
 		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+		shell->exit_code = 2;
 		free_tokens(shell);
 		return (1);
 	}

@@ -18,7 +18,11 @@ void	cleanup(t_ms *shell, int clean_shell)
         shell->commands = NULL;
     }
     if (clean_shell)
-        free_env(shell);
+	{
+		if (shell->prev_pwd)
+			free(shell->prev_pwd);
+		free_env(shell);
+	}
 }
 
 void	free_commands(t_command *commands)

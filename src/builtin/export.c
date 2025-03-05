@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 12:43:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/04 20:14:24 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/05 19:34:30 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,6 @@ void	ft_export(char **command, t_ms *shell)
 	char	*value;
 	int		i;
 
-	
 	if (export_command_check(command, shell))
 		return ;
 	i = 1;

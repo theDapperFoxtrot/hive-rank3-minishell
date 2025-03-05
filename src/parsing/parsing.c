@@ -98,21 +98,32 @@ void	get_var_name_len(t_ms *shell, int with_braces)
 		shell->exp_name_len++;
 }
 
-void	get_var_value(t_ms *shell)
+void get_var_value(t_ms *shell)
 {
-	while (shell->env_list[shell->exp_i])
-	{
-		if (ft_strncmp(shell->env_list[shell->exp_i], shell->exp_temp_name, \
-		ft_strlen(shell->exp_temp_name)) == 0 && \
-		shell->env_list[shell->exp_i][ft_strlen(shell->exp_temp_name)] == '=')
-		{
-			shell->exp.value = \
-			ft_strdup(shell->env_list[shell->exp_i] + \
-			ft_strlen(shell->exp_temp_name) + 1);
-			break ;
-		}
-		shell->exp_i++;
-	}
+    char *temp;
+    char *joined;
+
+    while (shell->env_list[shell->exp_i])
+    {
+        if (ft_strncmp(shell->env_list[shell->exp_i], shell->exp_temp_name,
+            ft_strlen(shell->exp_temp_name)) == 0 &&
+            shell->env_list[shell->exp_i][ft_strlen(shell->exp_temp_name)] == '=')
+        {
+            temp = shell->exp.value;
+            // Store result of ft_strjoin
+            joined = ft_strjoin(temp, shell->env_list[shell->exp_i] + 
+                ft_strlen(shell->exp_temp_name) + 1);
+            // Free the temporary value
+            free(temp);
+            // Use ft_strdup for the new value
+            shell->exp.value = ft_strdup(shell->env_list[shell->exp_i] + 
+                ft_strlen(shell->exp_temp_name) + 1);
+            // Free joined string since we're using strdup instead
+            free(joined);
+            break;
+        }
+        shell->exp_i++;
+    }
 }
 
 // Helper function to expand environment variables
@@ -357,6 +368,7 @@ int	lead_pipe_check_lm(t_ms *shell, int lead_pipe)
 			return (1);
 		}
 		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+		shell->exit_code = 2;
 		free_tokens(shell);
 		return (1);
 	}
@@ -408,6 +420,7 @@ int	pipe_syntax_check(t_ms *shell, t_token *token)
 	if (token->next->type == TOKEN_PIPE)
 	{
 		print_error("minishell: syntax error near unexpected token `|'", shell, 2, 0);
+		shell->exit_code = 2;
 		shell->token_error = 1;
 		return (1);
 	}

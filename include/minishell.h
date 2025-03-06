@@ -115,7 +115,8 @@ void			free_args(char **commands);
 void			free_env(t_ms *shell);
 void			print_error(char *message, t_ms *shell, \
 				unsigned char status, int clean_shell);
-int				count_args(char **command);
+				int				count_args(char **command);
+void			malloc_error(t_ms *shell);
 //builtin
 void			check_command(t_ms *shell, t_command *command);
 void			ft_echo(char **command, t_ms *shell);

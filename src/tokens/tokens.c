@@ -55,10 +55,7 @@ int	is_operator_true(t_ms *shell)
 		shell->new_buffer = ft_realloc(shell->buffer, \
 			ft_strlen(shell->buffer), 1);
 		if (!shell->new_buffer)
-		{
-			print_error("Error: malloc failed", shell, 1, 1);
-			exit(shell->exit_code);
-		}
+			malloc_error(shell);
 		shell->new_buffer[0] = '\0';
 		shell->buffer = shell->new_buffer;
 		shell->buf_count = 1;
@@ -115,10 +112,7 @@ void	write_token_args(t_ms *shell)
 		create_token(shell);
 	shell->new_buffer = ft_realloc(shell->buffer, ft_strlen(shell->buffer), 1);
 	if (!shell->new_buffer)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
+		malloc_error(shell);
 	shell->new_buffer[0] = '\0';
 	shell->buffer = shell->new_buffer;
 }

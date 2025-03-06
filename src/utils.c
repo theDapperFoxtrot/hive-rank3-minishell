@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:39:22 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/03 16:23:48 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/06 17:14:20 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,10 @@ int	count_args(char **command)
 		i++;
 	}
 	return (i);
+}
+
+void malloc_error(t_ms *shell)
+{
+	print_error("Error: malloc failed", shell, 1, 1);
+	exit(shell->exit_code);
 }

@@ -60,16 +60,12 @@ void	create_token(t_ms *shell)
 		return ;
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
+		malloc_error(shell);
 	new_token->value = ft_strdup(shell->buffer);
 	if (!new_token->value)
 	{
 		free(new_token);
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
+		malloc_error(shell);
 	}
 	new_token->type = shell->type;
 	new_token->next = NULL;

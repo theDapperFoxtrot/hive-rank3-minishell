@@ -244,11 +244,8 @@ void	check_for_append_lm(t_ms *shell)
     // Ensure buffer has enough space
     shell->buffer = ft_realloc(shell->buffer, shell->buf_count, shell->buf_count + 1);
     if (!shell->buffer)
-    {
-        print_error("Error: malloc failed", shell, 1, 1);
-        exit(shell->exit_code);
-    }
-    shell->buffer[1] = '>';
+		malloc_error(shell);
+	shell->buffer[1] = '>';
     shell->buffer[2] = '\0';
     shell->i++;
     shell->type = TOKEN_APPEND;
@@ -272,10 +269,7 @@ void	write_token_args_lm(t_ms *shell)
 		create_token(shell);
 	shell->new_buffer = ft_realloc(shell->buffer, ft_strlen(shell->buffer), 1);
 	if (!shell->new_buffer)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
+		malloc_error(shell);
 	shell->new_buffer[0] = '\0';
 	shell->buffer = shell->new_buffer;
 }
@@ -319,31 +313,19 @@ int is_operator_true_lm(t_ms *shell)
 {
     if (is_operator(shell->pipe_rdl_tokens[shell->i]))
     {
-        // Allocate space for up to 2 chars plus null terminator
         shell->buffer = ft_realloc(shell->buffer, shell->buf_count, shell->buf_count + 2);
         if (!shell->buffer)
-        {
-            print_error("Error: malloc failed", shell, 1, 1);
-            exit(shell->exit_code);
-        }
-        
-        shell->buffer[0] = shell->pipe_rdl_tokens[shell->i];
-        shell->buffer[1] = '\0';  // Ensure null termination
-        
+			malloc_error(shell);
+		shell->buffer[0] = shell->pipe_rdl_tokens[shell->i];
+        shell->buffer[1] = '\0';
         if_is_operator_lm(shell);
         create_token(shell);
         shell->type = TOKEN_ARGS;
         shell->i++;
-        
-        // Allocate new buffer with proper size
         shell->new_buffer = ft_realloc(NULL, 0, 1);
         if (!shell->new_buffer)
-        {
-            print_error("Error: malloc failed", shell, 1, 1);
-            exit(shell->exit_code);
-        }
-        
-        free(shell->buffer);  // Free old buffer before reassignment
+			malloc_error(shell);
+		free(shell->buffer);
         shell->buffer = shell->new_buffer;
         shell->buffer[0] = '\0';
         shell->buf_count = 1;
@@ -371,6 +353,11 @@ int	lead_pipe_check_lm(t_ms *shell, int lead_pipe)
 	return (0);
 }
 
+void	free_shell_buffer(t_ms *shell)
+{
+	free(shell->buffer);
+	shell->buffer = NULL;
+}
 
 void tokenize_input_lm(t_ms *shell)
 {
@@ -379,7 +366,7 @@ void tokenize_input_lm(t_ms *shell)
     lead_pipe = 1;
     shell->i = 0;
     shell->buf_count = 1;
-    shell->buffer = NULL;  // Initialize to NULL
+    shell->buffer = NULL;
     while (shell->pipe_rdl_tokens[shell->i])
     {
         while (shell->pipe_rdl_tokens[shell->i] &&
@@ -396,10 +383,7 @@ void tokenize_input_lm(t_ms *shell)
         shell->buf_count = 1;
     }
     if (shell->buffer)
-    {
-        free(shell->buffer);
-        shell->buffer = NULL;
-    }
+		free_shell_buffer(shell);
 }
 
 void print_tokens(t_token *token)
@@ -437,10 +421,7 @@ t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token)
 	count_cmd_args(shell, shell->next_start);
 	cmd->command_input = (char **) malloc(sizeof(char *) * (shell->command_input_count));
 	if (!cmd->command_input)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
+		malloc_error(shell);
 	while (cmd->command_input_index < shell->command_input_count)
 	{
 		cmd->command_input[cmd->command_input_index] = NULL;
@@ -465,10 +446,7 @@ int	setup_command_input_count(t_ms *shell, t_command *cmd, t_token *token)
 	{
 		cmd->command_input = (char **) malloc(sizeof(char *) * (shell->command_input_count));
 		if (!cmd->command_input)
-		{
-			print_error("Error: malloc failed", shell, 1, 1);
-			exit(shell->exit_code);
-		}
+			malloc_error(shell);
 	}
 	cmd->command_input_index = 0;
 	while (cmd->command_input_index < shell->command_input_count)

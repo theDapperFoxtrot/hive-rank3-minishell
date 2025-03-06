@@ -92,10 +92,7 @@ static void	init_shell(t_ms *shell, char **envp)
 	create_env(shell, envp);
 	shell->buffer = malloc(sizeof(char));
 	if (!shell->buffer)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
+		malloc_error(shell);
 	shell->buffer[0] = '\0';
 }
 

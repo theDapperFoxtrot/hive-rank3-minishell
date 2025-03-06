@@ -5,10 +5,7 @@ void	realloc_buffer(t_ms *shell)
 	shell->new_buffer = ft_realloc(shell->buffer, shell->buf_count, \
 		shell->buf_count + 1);
 	if (!shell->new_buffer)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
+		malloc_error(shell);
 	shell->buffer = shell->new_buffer;
 	shell->buf_count++;
 }

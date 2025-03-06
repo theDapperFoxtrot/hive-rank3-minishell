@@ -1,21 +1,12 @@
 #include "../../include/minishell.h"
 
-void malloc_error(t_ms *shell)
-{
-	print_error("Error: malloc failed", shell, 1, 1);
-	exit(shell->exit_code);
-}
-
 void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token)
 {
 	char        *expanded_value;
 
 	expanded_value = handle_expansions(shell, token->value);
 	if (!expanded_value)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
+		malloc_error(shell);
 	if (expanded_value[0] == '\0')
 	{
 		free(expanded_value);
@@ -33,10 +24,7 @@ t_command	*new_cmd_struct(t_ms *shell)
 	new_cmd = NULL;
 	new_cmd = malloc(sizeof(t_command));
 	if (!new_cmd)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
+		malloc_error(shell);
 	ft_bzero(new_cmd, sizeof(t_command));
 	return (new_cmd);
 }
@@ -78,11 +66,7 @@ void	make_heredoc_one_line(t_ms *shell, t_command *cmd)
 	{
 		line = ft_strjoin(cmd->heredoc_lines[i], "\n");
 		if (!line)
-		{
-			print_error("Error: malloc failed", shell, 1, 1);
-			free_split(cmd->heredoc_lines);
-			exit(shell->exit_code);
-		}
+			malloc_error(shell);
 		free(cmd->heredoc_lines[i]);
 		temp = cmd->heredoc_line;
 		cmd->heredoc_line = ft_strjoin(temp, line);
@@ -142,10 +126,7 @@ void	allocate_heredoc_lines(t_ms *shell, t_command *cmd)
 {
 	cmd->heredoc_lines = (char **) malloc(sizeof(char *) * 2);
 	if (!cmd->heredoc_lines)
-	{
-		print_error("Error: malloc failed", shell, 1, 1);
-		exit(shell->exit_code);
-	}
+		malloc_error(shell);
 	cmd->heredoc_lines[0] = NULL;
 }
 
@@ -171,10 +152,7 @@ int	heredoc_loop(t_ms *shell, t_command *cmd, int i)
 		sig_heredoc(&sig_handler_heredoc);
 		cmd->heredoc_lines = ft_realloc(cmd->heredoc_lines, sizeof(char *) * i, sizeof(char *) * (i + 1));
 		if (!cmd->heredoc_lines)
-		{
-			print_error("Error: malloc failed", shell, 1, 1);
-			exit(shell->exit_code);
-		}
+			malloc_error(shell);
 		cmd->heredoc_lines[i] = readline("> ");
 		if (g_signal == SIGINT)
 			break ;

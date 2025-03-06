@@ -435,7 +435,6 @@ t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token)
 	cmd->command_input_index = 0;
 	cmd->next = NULL;
 	count_cmd_args(shell, shell->next_start);
-	printf("Command input count: %d\n", shell->command_input_count);
 	cmd->command_input = (char **) malloc(sizeof(char *) * (shell->command_input_count));
 	if (!cmd->command_input)
 	{
@@ -566,7 +565,6 @@ void parse_tokens(t_ms *shell)
 			if (!token)
 				return ;
 		}
-		// printf("Command input count: %d\n", shell->command_input_count);
 		if (token->next == NULL)
 			handle_not_next_token(shell, cmd, token);
 		token = token->next;

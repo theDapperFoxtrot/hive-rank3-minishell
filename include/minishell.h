@@ -93,12 +93,11 @@ typedef struct s_ms
 	int				token_error;
 	char			*pipe_rdl_tokens;
 	int				exit_error_flag;
-	// expansion stuff
+// expansion stuff
 	int				exp_i;
 	int				exp_name_len;
 	char			*exp_temp_name;
 	int				command_input_count;
-
 }	t_ms;
 
 // signals
@@ -117,6 +116,7 @@ void			print_error(char *message, t_ms *shell, \
 				unsigned char status, int clean_shell);
 				int				count_args(char **command);
 void			malloc_error(t_ms *shell);
+char			*free_and_nullify(char *str_ptr);
 //builtin
 void			check_command(t_ms *shell, t_command *command);
 void			ft_echo(char **command, t_ms *shell);
@@ -140,6 +140,7 @@ void			handle_token_redir_in(t_ms *shell, \
 				t_command *cmd, t_token *token);
 void			handle_token_heredoc(t_ms *shell, \
 				t_command *cmd, t_token *token);
+int				event(void);
 void			handle_token_redir_out(t_ms *shell, \
 				t_command *cmd, t_token *token);
 void			handle_token_append(t_ms *shell, \
@@ -152,6 +153,31 @@ int				find_closing_brace(const char *str, \
 				int start);
 void			expand_env_var(t_ms *shell, \
 				int with_braces);
+int				handle_expansions_dollar_sign(t_ms *shell, const char *str);
+int				handle_expansions_no_braces(t_ms *shell, const char *str);
+int				handle_expansions_if_braces(t_ms *shell, const char *str);
+void			make_heredoc_one_line(t_ms *shell, t_command *cmd);
+void			setup_delim(t_ms *shell, t_command *cmd, t_token *token);
+void			allocate_heredoc_lines(t_ms *shell, t_command *cmd);
+int				heredoc_loop(t_ms *shell, t_command *cmd, int i);
+char			*qmark_check(t_ms *shell, int with_braces);
+void			get_var_name_len(t_ms *shell, int with_braces);
+void			get_var_value(t_ms *shell);
+void			count_cmd_args(t_ms *shell, t_token *token);
+void			check_for_append_lm(t_ms *shell);
+void			write_token_args_lm(t_ms *shell);
+void			checking_pipe_lm(t_ms *shell);
+void			checking_rd_in_lm(t_ms *shell);
+void			checking_rd_out_lm(t_ms *shell);
+void			if_is_operator_lm(t_ms *shell);
+int				is_operator_true_lm(t_ms *shell);
+int				lead_pipe_check_lm(t_ms *shell, int lead_pipe);
+void			free_shell_buffer(t_ms *shell);
+void			tokenize_input_lm(t_ms *shell);
+int				pipe_syntax_check(t_ms *shell, t_token *token);
+void			pipe_no_next_token(t_ms *shell);
+t_command		*new_command(t_ms *shell, t_command *cmd, t_token *token);
+int				setup_command_input_count(t_ms *shell, t_command *cmd, t_token *token);
 // tokens folder
 void			tokenize_input(t_ms *shell);
 int				is_operator(char c);

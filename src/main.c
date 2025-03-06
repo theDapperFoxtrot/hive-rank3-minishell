@@ -3,40 +3,6 @@
 #include <termios.h>
 
 int	g_signal = 0;
-// REMOVE THESE DEBUGGER FUNCTIONS WHEN SUBMITTING!!!
-void	print_commands(t_command *cmd)
-{
-	int	i;
-	int	j;
-
-	j = 0;
-	i = 0;
-	while (cmd != NULL)
-	{
-		printf("----[Structure %d]----\n", j);
-		while (cmd->args[i])
-		{
-			printf("[%d]%s\n", i, cmd->args[i]);
-			i++;
-		}
-		i = 0;
-		j++;
-		cmd = cmd->next;
-	}
-	printf("----[End of Structure]----\n");
-}
-void	print_redirections(t_command *cmd)
-{
-	while (cmd)
-	{
-		printf("New Command:\n");
-		for (int i = 0; cmd->command_input[i]; i++)
-			printf("%s\n", cmd->command_input[i]);
-		printf("\n");
-		cmd = cmd->next;
-	}
-}
-// REMOVE THESE DEBUGGER FUNCTIONS WHEN SUBMITTING!!!
 
 int	invalid_input(char *input)
 {
@@ -66,8 +32,6 @@ void	process_input(t_ms *shell)
 		return ;
 	parse_tokens(shell);
 	free_tokens(shell);
-	// print_commands(shell->commands);
-	// print_redirections(shell->commands);
 	if (shell->token_error)
 		return ;
 	if (g_signal == SIGINT)
@@ -96,7 +60,7 @@ static void	init_shell(t_ms *shell, char **envp)
 	shell->buffer[0] = '\0';
 }
 
-void input_loop(t_ms *shell, struct termios *original_term)
+void	input_loop(t_ms *shell, struct termios *original_term)
 {
 	while (1)
 	{

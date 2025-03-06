@@ -4,6 +4,7 @@ CFLAGS = -Wall -Wextra -Werror -g
 INCLUDE = -I ./libft
 SRCS = 	src/main.c \
 		src/utils.c \
+		src/utils1.c \
 		src/builtin/echo.c \
 		src/builtin/pwd.c \
 		src/builtin/exit.c \
@@ -18,8 +19,13 @@ SRCS = 	src/main.c \
 		src/tokens/tokens3.c \
 		src/parsing/parsing.c \
 		src/parsing/parsing_utils.c \
+		src/parsing/parsing_utils1.c \
 		src/parsing/parsing_utils2.c \
 		src/parsing/parsing_utils3.c \
+		src/parsing/parsing_utils4.c \
+		src/parsing/parsing_utils5.c \
+		src/parsing/parsing_utils6.c \
+		src/parsing/parsing_utils7.c \
 		src/error_cleanup/error_cleanup.c \
 		src/file_helpers.c \
 		src/execution/check_command.c \

@@ -211,21 +211,18 @@ char	*handle_expansions(t_ms *shell, const char *str)
 	return (shell->exp.result);
 }
 
-int	count_cmd_args(t_ms *shell, t_token *token)
+void	count_cmd_args(t_ms *shell, t_token *token)
 {
-	int	command_input_count;
-
-	command_input_count = 0;
 	while (token && token->type != TOKEN_PIPE)
 	{
 		if (token->type == TOKEN_ARGS)
-			command_input_count++;
+			shell->command_input_count++;
 		else if (token->type == TOKEN_HERE_DOC)
-			command_input_count++;
+			shell->command_input_count++;
 		else if (token->type == TOKEN_REDIR_IN)
-			command_input_count = command_input_count + 2;
+			shell->command_input_count++;
 		else if (token->type == TOKEN_REDIR_OUT || token->type == TOKEN_APPEND)
-			command_input_count = command_input_count + 2;
+			shell->command_input_count++;
 		if (token->next)
 		{
 			if (token->next->type == TOKEN_PIPE)
@@ -240,7 +237,6 @@ int	count_cmd_args(t_ms *shell, t_token *token)
 		else
 			break ;
 	}
-	return (command_input_count);
 }
 
 void	check_for_append_lm(t_ms *shell)
@@ -438,24 +434,20 @@ t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token)
 	cmd = new_cmd;
 	cmd->command_input_index = 0;
 	cmd->next = NULL;
-	shell->command_input_count = count_cmd_args(shell, shell->next_start);
-	if (shell->command_input_count >= 0)
+	count_cmd_args(shell, shell->next_start);
+	printf("Command input count: %d\n", shell->command_input_count);
+	cmd->command_input = (char **) malloc(sizeof(char *) * (shell->command_input_count));
+	if (!cmd->command_input)
 	{
-		cmd->command_input = (char **) malloc(sizeof(char *) * (shell->command_input_count + 2));
-		if (!cmd->command_input)
-		{
-			print_error("Error: malloc failed", shell, 1, 1);
-			exit(shell->exit_code);
-		}
-		while (cmd->command_input_index < shell->command_input_count)
-		{
-			cmd->command_input[cmd->command_input_index] = NULL;
-			cmd->command_input_index++;
-		}
-		cmd->command_input_index = 0;
+		print_error("Error: malloc failed", shell, 1, 1);
+		exit(shell->exit_code);
 	}
-	else
-		cmd->command_input = NULL;
+	while (cmd->command_input_index < shell->command_input_count)
+	{
+		cmd->command_input[cmd->command_input_index] = NULL;
+		cmd->command_input_index++;
+	}
+	cmd->command_input_index = 0;
 	if (!token->next)
 	{
 		shell->pipe_rdl_tokens = readline("> ");
@@ -469,10 +461,10 @@ t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token)
 
 int	setup_command_input_count(t_ms *shell, t_command *cmd, t_token *token)
 {
-	shell->command_input_count = count_cmd_args(shell, token);
+	count_cmd_args(shell, token);
 	if (shell->command_input_count > 0)
 	{
-		cmd->command_input = (char **) malloc(sizeof(char *) * (shell->command_input_count + 2));
+		cmd->command_input = (char **) malloc(sizeof(char *) * (shell->command_input_count));
 		if (!cmd->command_input)
 		{
 			print_error("Error: malloc failed", shell, 1, 1);
@@ -539,6 +531,19 @@ t_command	*setup_token(t_ms *shell, t_command *cmd, t_token *token)
 	return (cmd);
 }
 
+void	handle_not_next_token(t_ms *shell, t_command *cmd, t_token *token)
+{
+	if (cmd->command_input)
+		cmd->command_input[cmd->command_input_index] = NULL;
+	if ((ft_strncmp(token->value, ">", 1) == 0) || (ft_strncmp(token->value, "<", 1) == 0))
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
+		free_tokens(shell);
+		shell->token_error = 1;
+		return ;
+	}
+}
+
 void parse_tokens(t_ms *shell)
 {
 	t_token		*token;
@@ -561,18 +566,9 @@ void parse_tokens(t_ms *shell)
 			if (!token)
 				return ;
 		}
+		// printf("Command input count: %d\n", shell->command_input_count);
 		if (token->next == NULL)
-		{
-			if (cmd->command_input)
-			cmd->command_input[cmd->command_input_index] = NULL;
-			if ((ft_strncmp(token->value, ">", 1) == 0) || (ft_strncmp(token->value, "<", 1) == 0))
-			{
-				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
-				free_tokens(shell);
-				shell->token_error = 1;
-				return ;
-			}
-		}
+			handle_not_next_token(shell, cmd, token);
 		token = token->next;
 	}
 }

@@ -112,7 +112,7 @@ void input_loop(t_ms *shell, struct termios *original_term)
 		}
 		if (!shell->input)
 		{
-			ft_putstr_fd("exit\n", 1);
+			ft_putstr_fd("exit\n", 2);
 			break ;
 		}
 		if (*(shell->input))

@@ -426,7 +426,7 @@ int	pipe_syntax_check(t_ms *shell, t_token *token)
 	}
 	return (0);
 }
-t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token, int command_input_count)
+t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token)
 {
 	t_command	*new_cmd;
 
@@ -438,18 +438,16 @@ t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token, int command_
 	cmd = new_cmd;
 	cmd->command_input_index = 0;
 	cmd->next = NULL;
-	command_input_count = count_cmd_args(shell, shell->next_start);
-	// printf("input count : %d\n", command_input_count);
-	if (command_input_count >= 0)
+	shell->command_input_count = count_cmd_args(shell, shell->next_start);
+	if (shell->command_input_count >= 0)
 	{
-		cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 2));
+		cmd->command_input = (char **) malloc(sizeof(char *) * (shell->command_input_count + 2));
 		if (!cmd->command_input)
 		{
 			print_error("Error: malloc failed", shell, 1, 1);
 			exit(shell->exit_code);
 		}
-		// printf("command_input_count: %p\n", cmd->command_input);
-		while (cmd->command_input_index < command_input_count)
+		while (cmd->command_input_index < shell->command_input_count)
 		{
 			cmd->command_input[cmd->command_input_index] = NULL;
 			cmd->command_input_index++;
@@ -469,12 +467,12 @@ t_command	*new_command(t_ms *shell, t_command *cmd, t_token *token, int command_
 	return (cmd);
 }
 
-int	setup_command_input_count(t_ms *shell, t_command *cmd, t_token *token, int command_input_count)
+int	setup_command_input_count(t_ms *shell, t_command *cmd, t_token *token)
 {
-	command_input_count = count_cmd_args(shell, token);
-	if (command_input_count > 0)
+	shell->command_input_count = count_cmd_args(shell, token);
+	if (shell->command_input_count > 0)
 	{
-		cmd->command_input = (char **) malloc(sizeof(char *) * (command_input_count + 2));
+		cmd->command_input = (char **) malloc(sizeof(char *) * (shell->command_input_count + 2));
 		if (!cmd->command_input)
 		{
 			print_error("Error: malloc failed", shell, 1, 1);
@@ -482,68 +480,79 @@ int	setup_command_input_count(t_ms *shell, t_command *cmd, t_token *token, int c
 		}
 	}
 	cmd->command_input_index = 0;
-	while (cmd->command_input_index < command_input_count)
+	while (cmd->command_input_index < shell->command_input_count)
 	{
 		cmd->command_input[cmd->command_input_index] = NULL;
 		cmd->command_input_index++;
 	}
-	return (command_input_count);
+	return (shell->command_input_count);
+}
+
+t_token	*handle_token_redir(t_ms *shell, t_command *cmd, t_token *token, void (*func)(t_ms *, t_command *, t_token *))
+{
+	if (pipe_syntax_check(shell, token))
+		return (NULL);
+	func(shell, cmd, token);
+	// token = token->next;
+	return (token);
 }
 
 t_token	*check_token_redir(t_ms *shell, t_command *cmd, t_token *token)
 {
-	if (token->type == TOKEN_REDIR_IN && token->next)
-		{
-			if (pipe_syntax_check(shell, token))
-				return (NULL);
-			handle_token_redir_in(shell, cmd, token);
-			token = token->next;
-		}
-		else if (token->type == TOKEN_HERE_DOC && token->next)
-		{
-			handle_token_heredoc(shell, cmd, token);
-			if (g_signal == SIGINT)
-				return (NULL);
-			token = token->next;
-		}
-		else if (token->type == TOKEN_REDIR_OUT && token->next)
-		{
-			if (pipe_syntax_check(shell, token))
-				return (NULL);
-			handle_token_redir_out(shell, cmd, token);
-			token = token->next;
-		}
-		else if (token->type == TOKEN_APPEND && token->next)
-		{
-			if (pipe_syntax_check(shell, token))
-				return (NULL);
-			handle_token_append(shell, cmd, token);
-			token = token->next;
-		}
-		return (token);
+	if ((token->type == TOKEN_REDIR_IN) && token->next)
+	{
+		if (!handle_token_redir(shell, cmd, token, &handle_token_redir_in))
+			return (NULL);
 	}
+	else if (token->type == TOKEN_HERE_DOC && token->next)
+	{
+		handle_token_heredoc(shell, cmd, token);
+		if (g_signal == SIGINT)
+			return (NULL);
+	}
+	else if ((token->type == TOKEN_REDIR_OUT) && token->next)
+	{
+		if (!handle_token_redir(shell, cmd, token, &handle_token_redir_out))
+			return (NULL);
+	}
+	else if (token->type == TOKEN_APPEND && token->next)
+	{
+		if (!handle_token_redir(shell, cmd, token, &handle_token_append))
+			return (NULL);
+	}
+	if (token->next != NULL)
+		token = token->next;
+	return (token);
+}
+
+t_command	*setup_token(t_ms *shell, t_command *cmd, t_token *token)
+{
+	cmd = malloc(sizeof(t_command));
+	if (!cmd)
+		return (NULL);
+	ft_bzero(cmd, sizeof(t_command));
+	shell->commands = cmd;
+	shell->command_input_count = 0;
+	shell->command_input_count = setup_command_input_count(shell, cmd, token);
+	cmd->command_input_index = 0;
+	cmd->next = NULL;
+	return (cmd);
+}
 
 void parse_tokens(t_ms *shell)
 {
 	t_token		*token;
 	t_command	*cmd;
-	int			command_input_count;
 
-	cmd = malloc(sizeof(t_command));
-	if (!cmd)
-		return;
-	ft_bzero(cmd, sizeof(t_command));
-	shell->commands = cmd;
 	token = shell->token;
-	command_input_count = 0;
-	command_input_count = setup_command_input_count(shell, cmd, token, command_input_count);
-	cmd->command_input_index = 0;
+	cmd = NULL;
+	cmd = setup_token(shell, cmd, token);
 	while (token)
 	{
 		if (token->type == TOKEN_ARGS)
 			handle_token_args(shell, cmd, token);
 		else if (token->type == TOKEN_PIPE)
-			cmd = new_command(shell, cmd, token, command_input_count);
+			cmd = new_command(shell, cmd, token);
 		else
 		{
 			token = check_token_redir(shell, cmd, token);

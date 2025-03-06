@@ -121,7 +121,6 @@ char	*find_directory(char **dir, char *splitted_args)
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(splitted_args, 2);
 	ft_putstr_fd(": command not found\n", 2);
-	free(executable_path);
 return (NULL);
 }
 
@@ -298,7 +297,6 @@ void check_command(t_ms *shell, t_command *command)
 				if (!exec)
 				{
 					path = find_executable_path(shell, command);
-					printf("path: %s\n", path);
 					if (!path)
 					{
 						cleanup(shell, 1);

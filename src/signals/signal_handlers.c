@@ -19,17 +19,19 @@ void sig_handler_sigint(int signal)
     if (signal == SIGINT)
     {
         g_signal = SIGINT;
-        ioctl(STDIN_FILENO, TIOCSTI, "\n"); // Inject a newline to break readline
-        write(1, "\033[1A", 4);
+        ft_putstr_fd("\n", STDOUT_FILENO);
+        rl_on_new_line();
+        rl_replace_line("", 0);
+        rl_redisplay();
     }
 }
 
-void sig_handler_heredoc(int signal)
-{
-    if (signal == SIGINT)
-    {
-        g_signal = SIGINT;
-        rl_replace_line("\n", 0);
-        rl_done = 1;
-    }
-}
+// void sig_handler_heredoc(int signal)
+// {
+//     if (signal == SIGINT)
+//     {
+//         g_signal = SIGINT;
+//         rl_replace_line("\n", 0);
+//         rl_done = 1;
+//     }
+// }

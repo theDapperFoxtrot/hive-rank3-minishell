@@ -11,7 +11,6 @@
 # include <signal.h>
 # include <sys/ioctl.h>
 # include <termios.h>
-# define EXP_BUFFER_SIZE 100000
 
 extern int	g_signal;
 
@@ -101,14 +100,11 @@ typedef struct s_ms
 }	t_ms;
 
 // signals
-void			sig_heredoc(void *func);
-void			sig_ignore(void);
-void			sig_child(void *func);
-void			sig_init(void *func);
+int				check_signals(int signum, void (*handler_function)(int));
 void			sig_handler_child(int signal);
 void			sig_handler_sigint(int signal);
-void			sig_handler_heredoc(int signal);
-
+int				default_signals(void);
+int				init_signals(void);
 //utils.c
 void			free_args(char **commands);
 void			free_env(t_ms *shell);

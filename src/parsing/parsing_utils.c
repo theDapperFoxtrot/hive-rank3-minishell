@@ -67,7 +67,7 @@ int	heredoc_loop(t_ms *shell, t_command *cmd, int i)
 {
 	while (1)
 	{
-		sig_heredoc(&sig_handler_heredoc);
+		// sig_heredoc(&sig_handler_heredoc);
 		cmd->heredoc_lines = ft_realloc(cmd->heredoc_lines, sizeof(char *) * i, sizeof(char *) * (i + 1));
 		if (!cmd->heredoc_lines)
 			malloc_error(shell);

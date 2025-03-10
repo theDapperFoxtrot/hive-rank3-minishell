@@ -1,61 +1,34 @@
 #include "../../include/minishell.h"
 
-void	sig_heredoc(void *handler_function)
+int	check_signals(int signbr, void (*handler_function)(int))
 {
-	struct sigaction	sig_int;
-	struct sigaction	sig_quit;
+	struct sigaction	sa;
 
-	sig_int.sa_handler = handler_function;
-	sig_int.sa_flags = 0;
-	sigemptyset(&sig_int.sa_mask);
-	sigaction(SIGINT, &sig_int, NULL);
-	sig_quit.sa_handler = SIG_IGN;
-	sig_quit.sa_flags = 0;
-	sigemptyset(&sig_quit.sa_mask);
-	sigaction(SIGQUIT, &sig_quit, NULL);
+	sigemptyset(&sa.sa_mask);
+	sa.sa_handler = handler_function;
+	sa.sa_flags = 0;
+	if (sigaction(signbr, &sa, NULL) < 0)
+	{
+		ft_putendl_fd("Error: sigaction failed", 2);
+		return (1);
+	}
+	return (0);
 }
 
-void	sig_ignore(void)
+int	init_signals(void)
 {
-	struct sigaction	sig_int;
-	struct sigaction	sig_quit;
-
-	sig_int.sa_handler = SIG_IGN;
-	sig_int.sa_flags = 0;
-	sigemptyset(&sig_int.sa_mask);
-	sigaction(SIGINT, &sig_int, NULL);
-	sig_quit.sa_handler = SIG_IGN;
-	sig_quit.sa_flags = 0;
-	sigemptyset(&sig_quit.sa_mask);
-	sigaction(SIGQUIT, &sig_quit, NULL);
+	if (check_signals(SIGINT, sig_handler_sigint) == 1)
+		return (1);
+	if (check_signals(SIGQUIT, SIG_IGN) == 1)
+		return (1);
+	return (0);
 }
 
-void	sig_child(void *handler_function)
+int	default_signals(void)
 {
-	struct sigaction	sig_int;
-	struct sigaction	sig_quit;
-
-	sig_int.sa_handler = handler_function;
-	sig_int.sa_flags = 0;
-	sigemptyset(&sig_int.sa_mask);
-	sigaction(SIGINT, &sig_int, NULL);
-	sig_quit.sa_handler = handler_function;
-	sig_quit.sa_flags = 0;
-	sigemptyset(&sig_quit.sa_mask);
-	sigaction(SIGQUIT, &sig_quit, NULL);
-}
-
-void	sig_init(void *handler_function)
-{
-	struct sigaction	sig_int;
-	struct sigaction	sig_quit;
-
-	sig_int.sa_handler = handler_function;
-	sig_int.sa_flags = 0;
-	sigemptyset(&sig_int.sa_mask);
-	sigaction(SIGINT, &sig_int, NULL);
-	sig_quit.sa_handler = SIG_IGN;
-	sig_quit.sa_flags = 0;
-	sigemptyset(&sig_quit.sa_mask);
-	sigaction(SIGQUIT, &sig_quit, NULL);
+	if (signal(SIGINT, SIG_DFL) == SIG_ERR)
+		return (1);
+	if (signal(SIGQUIT, SIG_DFL) == SIG_ERR)
+		return (1);
+	return (0);
 }

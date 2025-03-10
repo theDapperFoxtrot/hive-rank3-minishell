@@ -259,11 +259,14 @@ void check_command(t_ms *shell, t_command *command)
 		}
 		shell->child_count++;
 		command->pid = fork();
-		sig_child(&sig_handler_child);
 		if (command->pid == -1)
 		fork_error(new_pipe);
 		if (command->pid == 0)
 		{
+			if (default_signals() == 1)
+				print_error("Error: default_signals failed", shell, 1, 1);
+			check_signals(SIGINT, &sig_handler_child);
+			check_signals(SIGQUIT, &sig_handler_child);
 			if (prev_pipe_in != -1)
 			{
 				dup2(prev_pipe_in, STDIN_FILENO);
@@ -304,6 +307,8 @@ void check_command(t_ms *shell, t_command *command)
 					}
 					if (execve(path, command->args, shell->env_list) == -1)
 					{
+						if (g_signal == SIGINT)
+							write(1, "\n", 1);
 						perror("minishell");
 						shell->exit_code = 126;
 						cleanup(shell, 1);
@@ -334,8 +339,23 @@ void check_command(t_ms *shell, t_command *command)
 	// wait for all children to finish IN ORDER
 	while (shell->child_count-- > 0)
 	{
+		signal(SIGINT, SIG_IGN);
+		signal(SIGQUIT, SIG_IGN);
 		shell->wpid = waitpid(-1, &status, 0);
 		if (shell->wpid == shell->last_pid)
-			shell->exit_code = WEXITSTATUS(status);
+		{
+			if (WIFSIGNALED(status))
+			{
+				if (WTERMSIG(status) == SIGINT)
+					write(1, "\n", 1);
+				else if (WTERMSIG(status) == SIGQUIT)
+					ft_putstr_fd("Quit (core dumped)\n", 2);
+				shell->exit_code = 128 + WTERMSIG(status);
+			}
+			else
+			{
+				shell->exit_code = WEXITSTATUS(status);
+			}
+		}
 	}
 }

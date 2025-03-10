@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:39:40 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/18 18:43:05 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/10 15:10:05 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,8 @@ void	ft_cd(char **command, t_ms *shell)
 	{
 		free(oldpwd);
 		shell->exit_code = 1;
-		free(shell->prev_pwd);
+		// if (shell->prev_pwd)
+		// 	free(shell->prev_pwd);
 		return ;
 	}
 	if (count == 1)

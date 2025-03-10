@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:33:02 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/06 14:11:14 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/10 16:31:45 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ static void	check_numeric(t_command *command, t_ms *shell)
 	if (command->args[1][i] == '#')
 	{
 		shell->exit_code = 0;
-		ft_putstr_fd("exit\n", 2);
+		// ft_putstr_fd("exit\n", 2);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}
@@ -117,7 +117,7 @@ void	ft_exit(t_command *command, t_ms *shell)
 {
 	if (!command->args[1] && !command->next)
 	{
-		ft_putstr_fd("exit\n", 2);
+		// ft_putstr_fd("exit\n", 2);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}
@@ -131,7 +131,7 @@ void	ft_exit(t_command *command, t_ms *shell)
 	else if (command->args[1] && !command->next)
 	{
 		shell->exit_code = ft_atoi(command->args[1]);
-		ft_putstr_fd("exit\n", 1);
+		// ft_putstr_fd("exit\n", 1);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}

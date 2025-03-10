@@ -67,7 +67,15 @@ void	input_loop(t_ms *shell)
 		if (init_signals() == 1)
 			return ;
 		shell->token_error = 0;
-		shell->input = readline("minishell> ");
+		if (isatty(fileno(stdin)))
+			shell->input = readline("minishell> ");
+		else
+		{
+				char *line;
+				line = get_next_line(fileno(stdin));
+				shell->input = ft_strtrim(line, "\n");
+				free(line);
+		}
 		if (g_signal == SIGINT)
 		{
 			g_signal = 0;
@@ -75,7 +83,7 @@ void	input_loop(t_ms *shell)
 		}
 		if (!shell->input)
 		{
-			ft_putstr_fd("exit\n", 2);
+			// ft_putstr_fd("exit\n", 2);
 			break ;
 		}
 		if (*(shell->input))

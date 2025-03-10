@@ -4,6 +4,15 @@ t_token	*handle_token_redir(t_ms *shell, t_command *cmd, t_token *token, void (*
 {
 	if (pipe_syntax_check(shell, token))
 		return (NULL);
+	if (token && token->next && (token->next->type == TOKEN_REDIR_IN || token->next->type == TOKEN_REDIR_OUT))
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+		ft_putstr_fd(token->next->value, 2);
+		ft_putstr_fd("'\n", 2);
+		shell->exit_code = 2;
+		shell->token_error = 1;
+		return (NULL);
+	}
 	func(shell, cmd, token);
 	return (token);
 }
@@ -17,7 +26,8 @@ t_token	*check_token_redir(t_ms *shell, t_command *cmd, t_token *token)
 	}
 	else if (token->type == TOKEN_HERE_DOC && token->next)
 	{
-		handle_token_heredoc(shell, cmd, token);
+		if (handle_token_heredoc(shell, cmd, token) == 1)
+			return (NULL);
 		if (g_signal == SIGINT)
 			return (NULL);
 	}
@@ -58,6 +68,7 @@ void	handle_not_next_token(t_ms *shell, t_command *cmd, t_token *token)
 	{
 		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
 		free_tokens(shell);
+		shell->exit_code = 2;
 		shell->token_error = 1;
 		return ;
 	}

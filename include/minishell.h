@@ -135,7 +135,7 @@ void			handle_token_args(t_ms *shell, t_command *cmd, t_token *token);
 t_command		*new_cmd_struct(t_ms *shell);
 void			handle_token_redir_in(t_ms *shell, \
 				t_command *cmd, t_token *token);
-void			handle_token_heredoc(t_ms *shell, \
+int				handle_token_heredoc(t_ms *shell, \
 				t_command *cmd, t_token *token);
 int				event(void);
 void			handle_token_redir_out(t_ms *shell, \

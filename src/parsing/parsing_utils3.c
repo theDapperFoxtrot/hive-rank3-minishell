@@ -27,10 +27,21 @@ int	event(void)
 	return (0);
 }
 
-void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
+int	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 {
 	int	i;
 
+	if (pipe_syntax_check(shell, token))
+		return (1);
+	if (token && token->next && (token->next->type == TOKEN_REDIR_IN || token->next->type == TOKEN_REDIR_OUT))
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+		ft_putstr_fd(token->next->value, 2);
+		ft_putstr_fd("'\n", 2);
+		shell->exit_code = 2;
+		shell->token_error = 1;
+		return (1);
+	}
 	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
 	token = token->next;
 	if (token && token->type == TOKEN_ARGS)
@@ -45,12 +56,13 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	i = 0;
 	i = heredoc_loop(shell, cmd, i);
 	if (g_signal == SIGINT)
-		return ;
+		return (1);
 	shell->heredoc_line_count = shell->heredoc_line_count + i;
 	cmd->heredoc_lines[i] = NULL;
 	make_heredoc_one_line(shell, cmd);
 	cmd->heredoc = 1;
 	cmd->command_input_index++;
+	return (0);
 }
 
 void handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)

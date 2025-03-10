@@ -9,12 +9,14 @@ char    *handle_expansions_quotes(t_ms *shell, const char *str)
         return (ft_strdup(str));
     }
     shell->exp.quote_type = str[shell->exp.i];
-    shell->exp.i++;
+	shell->exp.i++;
     while (shell->exp.i < shell->exp.closing_quote)
     {
         if (str[shell->exp.i] == '$' && shell->exp.quote_type == '\"')
         {
-			if (handle_expansions_dollar_sign(shell, str))
+			if (handle_expansions_dollar_sign(shell, str) == -1)
+				return (NULL);
+			else
 				continue ;
         }
         else
@@ -35,7 +37,7 @@ void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token)
 
 	expanded_value = handle_expansions(shell, token->value);
 	if (!expanded_value)
-		malloc_error(shell);
+		return ;
 	if (expanded_value[0] == '\0')
 	{
 		free(expanded_value);

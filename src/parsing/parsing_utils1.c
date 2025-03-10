@@ -64,7 +64,16 @@ int	handle_expansions_dollar_sign(t_ms *shell, const char *str)
 
 	cont_loop = 0;
 	if (str[shell->exp.i + 1] == '{')
+	{
+		if (str[shell->exp.i + 2] == '\'' || str[shell->exp.i + 2] == '\"')
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putconstr_fd(str, 2);
+			ft_putstr_fd(": bad substitution\n", 2);
+			return (-1);
+		}
 		cont_loop = handle_expansions_if_braces(shell, str);
+	}
 	else
 		cont_loop = handle_expansions_no_braces(shell, str);
 	return (cont_loop);
@@ -76,14 +85,21 @@ char	*handle_expansions(t_ms *shell, const char *str)
 	shell->exp.j = 0;
 	shell->exp.result = ft_strdup("");
 	if (!(shell->exp.result))
-		return (NULL);
+		malloc_error(shell);
 	while (str[shell->exp.i])
 	{
 		if (str[shell->exp.i] == '\'' || str[shell->exp.i] == '\"')
 			shell->exp.result = handle_expansions_quotes(shell, str);
 		else if (str[shell->exp.i] == '$')
 		{
-			if (handle_expansions_dollar_sign(shell, str))
+			if (str[shell->exp.i + 1] == '\'' || str[shell->exp.i + 1] == '\"')
+			{
+				shell->exp.i++;
+				shell->exp.result = handle_expansions_quotes(shell, str);
+			}
+			if (handle_expansions_dollar_sign(shell, str) == -1)
+				return (NULL);
+			else
 				continue ;
 		}
 		else

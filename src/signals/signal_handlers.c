@@ -26,12 +26,12 @@ void sig_handler_sigint(int signal)
     }
 }
 
-// void sig_handler_heredoc(int signal)
-// {
-//     if (signal == SIGINT)
-//     {
-//         g_signal = SIGINT;
-//         rl_replace_line("\n", 0);
-//         rl_done = 1;
-//     }
-// }
+void sig_handler_heredoc(int signal)
+{
+    if (signal == SIGINT)
+    {
+        g_signal = SIGINT;
+        rl_replace_line("\n", 0);
+        rl_done = 1;
+    }
+}

@@ -103,6 +103,7 @@ typedef struct s_ms
 int				check_signals(int signum, void (*handler_function)(int));
 void			sig_handler_child(int signal);
 void			sig_handler_sigint(int signal);
+void			sig_handler_heredoc(int signal);
 int				default_signals(void);
 int				init_signals(void);
 //utils.c

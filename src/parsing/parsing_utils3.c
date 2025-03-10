@@ -36,7 +36,8 @@ void	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	if (token && token->type == TOKEN_ARGS)
 		setup_delim(shell, cmd, token);
 	i = 0;
-	// sig_heredoc(&sig_handler_heredoc);
+	check_signals(SIGINT, &sig_handler_heredoc);
+	check_signals(SIGQUIT, &sig_handler_heredoc);
 	shell->heredoc_line_count++;
 	allocate_heredoc_lines(shell, cmd);
 	rl_done = 0;

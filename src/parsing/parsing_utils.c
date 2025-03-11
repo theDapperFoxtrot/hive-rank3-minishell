@@ -8,6 +8,8 @@ char	*parse_quotes(char *str)
 
 	i = 0;
 	j = 0;
+	if (!str)
+		return (NULL);
 	while (str[i])
 	{
 		if (str[i] != 34 || str[i] != 39)

@@ -90,6 +90,20 @@ char	*handle_expansions(t_ms *shell, const char *str)
 	{
 		if (str[shell->exp.i] == '\'' || str[shell->exp.i] == '\"')
 			shell->exp.result = handle_expansions_quotes(shell, str);
+		else if (str[shell->exp.i] == '\\' && str[shell->exp.i + 1] == '$')
+		{
+			// Skip the backslash and copy the $ as a literal character
+			shell->exp.i++;
+			shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
+			shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
+		}
+		else if (str[shell->exp.i] == '\\' && str[shell->exp.i + 1] == '\\')
+		{
+			// Skip the backslash and copy the \ as a literal character
+			shell->exp.i++;
+			shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
+			shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
+		}
 		else if (str[shell->exp.i] == '$')
 		{
 			if (str[shell->exp.i + 1] == '\'' || str[shell->exp.i + 1] == '\"')

@@ -67,7 +67,6 @@ int	is_operator_true(t_ms *shell)
 void	tokenize_input(t_ms *shell)
 {
 	int		lead_pipe;
-
 	lead_pipe = 1;
 	shell->i = 0;
 	shell->buf_count = 1;

@@ -129,6 +129,7 @@ void			quicksort(char **arr, int low, int high);
 void			ft_unset(char **command, t_ms *shell);
 // parser
 void			parse_tokens(t_ms *shell);
+char			*parse_quotes(char *str);
 void			add_argument(t_command *cmd, char *arg);
 char			*handle_expansions(t_ms *shell, const char *str);
 void			handle_token_args(t_ms *shell, t_command *cmd, t_token *token);

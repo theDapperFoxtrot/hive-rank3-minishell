@@ -82,19 +82,23 @@ void get_var_value(t_ms *shell)
 
     while (shell->env_list[shell->exp_i])
     {
-        if (ft_strncmp(shell->env_list[shell->exp_i], shell->exp_temp_name,
-            ft_strlen(shell->exp_temp_name)) == 0 &&
-            shell->env_list[shell->exp_i][ft_strlen(shell->exp_temp_name)] == '=')
-        {
-            temp = shell->exp.value;
-            joined = ft_strjoin(temp, shell->env_list[shell->exp_i] + 
-                ft_strlen(shell->exp_temp_name) + 1);
-            free(temp);
-            shell->exp.value = ft_strdup(shell->env_list[shell->exp_i] + 
-                ft_strlen(shell->exp_temp_name) + 1);
-            free(joined);
-            break;
-        }
-        shell->exp_i++;
-    }
+		if (ft_strncmp(shell->env_list[shell->exp_i], shell->exp_temp_name,
+		ft_strlen(shell->exp_temp_name)) == 0 &&
+		shell->env_list[shell->exp_i][ft_strlen(shell->exp_temp_name)] == '=')
+		{
+			temp = shell->exp.value;
+			joined = ft_strjoin(temp, shell->env_list[shell->exp_i] + 
+				ft_strlen(shell->exp_temp_name) + 1);
+			free(temp);
+			shell->exp.value = ft_strdup(shell->env_list[shell->exp_i] + 
+				ft_strlen(shell->exp_temp_name) + 1);
+			free(joined);
+			break;
+		}
+		shell->exp_i++;
+	}
+	temp = shell->exp.value;
+	// free(shell->exp.value);
+	shell->exp.value = parse_quotes(temp);
+	free(temp);
 }

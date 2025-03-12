@@ -152,7 +152,7 @@ void	ft_export(char **command, t_ms *shell)
 		{
 			shell->equal_found = 0;
 			key = arg;
-			value = '\0';
+			value = 0;
 			set_env_variable(shell, key, value, equal_sign);
 		}
 		else if (equal_sign)

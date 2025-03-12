@@ -12,7 +12,7 @@ char	*parse_quotes(char *str)
 		return (NULL);
 	while (str[i])
 	{
-		if (str[i] != 34 || str[i] != 39)
+		if (str[i] != 34 && str[i] != 39)
 			j++;
 		i++;
 	}

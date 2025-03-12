@@ -12,6 +12,20 @@
 
 #include "../../include/minishell.h"
 
+int check_n(char *command)
+{
+	int i;
+
+	i = 1;
+	while (command[i])
+	{
+		if (command[i] != 'n')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 void	ft_echo(char **command, t_ms *shell)
 {
 	int	i;
@@ -19,12 +33,7 @@ void	ft_echo(char **command, t_ms *shell)
 
 	i = 1;
 	no_newline = 1;
-	if ((ft_strncmp(command[1], "-", 1 == 0) && ft_strncmp(command[2], "n", 1) == 0))
-	{
-		no_newline = 0;
-		i += 2;
-	}
-	else if (ft_strncmp(command[1], "-n", 2) == 0 && ft_strlen(command[1]) == 2)
+	if (ft_strncmp(command[1], "-n", 2) == 0 && check_n(command[1]))
 	{
 		no_newline = 0;
 		i++;
@@ -32,7 +41,7 @@ void	ft_echo(char **command, t_ms *shell)
 	while (command[i])
 	{
 		ft_putstr_fd(command[i++], 1);
-		if (command[i] != NULL)
+		if (command[i])
 			ft_putstr_fd(" ", 1);
 	}
 	if (no_newline)

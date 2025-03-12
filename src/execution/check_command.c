@@ -35,7 +35,7 @@ int	is_builtin(char **command, t_ms *shell)
 		ft_export(command, shell);
 		return (1);
 	}
-	else if ((ft_strncmp(command[0], "echo", 4) == 0 && ft_strlen(command[0]) == 4) || (ft_strncmp(command[0], "/bin/echo", 9) == 0 && ft_strlen(command[0])))
+	else if ((ft_strncmp(command[0], "echo", 4) == 0 && ft_strlen(command[0]) == 4) || (ft_strncmp(command[0], "/bin/echo", 9) == 0 && ft_strlen(command[0]) == 9))
 	{
 		ft_echo(command, shell);
 		return (1);

@@ -16,3 +16,9 @@
     ...
     fun:add_history
 }
+{
+    leak rl_add_undo
+    Memcheck:Leak
+    ...
+    fun:rl_add_undo
+}

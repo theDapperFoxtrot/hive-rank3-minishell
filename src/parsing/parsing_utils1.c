@@ -32,6 +32,7 @@ int	handle_expansions_no_braces(t_ms *shell, const char *str)
 		ft_strlcpy(shell->exp.result + shell->exp.j, shell->exp.value, ft_strlen(shell->exp.value) + 1);
 		shell->exp.j += ft_strlen(shell->exp.value);
 		shell->exp.i = shell->exp.var_start + shell->exp.var_len;
+		shell->exp.value = free_and_nullify(shell->exp.value);
 		return (1);
 	}
 	else

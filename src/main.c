@@ -22,12 +22,22 @@ int	invalid_input(char *input)
 	}
 	return (1);
 }
+void print_token(t_token *token)
+{
+	while (token)
+	{
+		printf("value: %s\n", token->value);
+		printf("type: %d\n", token->type);
+		token = token->next;
+	}
+}
 
 void	process_input(t_ms *shell)
 {
 	if (invalid_input(shell->input))
 		return ;
 	tokenize_input(shell);
+	// print_token(shell->token);
 	if (!shell->token)
 		return ;
 	parse_tokens(shell);

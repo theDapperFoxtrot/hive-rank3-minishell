@@ -111,7 +111,7 @@ char	*find_directory(char **dir, char *splitted_args)
 		{
 			if (access(executable_path, X_OK) == 0)
 				return (executable_path);
-			ft_putendl_fd("minishell: permission denied:", 2);
+			ft_putendl_fd("minishell: Permission denied:", 2);
 			free(executable_path);
 			exit(126);
 		}
@@ -142,11 +142,13 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 				ft_putstr_fd("minishell: ", 2);
 				ft_putstr_fd(command->args[0], 2);
 				ft_putstr_fd(": Is a directory\n", 2);
+				cleanup(shell, 1);
 				exit(126);
 			}
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(command->args[0], 2);
 			ft_putstr_fd(": Permission denied\n", 2);
+			cleanup(shell, 1);
 			exit(126);
 		}
 		ft_putstr_fd("minishell: ", 2);
@@ -238,6 +240,14 @@ void check_command(t_ms *shell, t_command *command)
 	{
 		if (command->args)
 		{
+			if ((ft_strncmp(command->args[0], "..", 2) == 0 && ft_strlen(command->args[0]) == 2))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(command->args[0], 2);
+				ft_putstr_fd(": command not found\n", 2);
+				command = command->next;
+				continue ;
+			}
 			if (ft_strncmp(command->args[0], "exit", 4) == 0 && ft_strlen(command->args[0]) == 4)
 			{
 				if (shell->child_count > 1)

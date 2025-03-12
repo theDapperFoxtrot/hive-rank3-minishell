@@ -97,6 +97,7 @@ typedef struct s_ms
 	int				exp_name_len;
 	char			*exp_temp_name;
 	int				command_input_count;
+	int				heredoc_exp;
 }	t_ms;
 
 // signals

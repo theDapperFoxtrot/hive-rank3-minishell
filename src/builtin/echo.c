@@ -33,7 +33,7 @@ void	ft_echo(char **command, t_ms *shell)
 
 	i = 1;
 	no_newline = 1;
-	if (ft_strncmp(command[1], "-n", 2) == 0 && check_n(command[1]))
+	while (ft_strncmp(command[i], "-n", 2) == 0 && check_n(command[i]))
 	{
 		no_newline = 0;
 		i++;

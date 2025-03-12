@@ -81,10 +81,10 @@ void	input_loop(t_ms *shell)
 			shell->input = readline("minishell> ");
 		else
 		{
-				char *line;
-				line = get_next_line(fileno(stdin));
-				shell->input = ft_strtrim(line, "\n");
-				free(line);
+			char *line;
+			line = get_next_line(fileno(stdin));
+			shell->input = ft_strtrim(line, "\n");
+			free(line);
 		}
 		if (g_signal == SIGINT)
 		{

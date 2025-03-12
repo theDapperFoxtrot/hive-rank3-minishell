@@ -35,6 +35,9 @@ void	setup_delim(t_ms *shell, t_command *cmd, t_token *token)
 {
 	char	*stripped;
 
+	shell->heredoc_exp = 1;
+	if (token->value[0] == '\"' || token->value[0] == '\'')
+		shell->heredoc_exp = 0;
 	stripped = parse_quotes(token->value);
 	cmd->heredoc_delimiter = ft_strdup(stripped);
 	free(stripped);
@@ -80,7 +83,9 @@ int	heredoc_loop(t_ms *shell, t_command *cmd, int i)
 		if (heredoc_lines_err(shell, cmd, i))
 			break ;
 		if (ft_strncmp(cmd->heredoc_lines[i], cmd->heredoc_delimiter, ft_strlen(cmd->heredoc_lines[i])) == 0)
-		break ;
+			break ;
+		if (cmd->heredoc_lines[i][0] == '$' && shell->heredoc_exp)
+			cmd->heredoc_lines[i] = handle_expansions(shell, cmd->heredoc_lines[i]);
 		i++;
 	}
 	return (i);

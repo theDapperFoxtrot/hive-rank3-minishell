@@ -217,10 +217,10 @@ void handle_input_redirection(t_ms *shell, t_command *command, char *symbol, cha
 void handle_output_redirection(t_ms *shell, t_command *command, char *symbol, char *file)
 {
 	(void) command;
-	if (ft_strncmp(symbol, ">", 1) == 0)
-			write_file(shell, file);
-	else if (ft_strncmp(symbol, ">>", 2) == 0)
+	if (ft_strncmp(symbol, ">>", 2) == 0)
 			append_file(shell, file);
+	else if (ft_strncmp(symbol, ">", 1) == 0)
+			write_file(shell, file);
 }
 
 void check_command(t_ms *shell, t_command *command)
@@ -279,18 +279,19 @@ void check_command(t_ms *shell, t_command *command)
 				close(new_pipe[1]);
 			}
 			i = 0;
-			while (command->command_input[i] && \
-			(command->heredoc || command->redir_in ||\
-			command->redir_out || command->append_mode))
+			while (command->command_input[i]) /*&& \*/
+			// (command->heredoc || command->redir_in ||\
+			// command->redir_out || command->append_mode))
 			{
-				if (ft_strncmp(command->command_input[i], "<", 1) == 0)
-					handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
-				if (ft_strncmp(command->command_input[i], "<<", 2) == 0)
-					handle_input_redirection(shell, command, command->command_input[i], NULL);
-				if (ft_strncmp(command->command_input[i], ">", 1) == 0)
-					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
+				// printf("command->command_input[i]: symbol: %s\n file: %s\n", command->command_input[i], command->command_input[i + 1]);
 				if (ft_strncmp(command->command_input[i], ">>", 2) == 0)
 					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
+				if (ft_strncmp(command->command_input[i], "<<", 2) == 0)
+					handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
+				if (ft_strncmp(command->command_input[i], ">", 1) == 0)
+					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
+				if (ft_strncmp(command->command_input[i], "<", 1) == 0)
+					handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
 				i++;
 			}
 			if (command->args)

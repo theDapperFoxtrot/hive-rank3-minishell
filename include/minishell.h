@@ -87,6 +87,7 @@ typedef struct s_ms
 	int				rd_out_count;
 	pid_t			last_pid;
 	pid_t			wpid;
+	int				status;
 	int				heredoc_line_count;
 	char			*prev_pwd;
 	int				token_error;

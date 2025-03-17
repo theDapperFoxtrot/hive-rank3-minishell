@@ -124,6 +124,34 @@ char	*find_directory(char **dir, char *splitted_args)
 return (NULL);
 }
 
+void	find_exec_path_error(t_ms *shell, t_command *command, char *message, int exit_code)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(command->args[0], 2);
+	ft_putstr_fd(message, 2);
+	if (exit_code)
+	{
+		cleanup(shell, 1);
+		exit(exit_code);
+	}
+}
+
+char	*access_check(t_ms *shell, t_command *command)
+{
+	if (access(command->args[0], F_OK) == 0)
+	{
+		if (access(command->args[0], X_OK) == 0)
+		{
+			if (!is_dir(command->args[0]))
+				return (ft_strdup(command->args[0]));
+			find_exec_path_error(shell, command, ": Is a directory\n", 126);
+		}
+		find_exec_path_error(shell, command, ": Permission denied\n", 126);
+	}
+	find_exec_path_error(shell, command, ": No such file or directory\n", 0);
+	return (NULL);
+}
+
 char	*find_executable_path(t_ms *shell, t_command *command)
 {
 	char	*get_path;
@@ -132,30 +160,7 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 	char 	**envp;
 
 	if (ft_strchr(command->args[0], '/'))
-	{
-		if (access(command->args[0], F_OK) == 0)
-		{
-			if (access(command->args[0], X_OK) == 0)
-			{
-				if (!is_dir(command->args[0]))
-					return (ft_strdup(command->args[0]));
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(command->args[0], 2);
-				ft_putstr_fd(": Is a directory\n", 2);
-				cleanup(shell, 1);
-				exit(126);
-			}
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(command->args[0], 2);
-			ft_putstr_fd(": Permission denied\n", 2);
-			cleanup(shell, 1);
-			exit(126);
-		}
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(command->args[0], 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		return (NULL);
-	}
+		return (access_check(shell, command));
 	envp = shell->env_list;
 	get_path = find_path(command->args[0], envp);
 	if (get_path == NULL)
@@ -168,6 +173,29 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 	return (found_path);
 }
 
+void	error_free_clean_exit(t_ms *shell, char *message)
+{
+	perror(message);
+	free(shell->commands->heredoc_line);
+	cleanup(shell, 1);
+	exit(EXIT_FAILURE);
+}
+
+void	hir_hd_child_process(t_ms *shell, t_command *command, int *pipefd)
+{
+	close(pipefd[0]);
+	if (write(pipefd[1], command->heredoc_line, ft_strlen(command->heredoc_line)) == -1)
+	{
+		ft_putendl_fd("minishell: write failed", 2);
+		close(pipefd[1]);
+		cleanup(shell, 1);
+		exit(EXIT_FAILURE);
+	}
+	close(pipefd[1]);
+	cleanup(shell, 1);
+	exit(EXIT_SUCCESS);
+}
+
 void handle_input_redirection(t_ms *shell, t_command *command, char *symbol, char *file)
 {
 	int pipefd[2];
@@ -175,65 +203,117 @@ void handle_input_redirection(t_ms *shell, t_command *command, char *symbol, cha
 	if (ft_strncmp(symbol, "<<", 2) == 0)
 	{
 		if (pipe(pipefd) == -1)
+			error_free_clean_exit(shell, "pipe");
+		command->pid = fork();
+		if (command->pid == -1)
+			error_free_clean_exit(shell, "fork");
+        if (command->pid == 0)
+			hir_hd_child_process(shell, command, pipefd);
+		else
         {
-			perror("pipe");
-            exit(EXIT_FAILURE);
-        }
-        command->pid = fork();
-        if (command->pid == -1)
-        {
-			perror("fork");
-			free(shell->commands->heredoc_line);
-			cleanup(shell, 1);
-            exit(EXIT_FAILURE);
-        }
-        if (command->pid == 0) // Child process
-        {
-			close(pipefd[0]); // Close read end
-			if (write(pipefd[1], command->heredoc_line, ft_strlen(command->heredoc_line)) == -1)
-			{
-				ft_putendl_fd("minishell: write failed", 2);
-				close(pipefd[1]);
-				cleanup(shell, 1);
-				exit(EXIT_FAILURE);
-			}
-            close(pipefd[1]);
-			cleanup(shell, 1);
-            exit(EXIT_SUCCESS);
-        }
-        else // Parent process
-        {
-			close(pipefd[1]); // Close write end
+			close(pipefd[1]);
             dup2(pipefd[0], STDIN_FILENO);
             close(pipefd[0]);
+			// printf("command->command_input[2]: %s\n", command->command_input[2]);
 			if (command->redir_out)
-				write_file(shell, file);
+				write_file(shell, command->command_input[2]);
 			while (waitpid(-1, NULL, 0) > 0);
         }
 	}
-	// read_heredoc(command);
 	else if (ft_strncmp(symbol, "<", 1) == 0)
 		read_file(shell, file);
 }
 
-void handle_output_redirection(t_ms *shell, t_command *command, char *symbol, char *file)
+void handle_output_redirection(t_ms *shell, char *symbol, char *file)
 {
-	(void) command;
 	if (ft_strncmp(symbol, ">>", 2) == 0)
 			append_file(shell, file);
 	else if (ft_strncmp(symbol, ">", 1) == 0)
 			write_file(shell, file);
 }
 
+void	wait_for_kids(t_ms *shell)
+{
+	while (shell->child_count-- > 0)
+	{
+		signal(SIGINT, SIG_IGN);
+		signal(SIGQUIT, SIG_IGN);
+		shell->wpid = waitpid(-1, &shell->status, 0);
+		if (shell->wpid == shell->last_pid)
+		{
+			if (WIFSIGNALED(shell->status))
+			{
+				if (WTERMSIG(shell->status) == SIGINT)
+					write(1, "\n", 1);
+				else if (WTERMSIG(shell->status) == SIGQUIT)
+					ft_putstr_fd("Quit (core dumped)\n", 2);
+				shell->exit_code = 128 + WTERMSIG(shell->status);
+			}
+			else
+				shell->exit_code = WEXITSTATUS(shell->status);
+		}
+	}
+}
+
+void	execute_redir(t_ms *shell, t_command *command, int i)
+{
+	if (ft_strncmp(command->command_input[i], ">>", 2) == 0)
+		handle_output_redirection(shell, command->command_input[i], command->command_input[i + 1]);
+	if (ft_strncmp(command->command_input[i], "<<", 2) == 0)
+		handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
+	if (ft_strncmp(command->command_input[i], ">", 1) == 0)
+		handle_output_redirection(shell, command->command_input[i], command->command_input[i + 1]);
+	if (ft_strncmp(command->command_input[i], "<", 1) == 0)
+		handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
+}
+
+void	execute_command(t_ms *shell, t_command *command, int exec)
+{
+	char	*path;
+
+	if (!exec)
+	{
+		path = find_executable_path(shell, command);
+		if (!path)
+		{
+			cleanup(shell, 1);
+			exit(127);
+		}
+		if (execve(path, command->args, shell->env_list) == -1)
+		{
+			if (g_signal == SIGINT)
+				write(1, "\n", 1);
+			perror("minishell");
+			shell->exit_code = 126;
+			cleanup(shell, 1);
+			exit(shell->exit_code);
+		}
+	}
+}
+
+void print_cmd_input(char **command)
+{
+	int i;
+
+	i = 0;
+	ft_putstr_fd("Command input: ", 1);
+	while (command[i])
+	{
+		ft_putstr_fd(command[i], 1);
+		ft_putstr_fd(", ", 1);
+		i++;
+	}
+	ft_putchar_fd('\n', 1);
+}
+
 void check_command(t_ms *shell, t_command *command)
 {
-	int			prev_pipe_in = -1;
+	int			prev_pipe_in;
 	int			new_pipe[2];
-	int			status;
 	int			i;
-	char		*path;
 	int			exec;
 
+	prev_pipe_in = -1;
 	shell->last_pid = 0;
 	shell->child_count = 0;
 	while (command)
@@ -270,7 +350,7 @@ void check_command(t_ms *shell, t_command *command)
 		shell->child_count++;
 		command->pid = fork();
 		if (command->pid == -1)
-		fork_error(new_pipe);
+			fork_error(new_pipe);
 		if (command->pid == 0)
 		{
 			if (default_signals() == 1)
@@ -288,45 +368,14 @@ void check_command(t_ms *shell, t_command *command)
 				dup2(new_pipe[1], STDOUT_FILENO);
 				close(new_pipe[1]);
 			}
-			i = 0;
-			while (command->command_input[i]) /*&& \*/
-			// (command->heredoc || command->redir_in ||\
-			// command->redir_out || command->append_mode))
-			{
-				// printf("command->command_input[i]: symbol: %s\n file: %s\n", command->command_input[i], command->command_input[i + 1]);
-				if (ft_strncmp(command->command_input[i], ">>", 2) == 0)
-					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
-				if (ft_strncmp(command->command_input[i], "<<", 2) == 0)
-					handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
-				if (ft_strncmp(command->command_input[i], ">", 1) == 0)
-					handle_output_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
-				if (ft_strncmp(command->command_input[i], "<", 1) == 0)
-					handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
-				i++;
-			}
+			// print_cmd_input(command->command_input);
+			i = -1;
+			while (command->command_input[++i])
+				execute_redir(shell, command, i);
 			if (command->args)
 				exec = is_builtin(command->args, shell);
 			if (command->args)
-			{
-				if (!exec)
-				{
-					path = find_executable_path(shell, command);
-					if (!path)
-					{
-						cleanup(shell, 1);
-						exit(127);
-					}
-					if (execve(path, command->args, shell->env_list) == -1)
-					{
-						if (g_signal == SIGINT)
-							write(1, "\n", 1);
-						perror("minishell");
-						shell->exit_code = 126;
-						cleanup(shell, 1);
-						exit(shell->exit_code);
-					}
-				}
-			}
+				execute_command(shell, command, exec);
 			cleanup(shell, 1);
 			exit(shell->exit_code);
 		}
@@ -340,33 +389,12 @@ void check_command(t_ms *shell, t_command *command)
 			{
 				close(new_pipe[1]);
 				prev_pipe_in = new_pipe[0];
-				// close(new_pipe[0]);
 			}
 			command = command->next;
 		}
 	}
 	if (prev_pipe_in != -1)
 		close(prev_pipe_in);
-	// wait for all children to finish IN ORDER
-	while (shell->child_count-- > 0)
-	{
-		signal(SIGINT, SIG_IGN);
-		signal(SIGQUIT, SIG_IGN);
-		shell->wpid = waitpid(-1, &status, 0);
-		if (shell->wpid == shell->last_pid)
-		{
-			if (WIFSIGNALED(status))
-			{
-				if (WTERMSIG(status) == SIGINT)
-					write(1, "\n", 1);
-				else if (WTERMSIG(status) == SIGQUIT)
-					ft_putstr_fd("Quit (core dumped)\n", 2);
-				shell->exit_code = 128 + WTERMSIG(status);
-			}
-			else
-			{
-				shell->exit_code = WEXITSTATUS(status);
-			}
-		}
-	}
+	wait_for_kids(shell);
 }
+

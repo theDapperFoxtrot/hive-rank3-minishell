@@ -27,12 +27,6 @@ void	read_file(t_ms *shell, char *file)
 	close(fd_open);
 }
 
-void	read_heredoc(t_command *cmd)
-{
-		write(STDOUT_FILENO, cmd->heredoc_line, ft_strlen(cmd->heredoc_line));
-		free(cmd->heredoc_line);
-}
-
 void	write_file(t_ms *shell, char *file)
 {
 	int	fd_write;

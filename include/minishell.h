@@ -93,12 +93,12 @@ typedef struct s_ms
 	int				token_error;
 	char			*pipe_rdl_tokens;
 	int				exit_error_flag;
-// expansion stuff
 	int				exp_i;
 	int				exp_name_len;
 	char			*exp_temp_name;
 	int				command_input_count;
 	int				heredoc_exp;
+	int				select_command_found;
 }	t_ms;
 
 // signals

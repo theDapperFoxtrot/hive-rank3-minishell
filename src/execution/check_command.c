@@ -306,92 +306,129 @@ void print_cmd_input(char **command)
 	ft_putchar_fd('\n', 1);
 }
 
+void	child_process(t_ms *shell, t_command *command, int *prev_pipe_in, int *new_pipe)
+{
+	int			exec;
+	int			i;
+
+	if (default_signals() == 1)
+		print_error("Error: default_signals failed", shell, 1, 1);
+	check_signals(SIGINT, &sig_handler_child);
+	check_signals(SIGQUIT, &sig_handler_child);
+	if (*prev_pipe_in != -1)
+	{
+		dup2(*prev_pipe_in, STDIN_FILENO);
+		close(*prev_pipe_in);
+	}
+	if (command->next)
+	{
+		close(new_pipe[0]);
+		dup2(new_pipe[1], STDOUT_FILENO);
+		close(new_pipe[1]);
+	}
+	i = -1;
+	while (command->command_input[++i])
+		execute_redir(shell, command, i);
+	if (command->args)
+		exec = is_builtin(command->args, shell);
+	if (command->args)
+		execute_command(shell, command, exec);
+	cleanup(shell, 1);
+	exit(shell->exit_code);
+}
+
+t_command	*parent_process(t_ms *shell, t_command *command, int *prev_pipe_in, int *new_pipe)
+{
+	if ((*prev_pipe_in) != -1)
+		close((*prev_pipe_in));
+	if (!command->next)
+		shell->last_pid = command->pid;
+	if (command->next)
+	{
+		close(new_pipe[1]);
+		(*prev_pipe_in) = new_pipe[0];
+	}
+	command = command->next;
+	return (command);
+}
+
+t_command *check_for_dots(t_command *command)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(command->args[0], 2);
+	ft_putstr_fd(": command not found\n", 2);
+	command = command->next;
+	return (command);
+}
+
+t_command *check_for_exit(t_ms *shell, t_command *command, int *new_pipe)
+{
+	if (shell->child_count > 1)
+		close(new_pipe[0]);
+	ft_exit(command, shell);
+	command = command->next;
+	return (command);
+}
+
+t_command *checking_for_select_commands(t_ms *shell, t_command *command, int *new_pipe)
+{
+	if ((ft_strncmp(command->args[0], "..", 2) == 0 && ft_strlen(command->args[0]) == 2))
+	{
+		command = check_for_dots(command);
+		shell->select_command_found = 1;
+		return (command);
+	}
+	if (ft_strncmp(command->args[0], "exit", 4) == 0 && ft_strlen(command->args[0]) == 4)
+	{
+		command = check_for_exit(shell, command, new_pipe);
+		shell->select_command_found = 1;
+		return (command);
+	}
+	if (is_parent_builtin(command->args, shell))
+	{
+		command = command->next;
+		shell->select_command_found = 1;
+	}
+	return (command);
+}
+
+void 	pipe_failure(t_ms *shell)
+{
+	ft_putendl_fd("minishell: pipe failed", 2);
+	cleanup(shell, 1);
+	exit(EXIT_FAILURE);
+}
+
 void check_command(t_ms *shell, t_command *command)
 {
 	int			prev_pipe_in;
 	int			new_pipe[2];
-	int			i;
-	int			exec;
 
 	prev_pipe_in = -1;
 	shell->last_pid = 0;
 	shell->child_count = 0;
+	shell->select_command_found = 0;
 	while (command)
 	{
 		if (command->args)
 		{
-			if ((ft_strncmp(command->args[0], "..", 2) == 0 && ft_strlen(command->args[0]) == 2))
+			command = checking_for_select_commands(shell, command, new_pipe);
+			if (shell->select_command_found)
 			{
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(command->args[0], 2);
-				ft_putstr_fd(": command not found\n", 2);
-				command = command->next;
-				continue ;
-			}
-			if (ft_strncmp(command->args[0], "exit", 4) == 0 && ft_strlen(command->args[0]) == 4)
-			{
-				if (shell->child_count > 1)
-				close(new_pipe[0]);
-				ft_exit(command, shell);
-				command = command->next;
-				continue ;
-			}
-			if (is_parent_builtin(command->args, shell))
-			{
-				command = command->next;
+				shell->select_command_found = 0;
 				continue ;
 			}
 		}
 		if (command->next && pipe(new_pipe) == -1)
-		{
-			ft_putendl_fd("minishell: pipe failed", 2);
-			exit(EXIT_FAILURE);
-		}
+			pipe_failure(shell);
 		shell->child_count++;
 		command->pid = fork();
 		if (command->pid == -1)
 			fork_error(new_pipe);
 		if (command->pid == 0)
-		{
-			if (default_signals() == 1)
-				print_error("Error: default_signals failed", shell, 1, 1);
-			check_signals(SIGINT, &sig_handler_child);
-			check_signals(SIGQUIT, &sig_handler_child);
-			if (prev_pipe_in != -1)
-			{
-				dup2(prev_pipe_in, STDIN_FILENO);
-				close(prev_pipe_in);
-			}
-			if (command->next)
-			{
-				close(new_pipe[0]);
-				dup2(new_pipe[1], STDOUT_FILENO);
-				close(new_pipe[1]);
-			}
-			// print_cmd_input(command->command_input);
-			i = -1;
-			while (command->command_input[++i])
-				execute_redir(shell, command, i);
-			if (command->args)
-				exec = is_builtin(command->args, shell);
-			if (command->args)
-				execute_command(shell, command, exec);
-			cleanup(shell, 1);
-			exit(shell->exit_code);
-		}
+			child_process(shell, command, &prev_pipe_in, new_pipe);
 		else
-		{
-			if (prev_pipe_in != -1)
-				close(prev_pipe_in);
-			if (!command->next)
-				shell->last_pid = command->pid;
-			if (command->next)
-			{
-				close(new_pipe[1]);
-				prev_pipe_in = new_pipe[0];
-			}
-			command = command->next;
-		}
+			command = parent_process(shell, command, &prev_pipe_in, new_pipe);
 	}
 	if (prev_pipe_in != -1)
 		close(prev_pipe_in);

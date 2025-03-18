@@ -99,6 +99,8 @@ typedef struct s_ms
 	int				command_input_count;
 	int				heredoc_exp;
 	int				select_command_found;
+	int				prev_pipe_in;
+	int				exec;
 }	t_ms;
 
 // signals
@@ -108,6 +110,7 @@ void			sig_handler_sigint(int signal);
 void			sig_handler_heredoc(int signal);
 int				default_signals(void);
 int				init_signals(void);
+void			start_sig_checkers();
 //utils.c
 void			free_args(char **commands);
 void			free_env(t_ms *shell);

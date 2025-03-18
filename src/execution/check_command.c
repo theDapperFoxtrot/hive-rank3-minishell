@@ -214,7 +214,6 @@ void handle_input_redirection(t_ms *shell, t_command *command, char *symbol, cha
 			close(pipefd[1]);
             dup2(pipefd[0], STDIN_FILENO);
             close(pipefd[0]);
-			// printf("command->command_input[2]: %s\n", command->command_input[2]);
 			if (command->redir_out)
 				write_file(shell, command->command_input[2]);
 			while (waitpid(-1, NULL, 0) > 0);
@@ -267,11 +266,11 @@ void	execute_redir(t_ms *shell, t_command *command, int i)
 		handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
 }
 
-void	execute_command(t_ms *shell, t_command *command, int exec)
+void	execute_command(t_ms *shell, t_command *command)
 {
 	char	*path;
 
-	if (!exec)
+	if (!shell->exec)
 	{
 		path = find_executable_path(shell, command);
 		if (!path)
@@ -306,19 +305,23 @@ void print_cmd_input(char **command)
 	ft_putchar_fd('\n', 1);
 }
 
-void	child_process(t_ms *shell, t_command *command, int *prev_pipe_in, int *new_pipe)
+void start_sig_checkers(void *handler_func)
 {
-	int			exec;
+	check_signals(SIGINT, handler_func);
+	check_signals(SIGQUIT, handler_func);
+}
+
+void	child_process(t_ms *shell, t_command *command, int *new_pipe)
+{
 	int			i;
 
 	if (default_signals() == 1)
 		print_error("Error: default_signals failed", shell, 1, 1);
-	check_signals(SIGINT, &sig_handler_child);
-	check_signals(SIGQUIT, &sig_handler_child);
-	if (*prev_pipe_in != -1)
+	start_sig_checkers(&sig_handler_child);
+	if (shell->prev_pipe_in != -1)
 	{
-		dup2(*prev_pipe_in, STDIN_FILENO);
-		close(*prev_pipe_in);
+		dup2(shell->prev_pipe_in, STDIN_FILENO);
+		close(shell->prev_pipe_in);
 	}
 	if (command->next)
 	{
@@ -330,23 +333,23 @@ void	child_process(t_ms *shell, t_command *command, int *prev_pipe_in, int *new_
 	while (command->command_input[++i])
 		execute_redir(shell, command, i);
 	if (command->args)
-		exec = is_builtin(command->args, shell);
+		shell->exec = is_builtin(command->args, shell);
 	if (command->args)
-		execute_command(shell, command, exec);
+		execute_command(shell, command);
 	cleanup(shell, 1);
 	exit(shell->exit_code);
 }
 
-t_command	*parent_process(t_ms *shell, t_command *command, int *prev_pipe_in, int *new_pipe)
+t_command	*parent_process(t_ms *shell, t_command *command, int *new_pipe)
 {
-	if ((*prev_pipe_in) != -1)
-		close((*prev_pipe_in));
+	if ((shell->prev_pipe_in) != -1)
+		close((shell->prev_pipe_in));
 	if (!command->next)
 		shell->last_pid = command->pid;
 	if (command->next)
 	{
 		close(new_pipe[1]);
-		(*prev_pipe_in) = new_pipe[0];
+		(shell->prev_pipe_in) = new_pipe[0];
 	}
 	command = command->next;
 	return (command);
@@ -399,15 +402,28 @@ void 	pipe_failure(t_ms *shell)
 	exit(EXIT_FAILURE);
 }
 
-void check_command(t_ms *shell, t_command *command)
+void	starting_values(t_ms *shell)
 {
-	int			prev_pipe_in;
-	int			new_pipe[2];
-
-	prev_pipe_in = -1;
+	shell->prev_pipe_in = -1;
 	shell->last_pid = 0;
 	shell->child_count = 0;
 	shell->select_command_found = 0;
+}
+
+pid_t call_fork(t_ms *shell, t_command *command, int *new_pipe)
+{
+	shell->child_count++;
+	command->pid = fork();
+	if (command->pid == -1)
+		fork_error(new_pipe);
+	return (command->pid);
+}
+
+void check_command(t_ms *shell, t_command *command)
+{
+	int			new_pipe[2];
+
+	starting_values(shell);
 	while (command)
 	{
 		if (command->args)
@@ -421,17 +437,14 @@ void check_command(t_ms *shell, t_command *command)
 		}
 		if (command->next && pipe(new_pipe) == -1)
 			pipe_failure(shell);
-		shell->child_count++;
-		command->pid = fork();
-		if (command->pid == -1)
-			fork_error(new_pipe);
+		command->pid = call_fork(shell, command, new_pipe);
 		if (command->pid == 0)
-			child_process(shell, command, &prev_pipe_in, new_pipe);
+			child_process(shell, command, new_pipe);
 		else
-			command = parent_process(shell, command, &prev_pipe_in, new_pipe);
+			command = parent_process(shell, command, new_pipe);
 	}
-	if (prev_pipe_in != -1)
-		close(prev_pipe_in);
+	if (shell->prev_pipe_in != -1)
+		close(shell->prev_pipe_in);
 	wait_for_kids(shell);
 }
 

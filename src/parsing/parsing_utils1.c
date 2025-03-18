@@ -80,6 +80,41 @@ int	handle_expansions_dollar_sign(t_ms *shell, const char *str)
 	return (cont_loop);
 }
 
+void realloc_and_write(t_ms *shell, const char *str, int inc_i)
+{
+	if (inc_i)
+		shell->exp.i++;
+	shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
+	if (!shell->exp.result)
+		malloc_error(shell);
+	shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
+}
+
+int	go_through_exp_cases(t_ms *shell, const char *str)
+{
+	if (str[shell->exp.i] == '\'' || str[shell->exp.i] == '\"')
+		shell->exp.result = handle_expansions_quotes(shell, str);
+	else if (str[shell->exp.i] == '\\' && str[shell->exp.i + 1] == '$')
+		realloc_and_write(shell, str, 1);
+	else if (str[shell->exp.i] == '\\' && str[shell->exp.i + 1] == '\\')
+		realloc_and_write(shell, str, 1);
+	else if (str[shell->exp.i] == '$')
+	{
+		if (str[shell->exp.i + 1] == '\'' || str[shell->exp.i + 1] == '\"')
+		{
+			shell->exp.i++;
+			shell->exp.result = handle_expansions_quotes(shell, str);
+		}
+		if (handle_expansions_dollar_sign(shell, str) == -1)
+			return (0);
+		else
+			return (1);
+	}
+	else
+		realloc_and_write(shell, str, 0);
+	return (1);
+}
+
 char	*handle_expansions(t_ms *shell, const char *str)
 {
 	shell->exp.i = 0;
@@ -89,39 +124,9 @@ char	*handle_expansions(t_ms *shell, const char *str)
 		malloc_error(shell);
 	while (str[shell->exp.i])
 	{
-		if (str[shell->exp.i] == '\'' || str[shell->exp.i] == '\"')
-			shell->exp.result = handle_expansions_quotes(shell, str);
-		else if (str[shell->exp.i] == '\\' && str[shell->exp.i + 1] == '$')
-		{
-			// Skip the backslash and copy the $ as a literal character
-			shell->exp.i++;
-			shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
-			shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
-		}
-		else if (str[shell->exp.i] == '\\' && str[shell->exp.i + 1] == '\\')
-		{
-			// Skip the backslash and copy the \ as a literal character
-			shell->exp.i++;
-			shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
-			shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
-		}
-		else if (str[shell->exp.i] == '$')
-		{
-			if (str[shell->exp.i + 1] == '\'' || str[shell->exp.i + 1] == '\"')
-			{
-				shell->exp.i++;
-				shell->exp.result = handle_expansions_quotes(shell, str);
-			}
-			if (handle_expansions_dollar_sign(shell, str) == -1)
-				return (NULL);
-			else
-				continue ;
-		}
-		else
-		{
-			shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
-			shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
-		}
+		if (!go_through_exp_cases(shell, str))
+			return (NULL);
+		continue ;
 	}
 	shell->exp.value = free_and_nullify(shell->exp.value);
 	shell->exp.var_name = free_and_nullify(shell->exp.var_name);

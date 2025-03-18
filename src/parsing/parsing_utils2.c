@@ -38,11 +38,11 @@ void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token)
 	expanded_value = handle_expansions(shell, token->value);
 	if (!expanded_value)
 		return ;
-	if (expanded_value[0] == '\0')
-	{
-		free(expanded_value);
-		return ;
-	}
+	// if (expanded_value[0] == '\0')
+	// {
+	// 	free(expanded_value);
+	// 	return ;
+	// }
 	add_argument(cmd, expanded_value);
 	cmd->arg_count++;
 	free(expanded_value);

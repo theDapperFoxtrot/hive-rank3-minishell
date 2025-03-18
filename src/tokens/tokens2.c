@@ -56,7 +56,7 @@ void	create_token(t_ms *shell)
 {
 	t_token	*new_token;
 
-	if (!shell || !shell->buffer)
+	if (!shell)
 		return ;
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)

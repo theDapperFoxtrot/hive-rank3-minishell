@@ -35,3 +35,9 @@ void sig_handler_heredoc(int signal)
         rl_done = 1;
     }
 }
+
+void start_sig_checkers(void *handler_func)
+{
+	check_signals(SIGINT, handler_func);
+	check_signals(SIGQUIT, handler_func);
+}

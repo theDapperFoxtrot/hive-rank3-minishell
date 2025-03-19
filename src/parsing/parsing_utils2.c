@@ -20,13 +20,10 @@ char    *handle_expansions_quotes(t_ms *shell, const char *str)
 				continue ;
         }
         else
-        {
-            shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
-            shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
-        }
+			realloc_and_write(shell, str, 0, 1);
     }
     shell->exp.i = shell->exp.closing_quote + 1;
-    shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
+	realloc_and_write(shell, str, 0, 0);
     shell->exp.result[shell->exp.j] = '\0';
     return (shell->exp.result);
 }

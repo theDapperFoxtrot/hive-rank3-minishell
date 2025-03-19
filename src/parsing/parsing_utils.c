@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-char	*parse_quotes(char *str)
+char	*count_for_malloc(char *str)
 {
 	int		i;
 	int		j;
@@ -8,8 +8,6 @@ char	*parse_quotes(char *str)
 
 	i = 0;
 	j = 0;
-	if (!str)
-		return (NULL);
 	while (str[i])
 	{
 		if (str[i] != 34 && str[i] != 39)
@@ -17,10 +15,22 @@ char	*parse_quotes(char *str)
 		i++;
 	}
 	parsed = malloc((j + 1) * sizeof(char));
-	if (parsed == NULL)
+	return (parsed);
+}
+
+char	*parse_quotes(char *str)
+{
+	int		i;
+	int		j;
+	char	*parsed;
+
+	if (!str)
 		return (NULL);
-	j = 0;
+	parsed = count_for_malloc(str);
+	if (!parsed)
+		return (NULL);
 	i = 0;
+	j = 0;
 	while (str[i])
 	{
 		if (str[i] != 34 && str[i] != 39)

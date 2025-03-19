@@ -80,14 +80,15 @@ int	handle_expansions_dollar_sign(t_ms *shell, const char *str)
 	return (cont_loop);
 }
 
-void realloc_and_write(t_ms *shell, const char *str, int inc_i)
+void realloc_and_write(t_ms *shell, const char *str, int inc_i, int write)
 {
 	if (inc_i)
 		shell->exp.i++;
 	shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
 	if (!shell->exp.result)
 		malloc_error(shell);
-	shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
+	if (write)
+		shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
 }
 
 int	go_through_exp_cases(t_ms *shell, const char *str)
@@ -95,9 +96,9 @@ int	go_through_exp_cases(t_ms *shell, const char *str)
 	if (str[shell->exp.i] == '\'' || str[shell->exp.i] == '\"')
 		shell->exp.result = handle_expansions_quotes(shell, str);
 	else if (str[shell->exp.i] == '\\' && str[shell->exp.i + 1] == '$')
-		realloc_and_write(shell, str, 1);
+		realloc_and_write(shell, str, 1, 1);
 	else if (str[shell->exp.i] == '\\' && str[shell->exp.i + 1] == '\\')
-		realloc_and_write(shell, str, 1);
+		realloc_and_write(shell, str, 1, 1);
 	else if (str[shell->exp.i] == '$')
 	{
 		if (str[shell->exp.i + 1] == '\'' || str[shell->exp.i + 1] == '\"')
@@ -111,7 +112,7 @@ int	go_through_exp_cases(t_ms *shell, const char *str)
 			return (1);
 	}
 	else
-		realloc_and_write(shell, str, 0);
+		realloc_and_write(shell, str, 0, 1);
 	return (1);
 }
 

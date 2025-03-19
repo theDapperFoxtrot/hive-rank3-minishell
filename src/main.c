@@ -22,22 +22,12 @@ int	invalid_input(char *input)
 	}
 	return (1);
 }
-void print_token(t_token *token)
-{
-	while (token)
-	{
-		printf("value: %s\n", token->value);
-		printf("type: %d\n", token->type);
-		token = token->next;
-	}
-}
 
 void	process_input(t_ms *shell)
 {
 	if (invalid_input(shell->input))
 		return ;
 	tokenize_input(shell);
-	// print_token(shell->token);
 	if (!shell->token)
 		return ;
 	parse_tokens(shell);
@@ -99,8 +89,6 @@ void	input_loop(t_ms *shell)
 		if (*(shell->input))
 			add_history(shell->input);
 		process_input(shell);
-		// tcsetattr(STDIN_FILENO, TCSANOW, original_term);
-		// rl_on_new_line();
 		rl_done = 1;
 	}
 }
@@ -108,16 +96,11 @@ void	input_loop(t_ms *shell)
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_ms			shell;
-	// struct termios	original_term;
 
 	(void)argc;
 	(void)argv;
 	init_shell(&shell, envp);
-	// tcgetattr(STDIN_FILENO, &original_term);
-	// check_signals(SIGINT, sig_handler_sigint);
-	// check_signals(SIGQUIT, SIG_IGN);
 	input_loop(&shell);
-	// tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
 	rl_clear_history();
 	cleanup(&shell, 1);
 	return (shell.exit_code);

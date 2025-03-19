@@ -12,6 +12,8 @@ SRCS = 	src/main.c \
 		src/builtin/cd.c \
 		src/builtin/update_pwd.c \
 		src/builtin/export.c \
+		src/builtin/export1.c \
+		src/builtin/export2.c \
 		src/builtin/quicksort.c \
 		src/builtin/unset.c \
 		src/tokens/tokens.c \
@@ -29,6 +31,10 @@ SRCS = 	src/main.c \
 		src/error_cleanup/error_cleanup.c \
 		src/file_helpers.c \
 		src/execution/check_command.c \
+		src/execution/check_command1.c \
+		src/execution/check_command2.c \
+		src/execution/check_command3.c \
+		src/execution/check_command4.c \
 		src/signals/signals.c \
 		src/signals/signal_handlers.c
 OBJ_DIR = objects

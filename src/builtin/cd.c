@@ -74,8 +74,6 @@ void	ft_cd(char **command, t_ms *shell)
 	oldpwd = getcwd(NULL, 0);
 	if (!oldpwd)
 		return (if_not_oldpwd(shell, command, home, oldpwd));
-	if (shell->prev_pwd)
-		free(shell->prev_pwd);
 	shell->prev_pwd = ft_strdup(oldpwd);
 	if (count > 2)
 		return (too_many_args(shell, oldpwd));

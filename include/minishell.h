@@ -126,6 +126,11 @@ void			ft_pwd(char **command, t_ms *shell);
 void			ft_exit(t_command *command, t_ms *shell);
 void			ft_env(char **command, t_ms *shell);
 void			ft_cd(char **command, t_ms *shell);
+void			if_count_is_1(t_ms *shell, char *oldpwd, char *home);
+void			execute_cd(t_ms *shell, char **command, char *oldpwd);
+void			error_and_exit_code(t_ms *shell);
+void			if_pipe_count(t_ms *shell, char **command, char *oldpwd);
+
 void			create_env(t_ms *shell, char **envp);
 int				update_pwd(t_ms *shell, char *string, char *value);
 int				env_list_size(char **envp);

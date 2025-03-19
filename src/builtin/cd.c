@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:39:40 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/10 15:10:05 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/19 17:47:45 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,13 @@ int	cd_to_arg(char **command, t_ms *shell)
 	return (0);
 }
 
-
-void if_not_oldpwd(t_ms *shell, char **command, char *home, char *oldpwd)
+void	if_not_oldpwd(t_ms *shell, char **command, char *home, char *oldpwd)
 {
 	if (ft_strncmp(command[1], "..", 2) == 0)
 	{
-		ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n", 2);
+		ft_putstr_fd("cd: error retrieving current directory: ", 2);
+		ft_putstr_fd("getcwd: cannot access parent directories: ", 2);
+		ft_putstr_fd("No such file or directory\n", 2);
 		shell->exit_code = 0;
 		return ;
 	}
@@ -55,9 +56,9 @@ void	execute_cd(t_ms *shell, char **command, char *oldpwd)
 	update_pwd(shell, "OLDPWD=", oldpwd);
 	if (cd_to_arg(command, shell) == 0 && ft_strncmp(command[1], "..", 2) != 0)
 	{
-		temp = ft_strjoin(shell->prev_pwd ,"/");
+		temp = ft_strjoin(shell->prev_pwd, "/");
 		free(shell->prev_pwd);
-		shell->prev_pwd = ft_strjoin(temp , command[1]);
+		shell->prev_pwd = ft_strjoin(temp, command[1]);
 		free(temp);
 	}
 }
@@ -68,8 +69,7 @@ void	ft_cd(char **command, t_ms *shell)
 	char	*home;
 	int		count;
 
-
-	home =  getenv("HOME");
+	home = getenv("HOME");
 	count = count_args(command);
 	oldpwd = getcwd(NULL, 0);
 	if (!oldpwd)

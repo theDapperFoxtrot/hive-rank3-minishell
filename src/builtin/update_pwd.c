@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   update_pwd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/09 13:47:21 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/03 16:26:43 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/19 17:43:06 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	error_and_exit_code(t_ms *shell)
 	shell->exit_code = 1;
 }
 
-void if_count_is_1(t_ms *shell, char *oldpwd, char *home)
+void	if_count_is_1(t_ms *shell, char *oldpwd, char *home)
 {
 	if (chdir(home) == -1)
 		error_and_exit_code(shell);
@@ -55,7 +55,7 @@ void if_count_is_1(t_ms *shell, char *oldpwd, char *home)
 
 void	if_pipe_count(t_ms *shell, char **command, char *oldpwd)
 {
-	char *temp;
+	char	*temp;
 
 	temp = oldpwd;
 	if (chdir(command[1]) == -1)

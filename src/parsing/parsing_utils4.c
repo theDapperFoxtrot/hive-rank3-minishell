@@ -1,4 +1,5 @@
 #include "../../include/minishell.h"
+
 int	find_closing_quote(t_ms *shell, const char *str, char quote_type, int start)
 {
 	int	i;
@@ -75,30 +76,29 @@ void	get_var_name_len(t_ms *shell, int with_braces)
 		shell->exp_name_len++;
 }
 
-void get_var_value(t_ms *shell)
+void	get_var_value(t_ms *shell)
 {
-    char *temp;
-    char *joined;
+	char	*temp;
+	char	*joined;
 
-    while (shell->env_list[shell->exp_i])
-    {
-		if (ft_strncmp(shell->env_list[shell->exp_i], shell->exp_temp_name,
-		ft_strlen(shell->exp_temp_name)) == 0 &&
+	while (shell->env_list[shell->exp_i])
+	{
+		if (ft_strncmp(shell->env_list[shell->exp_i], shell->exp_temp_name, \
+			ft_strlen(shell->exp_temp_name)) == 0 && \
 		shell->env_list[shell->exp_i][ft_strlen(shell->exp_temp_name)] == '=')
 		{
 			temp = shell->exp.value;
-			joined = ft_strjoin(temp, shell->env_list[shell->exp_i] + 
+			joined = ft_strjoin(temp, shell->env_list[shell->exp_i] + \
 				ft_strlen(shell->exp_temp_name) + 1);
 			free(temp);
-			shell->exp.value = ft_strdup(shell->env_list[shell->exp_i] + 
+			shell->exp.value = ft_strdup(shell->env_list[shell->exp_i] + \
 				ft_strlen(shell->exp_temp_name) + 1);
 			free(joined);
-			break;
+			break ;
 		}
 		shell->exp_i++;
 	}
 	temp = shell->exp.value;
-	// free(shell->exp.value);
 	shell->exp.value = parse_quotes(temp);
 	free(temp);
 }

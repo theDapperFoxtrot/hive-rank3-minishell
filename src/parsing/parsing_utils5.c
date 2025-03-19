@@ -30,14 +30,16 @@ void	count_cmd_args(t_ms *shell, t_token *token)
 
 void	check_for_append_lm(t_ms *shell)
 {
-    shell->buffer = ft_realloc(shell->buffer, shell->buf_count, shell->buf_count + 1);
-    if (!shell->buffer)
+	shell->buffer = ft_realloc(shell->buffer, shell->buf_count, \
+					shell->buf_count + 1);
+	if (!shell->buffer)
 		malloc_error(shell);
 	shell->buffer[1] = '>';
-    shell->buffer[2] = '\0';
-    shell->i++;
-    shell->type = TOKEN_APPEND;
+	shell->buffer[2] = '\0';
+	shell->i++;
+	shell->type = TOKEN_APPEND;
 }
+
 void	write_token_args_lm(t_ms *shell)
 {
 	shell->buf_i = 0;
@@ -46,7 +48,8 @@ void	write_token_args_lm(t_ms *shell)
 	!is_operator(shell->pipe_rdl_tokens[shell->i]))
 	{
 		realloc_buffer(shell);
-		if (shell->pipe_rdl_tokens[shell->i] == '"' || shell->pipe_rdl_tokens[shell->i] == '\'')
+		if (shell->pipe_rdl_tokens[shell->i] == '"' || \
+			shell->pipe_rdl_tokens[shell->i] == '\'')
 			if_quotes(shell);
 		else
 			shell->buffer[shell->buf_i++] = shell->pipe_rdl_tokens[shell->i++];

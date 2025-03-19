@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:50:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/18 16:45:03 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/19 17:42:00 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	if_not_pwd(t_ms *shell)
 {
-	int i;
+	int		i;
 	char	*read_here;
 
 	i = 0;

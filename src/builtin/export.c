@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 12:43:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/10 16:06:44 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/19 17:39:05 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void	found_equal_sign(t_ms *shell, char *arg, char *key, char *equal_sign)
 	key = arg;
 	value = equal_sign + 1;
 	set_env_variable(shell, key, value, equal_sign);
-
 }
 
 void	no_equal_sign(t_ms *shell, char *arg, char *key, char *equal_sign)

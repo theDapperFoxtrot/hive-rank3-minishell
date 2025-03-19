@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-int is_parent_builtin(char **command, t_ms *shell)
+int	is_parent_builtin(char **command, t_ms *shell)
 {
 	if (ft_strncmp(command[0], "export", 6) == 0 && ft_strlen(command[0]) == 6)
 	{
@@ -14,17 +14,17 @@ int is_parent_builtin(char **command, t_ms *shell)
 		ft_unset(command, shell);
 		return (1);
 	}
-		else if (ft_strncmp(command[0], "cd", 2) == 0 && ft_strlen(command[0]) == 2)
+	else if (ft_strncmp(command[0], "cd", 2) == 0 && ft_strlen(command[0]) == 2)
 	{
 		ft_cd(command, shell);
 		return (1);
 	}
-		else if (ft_strncmp(command[0], "pwd", 3) == 0 && ft_strlen(command[0]) == 3)
+	else if (ft_strncmp(command[0], "pwd", 3) == 0 && \
+		ft_strlen(command[0]) == 3)
 	{
 		ft_pwd(shell);
 		return (1);
 	}
-
 	return (0);
 }
 
@@ -35,12 +35,16 @@ int	is_builtin(char **command, t_ms *shell)
 		ft_export(command, shell);
 		return (1);
 	}
-	else if ((ft_strncmp(command[0], "echo", 4) == 0 && ft_strlen(command[0]) == 4) || (ft_strncmp(command[0], "/bin/echo", 9) == 0 && ft_strlen(command[0]) == 9))
+	else if ((ft_strncmp(command[0], "echo", 4) == 0 && \
+		ft_strlen(command[0]) == 4) || \
+		(ft_strncmp(command[0], "/bin/echo", 9) == 0 && \
+		ft_strlen(command[0]) == 9))
 	{
 		ft_echo(command, shell);
 		return (1);
 	}
-	else if (ft_strncmp(command[0], "env", 3) == 0 && ft_strlen(command[0]) == 3)
+	else if (ft_strncmp(command[0], "env", 3) == 0 && \
+			ft_strlen(command[0]) == 3)
 	{
 		ft_env(command, shell);
 		return (1);

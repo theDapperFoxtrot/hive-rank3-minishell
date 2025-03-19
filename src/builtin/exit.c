@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:33:02 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/10 16:31:45 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/19 17:38:27 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
 
 int	is_overflown(char *str)
 {
@@ -65,8 +64,8 @@ void	it_was_alpha(t_command *command, t_ms *shell)
 
 static void	check_numeric(t_command *command, t_ms *shell)
 {
-	int	i;
-	long long ret_value;
+	int			i;
+	long long	ret_value;
 
 	i = 0;
 	if (!command->args[1])

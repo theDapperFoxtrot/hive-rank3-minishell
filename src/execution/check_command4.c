@@ -68,7 +68,7 @@ t_command	*parent_process(t_ms *shell, t_command *command, int *new_pipe)
 	return (command);
 }
 
-t_command   *check_for_dots(t_command *command)
+t_command	*check_for_dots(t_command *command)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(command->args[0], 2);

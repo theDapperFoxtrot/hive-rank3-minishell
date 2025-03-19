@@ -1,7 +1,5 @@
 #include "../../include/minishell.h"
 
-//if very first token, set it to new token
-//otherwise, iterate to the end of the list, and add next new token
 void	add_token(t_ms *shell, t_token *new_token)
 {
 	t_token	*current;
@@ -27,9 +25,9 @@ int	lead_pipe_check(t_ms *shell, int lead_pipe)
 	{
 		if (shell->input[shell->i] == '|' && shell->input[shell->i + 1] == '|')
 		{
-			ft_putstr_fd("minishell: syntax error near unexpected token `||'\n" \
-				, 2);
-				shell->exit_code = 2;
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd("syntax error near unexpected token `||'\n", 2);
+			shell->exit_code = 2;
 			free_tokens(shell);
 			return (1);
 		}
@@ -67,6 +65,7 @@ int	is_operator_true(t_ms *shell)
 void	tokenize_input(t_ms *shell)
 {
 	int		lead_pipe;
+
 	lead_pipe = 1;
 	shell->i = 0;
 	shell->buf_count = 1;

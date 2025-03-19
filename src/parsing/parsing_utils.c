@@ -1,23 +1,5 @@
 #include "../../include/minishell.h"
 
-char	*count_for_malloc(char *str)
-{
-	int		i;
-	int		j;
-	char	*parsed;
-
-	i = 0;
-	j = 0;
-	while (str[i])
-	{
-		if (str[i] != 34 && str[i] != 39)
-			j++;
-		i++;
-	}
-	parsed = malloc((j + 1) * sizeof(char));
-	return (parsed);
-}
-
 char	*parse_quotes(char *str)
 {
 	int		i;
@@ -83,7 +65,8 @@ int	heredoc_loop(t_ms *shell, t_command *cmd, int i)
 	while (1)
 	{
 		start_sig_checkers(&sig_handler_heredoc);
-		cmd->heredoc_lines = ft_realloc(cmd->heredoc_lines, sizeof(char *) * i, sizeof(char *) * (i + 1));
+		cmd->heredoc_lines = ft_realloc(cmd->heredoc_lines, \
+				sizeof(char *) * i, sizeof(char *) * (i + 1));
 		if (!cmd->heredoc_lines)
 			malloc_error(shell);
 		cmd->heredoc_lines[i] = readline("> ");
@@ -91,13 +74,13 @@ int	heredoc_loop(t_ms *shell, t_command *cmd, int i)
 			break ;
 		if (heredoc_lines_err(shell, cmd, i))
 			break ;
-		if (ft_strncmp(cmd->heredoc_lines[i], cmd->heredoc_delimiter, ft_strlen(cmd->heredoc_lines[i])) == 0)
+		if (ft_strncmp(cmd->heredoc_lines[i], cmd->heredoc_delimiter, \
+						ft_strlen(cmd->heredoc_lines[i])) == 0)
 			break ;
 		if (cmd->heredoc_lines[i][0] == '$' && shell->heredoc_exp)
-			cmd->heredoc_lines[i] = handle_expansions(shell, cmd->heredoc_lines[i]);
+			cmd->heredoc_lines[i] = \
+				handle_expansions(shell, cmd->heredoc_lines[i]);
 		i++;
 	}
 	return (i);
 }
-
-

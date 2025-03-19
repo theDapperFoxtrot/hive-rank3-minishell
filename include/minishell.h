@@ -120,6 +120,8 @@ void			print_error(char *message, t_ms *shell, \
 void			malloc_error(t_ms *shell);
 char			*free_and_nullify(char *str_ptr);
 int				validate_str(char *str, char *acc_values);
+char			*count_for_malloc(char *str);
+int				event(void);
 //builtin
 void			ft_echo(char **command, t_ms *shell);
 void			ft_pwd(t_ms *shell);

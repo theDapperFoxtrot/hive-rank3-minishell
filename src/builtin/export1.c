@@ -1,6 +1,5 @@
 #include "../../include/minishell.h"
 
-// Function to sort and print environment variables alphabetically
 void	print_sorted_env(t_ms *shell)
 {
 	int		i;
@@ -62,14 +61,14 @@ int	sift_through_env(t_ms *shell, char *key, char *value, int i)
 {
 	if (ft_strncmp(shell->env_list[i], key, ft_strlen(key)) == 0)
 	{
-	free(shell->env_list[i]);
-	if (ft_strlen(value) > 0)
-		if_value_not_empty(shell, key, value, i);
-	else if (shell->equal_found)
-		if_equal_found(shell, key, i);
-	else if (ft_strlen(value) == 0)
-		shell->env_list[i] = ft_strdup(key);
-	return (1);
+		free(shell->env_list[i]);
+		if (ft_strlen(value) > 0)
+			if_value_not_empty(shell, key, value, i);
+		else if (shell->equal_found)
+			if_equal_found(shell, key, i);
+		else if (ft_strlen(value) == 0)
+			shell->env_list[i] = ft_strdup(key);
+		return (1);
 	}
 	return (0);
 }

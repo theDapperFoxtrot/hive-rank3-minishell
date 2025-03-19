@@ -26,10 +26,11 @@ char	*find_directory(char **dir, char *splitted_args)
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(splitted_args, 2);
 	ft_putstr_fd(": command not found\n", 2);
-return (NULL);
+	return (NULL);
 }
 
-void	find_exec_path_error(t_ms *shell, t_command *command, char *message, int exit_code)
+void	find_exec_path_error(t_ms *shell, t_command *command, \
+							char *message, int exit_code)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(command->args[0], 2);
@@ -62,7 +63,7 @@ char	*find_executable_path(t_ms *shell, t_command *command)
 	char	*get_path;
 	char	**path_directory;
 	char	*found_path;
-	char 	**envp;
+	char	**envp;
 
 	if (ft_strchr(command->args[0], '/'))
 		return (access_check(shell, command));

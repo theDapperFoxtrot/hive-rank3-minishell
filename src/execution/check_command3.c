@@ -3,7 +3,8 @@
 void	hir_hd_child_process(t_ms *shell, t_command *command, int *pipefd)
 {
 	close(pipefd[0]);
-	if (write(pipefd[1], command->heredoc_line, ft_strlen(command->heredoc_line)) == -1)
+	if (write(pipefd[1], command->heredoc_line, \
+		ft_strlen(command->heredoc_line)) == -1)
 	{
 		ft_putendl_fd("minishell: write failed", 2);
 		close(pipefd[1]);
@@ -15,9 +16,24 @@ void	hir_hd_child_process(t_ms *shell, t_command *command, int *pipefd)
 	exit(EXIT_SUCCESS);
 }
 
-void    handle_input_redirection(t_ms *shell, t_command *command, char *symbol, char *file)
+void	parent_wait(t_ms *shell, t_command *command, int *pipefd)
 {
-	int pipefd[2];
+	int	check_pid;
+
+	check_pid = 1;
+	close(pipefd[1]);
+	dup2(pipefd[0], STDIN_FILENO);
+	close(pipefd[0]);
+	if (command->redir_out)
+		write_file(shell, command->command_input[2]);
+	while (check_pid > 0)
+		check_pid = waitpid(-1, NULL, 0);
+}
+
+void	handle_input_redirection(t_ms *shell, t_command *command, \
+								char *symbol, char *file)
+{
+	int	pipefd[2];
 
 	if (ft_strncmp(symbol, "<<", 2) == 0)
 	{
@@ -26,17 +42,10 @@ void    handle_input_redirection(t_ms *shell, t_command *command, char *symbol, 
 		command->pid = fork();
 		if (command->pid == -1)
 			error_free_clean_exit(shell, "fork");
-        if (command->pid == 0)
+		if (command->pid == 0)
 			hir_hd_child_process(shell, command, pipefd);
 		else
-        {
-			close(pipefd[1]);
-            dup2(pipefd[0], STDIN_FILENO);
-            close(pipefd[0]);
-			if (command->redir_out)
-				write_file(shell, command->command_input[2]);
-			while (waitpid(-1, NULL, 0) > 0);
-        }
+			parent_wait(shell, command, pipefd);
 	}
 	else if (ft_strncmp(symbol, "<", 1) == 0)
 		read_file(shell, file);
@@ -45,9 +54,9 @@ void    handle_input_redirection(t_ms *shell, t_command *command, char *symbol, 
 void	handle_output_redirection(t_ms *shell, char *symbol, char *file)
 {
 	if (ft_strncmp(symbol, ">>", 2) == 0)
-			append_file(shell, file);
+		append_file(shell, file);
 	else if (ft_strncmp(symbol, ">", 1) == 0)
-			write_file(shell, file);
+		write_file(shell, file);
 }
 
 void	wait_for_kids(t_ms *shell)
@@ -76,11 +85,15 @@ void	wait_for_kids(t_ms *shell)
 void	execute_redir(t_ms *shell, t_command *command, int i)
 {
 	if (ft_strncmp(command->command_input[i], ">>", 2) == 0)
-		handle_output_redirection(shell, command->command_input[i], command->command_input[i + 1]);
+		handle_output_redirection(shell, command->command_input[i], \
+								command->command_input[i + 1]);
 	if (ft_strncmp(command->command_input[i], "<<", 2) == 0)
-		handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
+		handle_input_redirection(shell, command, command->command_input[i], \
+								command->command_input[i + 1]);
 	if (ft_strncmp(command->command_input[i], ">", 1) == 0)
-		handle_output_redirection(shell, command->command_input[i], command->command_input[i + 1]);
+		handle_output_redirection(shell, command->command_input[i], \
+								command->command_input[i + 1]);
 	if (ft_strncmp(command->command_input[i], "<", 1) == 0)
-		handle_input_redirection(shell, command, command->command_input[i], command->command_input[i + 1]);
+		handle_input_redirection(shell, command, command->command_input[i], \
+								command->command_input[i + 1]);
 }

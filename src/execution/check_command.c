@@ -1,14 +1,17 @@
 #include "../../include/minishell.h"
 
-t_command	*checking_for_select_commands(t_ms *shell, t_command *command, int *new_pipe)
+t_command	*checking_for_select_commands(t_ms *shell, \
+			t_command *command, int *new_pipe)
 {
-	if ((ft_strncmp(command->args[0], "..", 2) == 0 && ft_strlen(command->args[0]) == 2))
+	if ((ft_strncmp(command->args[0], "..", 2) == 0 && \
+		ft_strlen(command->args[0]) == 2))
 	{
 		command = check_for_dots(command);
 		shell->select_command_found = 1;
 		return (command);
 	}
-	if (ft_strncmp(command->args[0], "exit", 4) == 0 && ft_strlen(command->args[0]) == 4)
+	if (ft_strncmp(command->args[0], "exit", 4) == 0 && \
+		ft_strlen(command->args[0]) == 4)
 	{
 		command = check_for_exit(shell, command, new_pipe);
 		shell->select_command_found = 1;
@@ -22,7 +25,7 @@ t_command	*checking_for_select_commands(t_ms *shell, t_command *command, int *ne
 	return (command);
 }
 
-void 	pipe_failure(t_ms *shell)
+void	pipe_failure(t_ms *shell)
 {
 	ft_putendl_fd("minishell: pipe failed", 2);
 	cleanup(shell, 1);
@@ -37,7 +40,7 @@ void	starting_values(t_ms *shell)
 	shell->select_command_found = 0;
 }
 
-pid_t call_fork(t_ms *shell, t_command *command, int *new_pipe)
+pid_t	call_fork(t_ms *shell, t_command *command, int *new_pipe)
 {
 	shell->child_count++;
 	command->pid = fork();
@@ -46,7 +49,7 @@ pid_t call_fork(t_ms *shell, t_command *command, int *new_pipe)
 	return (command->pid);
 }
 
-void check_command(t_ms *shell, t_command *command)
+void	check_command(t_ms *shell, t_command *command)
 {
 	int			new_pipe[2];
 

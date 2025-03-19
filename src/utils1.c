@@ -30,3 +30,26 @@ int	validate_str(char *str, char *acc_values)
 	}
 	return (1);
 }
+
+char	*count_for_malloc(char *str)
+{
+	int		i;
+	int		j;
+	char	*parsed;
+
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] != 34 && str[i] != 39)
+			j++;
+		i++;
+	}
+	parsed = malloc((j + 1) * sizeof(char));
+	return (parsed);
+}
+
+int	event(void)
+{
+	return (0);
+}

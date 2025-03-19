@@ -28,6 +28,7 @@ SRCS = 	src/main.c \
 		src/parsing/parsing_utils5.c \
 		src/parsing/parsing_utils6.c \
 		src/parsing/parsing_utils7.c \
+		src/parsing/parsing_utils8.c \
 		src/error_cleanup/error_cleanup.c \
 		src/file_helpers.c \
 		src/execution/check_command.c \
@@ -35,6 +36,7 @@ SRCS = 	src/main.c \
 		src/execution/check_command2.c \
 		src/execution/check_command3.c \
 		src/execution/check_command4.c \
+		src/execution/check_command5.c \
 		src/signals/signals.c \
 		src/signals/signal_handlers.c
 OBJ_DIR = objects

@@ -16,20 +16,6 @@ void	hir_hd_child_process(t_ms *shell, t_command *command, int *pipefd)
 	exit(EXIT_SUCCESS);
 }
 
-void	parent_wait(t_ms *shell, t_command *command, int *pipefd)
-{
-	int	check_pid;
-
-	check_pid = 1;
-	close(pipefd[1]);
-	dup2(pipefd[0], STDIN_FILENO);
-	close(pipefd[0]);
-	if (command->redir_out)
-		write_file(shell, command->command_input[2]);
-	while (check_pid > 0)
-		check_pid = waitpid(-1, NULL, 0);
-}
-
 void	handle_input_redirection(t_ms *shell, t_command *command, \
 								char *symbol, char *file)
 {
@@ -54,7 +40,12 @@ void	handle_input_redirection(t_ms *shell, t_command *command, \
 void	handle_output_redirection(t_ms *shell, char *symbol, char *file)
 {
 	if (ft_strncmp(symbol, ">>", 2) == 0)
-		append_file(shell, file);
+	{
+		if (shell->pipe_count > 0)
+			write_file(shell, file);
+		else
+			append_file(shell, file);
+	}
 	else if (ft_strncmp(symbol, ">", 1) == 0)
 		write_file(shell, file);
 }

@@ -33,15 +33,6 @@ int	syntax_error_and_return(t_ms *shell, t_token *token)
 	return (1);
 }
 
-void	null_hd_and_oneline(t_ms *shell, t_command *cmd, int i)
-{
-	shell->heredoc_line_count = shell->heredoc_line_count + i;
-	cmd->heredoc_lines[i] = NULL;
-	make_heredoc_one_line(shell, cmd);
-	cmd->heredoc = 1;
-	cmd->command_input_index++;
-}
-
 int	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 {
 	int	i;

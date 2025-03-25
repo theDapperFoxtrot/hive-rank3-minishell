@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_utils3.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:09:10 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/24 17:33:56 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
-void handle_token_append(t_ms *shell, t_command *cmd, t_token *token)
+void	handle_token_append(t_ms *shell, t_command *cmd, t_token *token)
 {
-	char        *expanded_value;
+	char	*expanded_value;
 
 	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
 	if (!cmd->command_input[cmd->command_input_index])
@@ -13,18 +25,14 @@ void handle_token_append(t_ms *shell, t_command *cmd, t_token *token)
 		expanded_value = handle_expansions(shell, token->value);
 		if (!expanded_value)
 			malloc_error(shell);
-		cmd->command_input[cmd->command_input_index + 1] = ft_strdup(expanded_value);
+		cmd->command_input[cmd->command_input_index + 1] = \
+			ft_strdup(expanded_value);
 		if (!cmd->command_input[cmd->command_input_index + 1])
 			malloc_error(shell);
 		cmd->append_mode = 1;
 		free(expanded_value);
 	}
 	cmd->command_input_index += 2;
-}
-
-int	event(void)
-{
-	return (0);
 }
 
 int	syntax_error_and_return(t_ms *shell, t_token *token)
@@ -43,7 +51,8 @@ int	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 
 	if (pipe_syntax_check(shell, token))
 		return (1);
-	if (token && token->next && (token->next->type == TOKEN_REDIR_IN || token->next->type == TOKEN_REDIR_OUT))
+	if (token && token->next && (token->next->type == TOKEN_REDIR_IN || \
+		token->next->type == TOKEN_REDIR_OUT))
 		return (syntax_error_and_return(shell, token));
 	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
 	token = token->next;
@@ -58,17 +67,13 @@ int	handle_token_heredoc(t_ms *shell, t_command *cmd, t_token *token)
 	i = heredoc_loop(shell, cmd, i);
 	if (g_signal == SIGINT)
 		return (1);
-	shell->heredoc_line_count = shell->heredoc_line_count + i;
-	cmd->heredoc_lines[i] = NULL;
-	make_heredoc_one_line(shell, cmd);
-	cmd->heredoc = 1;
-	cmd->command_input_index++;
+	null_hd_and_oneline(shell, cmd, i);
 	return (0);
 }
 
-void handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)
+void	handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)
 {
-	char        *expanded_value;
+	char	*expanded_value;
 
 	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
 	if (!cmd->command_input[cmd->command_input_index])
@@ -79,7 +84,8 @@ void handle_token_redir_out(t_ms *shell, t_command *cmd, t_token *token)
 		expanded_value = handle_expansions(shell, token->value);
 		if (!expanded_value)
 			malloc_error(shell);
-		cmd->command_input[cmd->command_input_index + 1] = ft_strdup(expanded_value);
+		cmd->command_input[cmd->command_input_index + 1] \
+			= ft_strdup(expanded_value);
 		if (!cmd->command_input[cmd->command_input_index + 1])
 			malloc_error(shell);
 		cmd->redir_out = 1;

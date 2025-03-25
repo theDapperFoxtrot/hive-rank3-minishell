@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:09:02 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/19 20:09:03 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 char	*parse_quotes(char *str)
@@ -6,21 +18,13 @@ char	*parse_quotes(char *str)
 	int		j;
 	char	*parsed;
 
-	i = 0;
-	j = 0;
 	if (!str)
 		return (NULL);
-	while (str[i])
-	{
-		if (str[i] != 34 && str[i] != 39)
-			j++;
-		i++;
-	}
-	parsed = malloc((j + 1) * sizeof(char));
-	if (parsed == NULL)
+	parsed = count_for_malloc(str);
+	if (!parsed)
 		return (NULL);
-	j = 0;
 	i = 0;
+	j = 0;
 	while (str[i])
 	{
 		if (str[i] != 34 && str[i] != 39)
@@ -73,7 +77,8 @@ int	heredoc_loop(t_ms *shell, t_command *cmd, int i)
 	while (1)
 	{
 		start_sig_checkers(&sig_handler_heredoc);
-		cmd->heredoc_lines = ft_realloc(cmd->heredoc_lines, sizeof(char *) * i, sizeof(char *) * (i + 1));
+		cmd->heredoc_lines = ft_realloc(cmd->heredoc_lines, \
+				sizeof(char *) * i, sizeof(char *) * (i + 1));
 		if (!cmd->heredoc_lines)
 			malloc_error(shell);
 		cmd->heredoc_lines[i] = readline("> ");
@@ -81,13 +86,13 @@ int	heredoc_loop(t_ms *shell, t_command *cmd, int i)
 			break ;
 		if (heredoc_lines_err(shell, cmd, i))
 			break ;
-		if (ft_strncmp(cmd->heredoc_lines[i], cmd->heredoc_delimiter, ft_strlen(cmd->heredoc_lines[i])) == 0)
+		if (ft_strncmp(cmd->heredoc_lines[i], cmd->heredoc_delimiter, \
+						ft_strlen(cmd->heredoc_lines[i])) == 0)
 			break ;
 		if (cmd->heredoc_lines[i][0] == '$' && shell->heredoc_exp)
-			cmd->heredoc_lines[i] = handle_expansions(shell, cmd->heredoc_lines[i]);
+			cmd->heredoc_lines[i] = \
+				handle_expansions(shell, cmd->heredoc_lines[i]);
 		i++;
 	}
 	return (i);
 }
-
-

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:39:22 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/06 17:14:20 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/19 19:03:53 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ void	free_env(t_ms *shell)
 	free(shell->env_list);
 }
 
-void	print_error(char *message, t_ms *shell, unsigned char status, int clean_shell)
+void	print_error(char *message, t_ms *shell, \
+					unsigned char status, int clean_shell)
 {
 	ft_putendl_fd(message, 2);
 	cleanup(shell, clean_shell);
@@ -63,7 +64,7 @@ int	count_args(char **command)
 	return (i);
 }
 
-void malloc_error(t_ms *shell)
+void	malloc_error(t_ms *shell)
 {
 	print_error("Error: malloc failed", shell, 1, 1);
 	exit(shell->exit_code);

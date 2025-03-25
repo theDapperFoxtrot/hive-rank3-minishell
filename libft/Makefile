@@ -1,8 +1,6 @@
 NAME = libft.a
 
-SRCS = ft_get_next_line/get_next_line_utils.c \
-	ft_get_next_line/get_next_line.c \
-	ft_atoi.c \
+SRCS = ft_atoi.c \
 	ft_atol.c \
 	ft_bzero.c \
 	ft_calloc.c \

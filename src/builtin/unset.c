@@ -1,4 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   unset.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:08:31 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/20 16:27:57 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
+
+void	set_and_free(t_ms *shell, char **temp_list, int j)
+{
+	temp_list[j] = NULL;
+	free_split(shell->env_list);
+	shell->env_list = NULL;
+	shell->env_list = temp_list;
+}
 
 void	unset_env_variable(t_ms *shell, char *key)
 {
@@ -9,6 +29,8 @@ void	unset_env_variable(t_ms *shell, char *key)
 
 	list_size = env_list_size(shell->env_list);
 	temp_list = (char **) malloc((list_size) * sizeof(char *));
+	if (!temp_list)
+		malloc_error(shell);
 	i = 0;
 	j = 0;
 	while (shell->env_list[i])
@@ -22,10 +44,7 @@ void	unset_env_variable(t_ms *shell, char *key)
 		i++;
 		j++;
 	}
-	temp_list[j] = NULL;
-	free_split(shell->env_list);
-	shell->env_list = NULL;
-	shell->env_list = temp_list;
+	set_and_free(shell, temp_list, j);
 }
 
 int	does_var_exist(t_ms *shell, char *key)

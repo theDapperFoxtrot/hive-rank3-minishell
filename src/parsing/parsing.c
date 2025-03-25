@@ -1,10 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:09:26 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/24 17:20:32 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
-t_token	*handle_token_redir(t_ms *shell, t_command *cmd, t_token *token, void (*func)(t_ms *, t_command *, t_token *))
+t_token	*handle_token_redir(t_ms *shell, t_command *cmd, t_token *token, \
+							void (*func)(t_ms *, t_command *, t_token *))
 {
 	if (pipe_syntax_check(shell, token))
 		return (NULL);
-	if (token && token->next && (token->next->type == TOKEN_REDIR_IN || token->next->type == TOKEN_REDIR_OUT))
+	if (token && token->next && (token->next->type == TOKEN_REDIR_IN || \
+		token->next->type == TOKEN_REDIR_OUT))
 	{
 		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 		ft_putstr_fd(token->next->value, 2);
@@ -64,17 +78,17 @@ void	handle_not_next_token(t_ms *shell, t_command *cmd, t_token *token)
 {
 	if (cmd->command_input)
 		cmd->command_input[cmd->command_input_index] = NULL;
-	if ((ft_strncmp(token->value, ">", 1) == 0) || (ft_strncmp(token->value, "<", 1) == 0))
+	if ((ft_strncmp(token->value, ">", 1) == 0) || \
+		(ft_strncmp(token->value, "<", 1) == 0))
 	{
-		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
-		free_tokens(shell);
-		shell->exit_code = 2;
+		print_error("minishell: syntax error near unexpected token `newline'", \
+			shell, 2, 0);
 		shell->token_error = 1;
 		return ;
 	}
 }
 
-void parse_tokens(t_ms *shell)
+void	parse_tokens(t_ms *shell)
 {
 	t_token		*token;
 	t_command	*cmd;
@@ -91,13 +105,14 @@ void parse_tokens(t_ms *shell)
 		else
 		{
 			token = check_token_redir(shell, cmd, token);
-			if (g_signal == SIGINT)
-				return ;
 			if (!token)
 				return ;
 		}
 		if (token->next == NULL)
+		{
 			handle_not_next_token(shell, cmd, token);
+			break ;
+		}
 		token = token->next;
 	}
 }

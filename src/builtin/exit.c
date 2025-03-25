@@ -6,35 +6,11 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:33:02 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/10 16:31:45 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/20 15:10:00 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-int	validate_str(char *str, char *acc_values)
-{
-	size_t	s_i;
-	size_t	a_i;
-
-	s_i = 0;
-	if (str == NULL || acc_values == NULL)
-		return (-1);
-	while (str[s_i] != '\0')
-	{
-		a_i = 0;
-		while (acc_values[a_i] != '\0')
-		{
-			if (str[s_i] == acc_values[a_i])
-				break ;
-			a_i++;
-			if (acc_values[a_i] == '\0')
-				return (-1);
-		}
-		s_i++;
-	}
-	return (1);
-}
 
 int	is_overflown(char *str)
 {
@@ -72,11 +48,24 @@ long long	exit_error_check(t_ms *shell, char **cmd)
 	return (ret_val);
 }
 
+void	it_was_alpha(t_command *command, t_ms *shell)
+{
+	shell->exit_code = 2;
+	ft_putstr_fd("minishell: exit: ", 2);
+	ft_putstr_fd(command->args[1], 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
+	if (ft_strncmp(command->args[1], "false", 5) == 0)
+		shell->exit_code = 1;
+	if (ft_strncmp(command->args[1], "true", 4) == 0)
+		shell->exit_code = 0;
+	cleanup(shell, 1);
+	exit(shell->exit_code);
+}
 
 static void	check_numeric(t_command *command, t_ms *shell)
 {
-	int	i;
-	long long ret_value;
+	int			i;
+	long long	ret_value;
 
 	i = 0;
 	if (!command->args[1])
@@ -84,25 +73,14 @@ static void	check_numeric(t_command *command, t_ms *shell)
 	if (command->args[1][i] == '#')
 	{
 		shell->exit_code = 0;
-		// ft_putstr_fd("exit\n", 2);
+		ft_putstr_fd("exit\n", 2);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}
 	while (command->args[1][i])
 	{
 		if (ft_isalpha(command->args[1][i]) == 1)
-		{
-			shell->exit_code = 2;
-			ft_putstr_fd("minishell: exit: ", 2);
-			ft_putstr_fd(command->args[1], 2);
-			ft_putstr_fd(": numeric argument required\n", 2);
-			if (ft_strncmp(command->args[1], "false", 5) == 0)
-				shell->exit_code = 1;
-			if (ft_strncmp(command->args[1], "true", 4) == 0)
-				shell->exit_code = 0;
-			cleanup(shell, 1);
-			exit(shell->exit_code);
-		}
+			it_was_alpha(command, shell);
 		i++;
 	}
 	ret_value = exit_error_check(shell, command->args);
@@ -117,7 +95,7 @@ void	ft_exit(t_command *command, t_ms *shell)
 {
 	if (!command->args[1] && !command->next)
 	{
-		// ft_putstr_fd("exit\n", 2);
+		ft_putstr_fd("exit\n", 2);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}
@@ -131,7 +109,7 @@ void	ft_exit(t_command *command, t_ms *shell)
 	else if (command->args[1] && !command->next)
 	{
 		shell->exit_code = ft_atoi(command->args[1]);
-		// ft_putstr_fd("exit\n", 1);
+		ft_putstr_fd("exit\n", 1);
 		cleanup(shell, 1);
 		exit(shell->exit_code);
 	}

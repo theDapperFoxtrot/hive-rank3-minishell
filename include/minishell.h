@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:07:41 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/24 17:40:40 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 # include "../libft/libft.h"
@@ -9,8 +21,6 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <signal.h>
-# include <sys/ioctl.h>
-# include <termios.h>
 
 extern int	g_signal;
 
@@ -110,28 +120,77 @@ void			sig_handler_sigint(int signal);
 void			sig_handler_heredoc(int signal);
 int				default_signals(void);
 int				init_signals(void);
-void			start_sig_checkers();
+void			start_sig_checkers(void *handler_func);
 //utils.c
 void			free_args(char **commands);
 void			free_env(t_ms *shell);
 void			print_error(char *message, t_ms *shell, \
-				unsigned char status, int clean_shell);
-				int				count_args(char **command);
+					unsigned char status, int clean_shell);
+int				count_args(char **command);
 void			malloc_error(t_ms *shell);
 char			*free_and_nullify(char *str_ptr);
+int				validate_str(char *str, char *acc_values);
+char			*count_for_malloc(char *str);
+int				event(void);
+void			ft_putstr_eq(char *str);
 //builtin
-void			check_command(t_ms *shell, t_command *command);
 void			ft_echo(char **command, t_ms *shell);
-void			ft_pwd(char **command, t_ms *shell);
+void			ft_pwd(t_ms *shell);
 void			ft_exit(t_command *command, t_ms *shell);
 void			ft_env(char **command, t_ms *shell);
 void			ft_cd(char **command, t_ms *shell);
+char			*get_home_var(t_ms *shell);
+void			if_count_is_1(t_ms *shell, char *oldpwd, char *home);
+void			execute_cd(t_ms *shell, char **command, char *oldpwd);
+void			error_and_exit_code(t_ms *shell);
+void			if_pipe_count(t_ms *shell, char **command, char *oldpwd);
 void			create_env(t_ms *shell, char **envp);
 int				update_pwd(t_ms *shell, char *string, char *value);
 int				env_list_size(char **envp);
 void			ft_export(char **command, t_ms *shell);
+void			print_variables(char	**copy_list, int i);
+void			print_sorted_env(t_ms *shell);
+void			export_error(t_ms *shell, char *arg);
+void			if_value_not_empty(t_ms *shell, char *key, char *value, int i);
+void			if_equal_found(t_ms *shell, char *key, int i);
+int				sift_through_env(t_ms *shell, char *key, char *value, int i);
+void			realloc_env_list(t_ms *shell);
+void			equal_sign_no_value(t_ms *shell, char *key, int i);
+void			value_or_no_value(t_ms *shell, char *key, char *value, int i);
+void			set_env_variable(t_ms *shell, char *key, char *value, \
+					char *equal_sign);
 void			quicksort(char **arr, int low, int high);
 void			ft_unset(char **command, t_ms *shell);
+// execution
+void			check_command(t_ms *shell, t_command *command);
+int				is_parent_builtin(char **command, t_ms *shell);
+int				is_builtin(char **command, t_ms *shell);
+void			fork_error(int *new_pipe);
+char			*find_path(char *cmd, char **envp);
+int				is_dir(char *str);
+char			*find_directory(char **dir, char *splitted_args);
+void			find_exec_path_error(t_ms *shell, t_command *command, \
+					char *message, int exit_code);
+char			*access_check(t_ms *shell, t_command *command);
+char			*find_executable_path(t_ms *shell, t_command *command);
+void			error_free_clean_exit(t_ms *shell, char *message);
+void			hir_hd_child_process(t_ms *shell, t_command *command, \
+					int *pipefd);
+void			handle_input_redirection(t_ms *shell, t_command *command, \
+					char *symbol, char *file);
+void			handle_output_redirection(t_ms *shell, char *symbol, \
+					char *file);
+void			wait_for_kids(t_ms *shell);
+void			execute_redir(t_ms *shell, t_command *command, int i);
+void			execute_command(t_ms *shell, t_command *command);
+void			child_process(t_ms *shell, t_command *command, int *new_pipe);
+t_command		*parent_process(t_ms *shell, t_command *command, int *new_pipe);
+t_command		*check_for_dots(t_command *command);
+t_command		*check_for_exit(t_ms *shell, t_command *command, int *new_pipe);
+t_command		*checking_for_select_commands(t_ms *shell, t_command *command, \
+					int *new_pipe);
+void			parent_wait(t_ms *shell, t_command *command, int *pipefd);
+void			pipe_failure(t_ms *shell);
 // parser
 void			parse_tokens(t_ms *shell);
 char			*parse_quotes(char *str);
@@ -180,7 +239,13 @@ void			tokenize_input_lm(t_ms *shell);
 int				pipe_syntax_check(t_ms *shell, t_token *token);
 void			pipe_no_next_token(t_ms *shell);
 t_command		*new_command(t_ms *shell, t_command *cmd, t_token *token);
-int				setup_command_input_count(t_ms *shell, t_command *cmd, t_token *token);
+int				setup_command_input_count(t_ms *shell, t_command *cmd, \
+					t_token *token);
+void			realloc_and_write(t_ms *shell, const char *str, int inc_i, \
+					int write);
+void			var_len_not_zero(t_ms *shell, const char *str);
+void			null_hd_and_oneline(t_ms *shell, t_command *cmd, int i);
+int				print_ret(t_ms *shell, char *message);
 // tokens folder
 void			tokenize_input(t_ms *shell);
 int				is_operator(char c);
@@ -196,7 +261,6 @@ void			safe_dup2(int fd, int fd2);
 void			read_file(t_ms *shell, char *file);
 void			write_file(t_ms *shell, char *file);
 void			append_file(t_ms *shell, char *file);
-void			read_heredoc(t_command *cmd);
 // errors and cleanup
 void			cleanup(t_ms *shell, int clean_shell);
 void			free_commands(t_command *commands);

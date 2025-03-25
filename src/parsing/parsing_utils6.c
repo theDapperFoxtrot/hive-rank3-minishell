@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_utils6.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:09:18 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/19 20:09:19 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 void	checking_rd_out_lm(t_ms *shell)
@@ -21,36 +33,38 @@ void	if_is_operator_lm(t_ms *shell)
 		checking_rd_out_lm(shell);
 }
 
-int is_operator_true_lm(t_ms *shell)
+int	is_operator_true_lm(t_ms *shell)
 {
-    if (is_operator(shell->pipe_rdl_tokens[shell->i]))
-    {
-        shell->buffer = ft_realloc(shell->buffer, shell->buf_count, shell->buf_count + 2);
-        if (!shell->buffer)
+	if (is_operator(shell->pipe_rdl_tokens[shell->i]))
+	{
+		shell->buffer = ft_realloc(shell->buffer, shell->buf_count, \
+						shell->buf_count + 2);
+		if (!shell->buffer)
 			malloc_error(shell);
 		shell->buffer[0] = shell->pipe_rdl_tokens[shell->i];
-        shell->buffer[1] = '\0';
-        if_is_operator_lm(shell);
-        create_token(shell);
-        shell->type = TOKEN_ARGS;
-        shell->i++;
-        shell->new_buffer = ft_realloc(NULL, 0, 1);
-        if (!shell->new_buffer)
+		shell->buffer[1] = '\0';
+		if_is_operator_lm(shell);
+		create_token(shell);
+		shell->type = TOKEN_ARGS;
+		shell->i++;
+		shell->new_buffer = ft_realloc(NULL, 0, 1);
+		if (!shell->new_buffer)
 			malloc_error(shell);
 		free(shell->buffer);
-        shell->buffer = shell->new_buffer;
-        shell->buffer[0] = '\0';
-        shell->buf_count = 1;
-        return (1);
-    }
-    return (0);
+		shell->buffer = shell->new_buffer;
+		shell->buffer[0] = '\0';
+		shell->buf_count = 1;
+		return (1);
+	}
+	return (0);
 }
 
 int	lead_pipe_check_lm(t_ms *shell, int lead_pipe)
 {
 	if (shell->pipe_rdl_tokens[shell->i] == '|' && lead_pipe)
 	{
-		if (shell->pipe_rdl_tokens[shell->i] == '|' && shell->pipe_rdl_tokens[shell->i + 1] == '|')
+		if (shell->pipe_rdl_tokens[shell->i] == '|' && \
+			shell->pipe_rdl_tokens[shell->i + 1] == '|')
 		{
 			ft_putstr_fd("minishell: syntax error near unexpected token `||'\n" \
 				, 2);

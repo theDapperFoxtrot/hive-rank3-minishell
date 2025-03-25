@@ -1,23 +1,35 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error_cleanup.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:08:38 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/19 20:08:39 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 void	cleanup(t_ms *shell, int clean_shell)
 {
-    if (shell->input)
-    {
-        free(shell->input);
-        shell->input = NULL;
-    }
-    if (shell->token)
-    {
-        free_tokens(shell);
-        shell->token = NULL;
-    }
-    if (shell->commands)
-    {
-        free_commands(shell->commands);
-        shell->commands = NULL;
-    }
-    if (clean_shell)
+	if (shell->input)
+	{
+		free(shell->input);
+		shell->input = NULL;
+	}
+	if (shell->token)
+	{
+		free_tokens(shell);
+		shell->token = NULL;
+	}
+	if (shell->commands)
+	{
+		free_commands(shell->commands);
+		shell->commands = NULL;
+	}
+	if (clean_shell)
 	{
 		if (shell->prev_pwd)
 			free(shell->prev_pwd);

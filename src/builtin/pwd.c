@@ -3,47 +3,64 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 13:50:38 by saylital          #+#    #+#             */
-/*   Updated: 2025/02/18 16:45:03 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/19 17:42:00 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	ft_pwd(char **command, t_ms *shell)
+int	if_not_pwd(t_ms *shell)
 {
-	char	*pwd;
+	int		i;
+	char	*read_here;
+
+	i = 0;
+	while (shell->env_list[i])
+	{
+		if (ft_strncmp(shell->env_list[i], "PWD=", 4) == 0)
+		{
+			read_here = ft_strchr(shell->env_list[i], '=');
+			read_here++;
+			ft_putstr_fd(read_here, 1);
+			ft_putstr_fd("\n", 1);
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
+void	if_pwd(t_ms *shell, char *pwd)
+{
 	int		i;
 
-	(void) command;
+	i = 0;
+	while (shell->env_list[i])
+	{
+		if (ft_strncmp(shell->env_list[i], "PWD=", 4) == 0)
+		{
+			free(shell->env_list[i]);
+			shell->env_list[i] = ft_strjoin("PWD=", pwd);
+			break ;
+		}
+		i++;
+	}
+}
+
+void	ft_pwd(t_ms *shell)
+{
+	char	*pwd;
+
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 	{
-		i = 0;
-		while (shell->env_list[i])
-		{
-			if (ft_strncmp(shell->env_list[i], "PWD=", 4) == 0)
-			{
-				ft_putstr_fd(shell->env_list[i], 1);
-				ft_putstr_fd("\n", 1);
-				return ;
-			}
-			i++;
-		}
+		if (if_not_pwd(shell))
+			return ;
 	}
-	i = 0;
-		while (shell->env_list[i])
-		{
-			if (ft_strncmp(shell->env_list[i], "PWD=", 4) == 0)
-			{
-				free(shell->env_list[i]);
-				shell->env_list[i] = ft_strjoin("PWD=", pwd);
-				break ;
-			}
-			i++;
-		}
+	if_pwd(shell, pwd);
 	ft_putstr_fd(pwd, 1);
 	ft_putstr_fd("\n", 1);
 	free(pwd);

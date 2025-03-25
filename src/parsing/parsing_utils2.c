@@ -1,48 +1,53 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_utils2.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:09:08 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/19 20:09:09 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
-char    *handle_expansions_quotes(t_ms *shell, const char *str)
+char	*handle_expansions_quotes(t_ms *shell, const char *str)
 {
-    shell->exp.closing_quote = find_closing_quote(shell, str, str[shell->exp.i], shell->exp.i);
-    if (shell->exp.closing_quote == -1)
-    {
-        free(shell->exp.result);
-        return (ft_strdup(str));
-    }
-    shell->exp.quote_type = str[shell->exp.i];
+	shell->exp.closing_quote = find_closing_quote(shell, str, \
+							str[shell->exp.i], shell->exp.i);
+	if (shell->exp.closing_quote == -1)
+	{
+		free(shell->exp.result);
+		return (ft_strdup(str));
+	}
+	shell->exp.quote_type = str[shell->exp.i];
 	shell->exp.i++;
-    while (shell->exp.i < shell->exp.closing_quote)
-    {
-        if (str[shell->exp.i] == '$' && shell->exp.quote_type == '\"')
-        {
+	while (shell->exp.i < shell->exp.closing_quote)
+	{
+		if (str[shell->exp.i] == '$' && shell->exp.quote_type == '\"')
+		{
 			if (handle_expansions_dollar_sign(shell, str) == -1)
 				return (NULL);
 			else
 				continue ;
-        }
-        else
-        {
-            shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
-            shell->exp.result[shell->exp.j++] = str[shell->exp.i++];
-        }
-    }
-    shell->exp.i = shell->exp.closing_quote + 1;
-    shell->exp.result = ft_realloc(shell->exp.result, shell->exp.j, shell->exp.j + 1);
-    shell->exp.result[shell->exp.j] = '\0';
-    return (shell->exp.result);
+		}
+		else
+			realloc_and_write(shell, str, 0, 1);
+	}
+	shell->exp.i = shell->exp.closing_quote + 1;
+	realloc_and_write(shell, str, 0, 0);
+	shell->exp.result[shell->exp.j] = '\0';
+	return (shell->exp.result);
 }
 
-void    handle_token_args(t_ms *shell, t_command *cmd, t_token *token)
+void	handle_token_args(t_ms *shell, t_command *cmd, t_token *token)
 {
-	char        *expanded_value;
+	char	*expanded_value;
 
 	expanded_value = handle_expansions(shell, token->value);
 	if (!expanded_value)
 		return ;
-	// if (expanded_value[0] == '\0')
-	// {
-	// 	free(expanded_value);
-	// 	return ;
-	// }
 	add_argument(cmd, expanded_value);
 	cmd->arg_count++;
 	free(expanded_value);
@@ -62,7 +67,7 @@ t_command	*new_cmd_struct(t_ms *shell)
 
 void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token)
 {
-	char        *expanded_value;
+	char	*expanded_value;
 
 	cmd->command_input[cmd->command_input_index] = ft_strdup(token->value);
 	if (!cmd->command_input[cmd->command_input_index])
@@ -76,7 +81,8 @@ void	handle_token_redir_in(t_ms *shell, t_command *cmd, t_token *token)
 			print_error("minishell: syntax error", shell, 1, 1);
 			exit(shell->exit_code);
 		}
-		cmd->command_input[cmd->command_input_index + 1] = ft_strdup(expanded_value);
+		cmd->command_input[cmd->command_input_index + 1] = \
+			ft_strdup(expanded_value);
 		if (!cmd->command_input[cmd->command_input_index + 1])
 			malloc_error(shell);
 		cmd->redir_in = 1;
@@ -93,7 +99,7 @@ void	make_heredoc_one_line(t_ms *shell, t_command *cmd)
 
 	i = 0;
 	cmd->heredoc_line = ft_strdup("");
-	while(cmd->heredoc_lines[i])
+	while (cmd->heredoc_lines[i])
 	{
 		line = ft_strjoin(cmd->heredoc_lines[i], "\n");
 		if (!line)
@@ -102,7 +108,7 @@ void	make_heredoc_one_line(t_ms *shell, t_command *cmd)
 		temp = cmd->heredoc_line;
 		cmd->heredoc_line = ft_strjoin(temp, line);
 		free(temp);
-        free(line);
+		free(line);
 		i++;
 	}
 	free(cmd->heredoc_lines);

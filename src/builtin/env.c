@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: saylital <saylital@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 10:34:14 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/10 16:13:50 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/19 17:37:22 by saylital         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ void	ft_env(char **command, t_ms *shell)
 {
 	int	i;
 
-	
 	i = 0;
 	if (command[1])
 	{

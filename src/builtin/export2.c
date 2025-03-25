@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export2.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:08:22 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/20 17:52:44 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 void	realloc_env_list(t_ms *shell)
@@ -52,4 +64,13 @@ void	set_env_variable(t_ms *shell, char *key, char *value, char *equal_sign)
 		equal_sign[0] = '=';
 	realloc_env_list(shell);
 	value_or_no_value(shell, key, value, i);
+}
+
+void	print_variables(char	**copy_list, int i)
+{
+	if (ft_strchr(copy_list[i], '='))
+		ft_putstr_eq(copy_list[i]);
+	else
+		ft_putstr_fd(copy_list[i], 1);
+	ft_putstr_fd("\n", 1);
 }

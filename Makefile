@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/03/24 17:42:23 by smishos           #+#    #+#              #
+#    Updated: 2025/03/24 17:42:24 by smishos          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 NAME = minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
@@ -10,6 +22,7 @@ SRCS = 	src/main.c \
 		src/builtin/exit.c \
 		src/builtin/env.c \
 		src/builtin/cd.c \
+		src/builtin/cd1.c \
 		src/builtin/update_pwd.c \
 		src/builtin/export.c \
 		src/builtin/export1.c \

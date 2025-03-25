@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   check_command1.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/19 20:08:45 by smishos           #+#    #+#             */
+/*   Updated: 2025/03/20 14:55:42 by smishos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 int	is_parent_builtin(char **command, t_ms *shell)
 {
 	if (ft_strncmp(command[0], "export", 6) == 0 && ft_strlen(command[0]) == 6)
 	{
-		if (shell->pipe_count > 0)
+		if (shell->child_count > 0)
 			return (0);
 		ft_export(command, shell);
 		return (1);

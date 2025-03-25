@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/09 13:47:21 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/25 15:42:57 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/25 16:02:49 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ int	update_pwd(t_ms *shell, char *string, char *value)
 		}
 		i++;
 	}
-	free(new_value);
 	return (0);
 }
 
@@ -56,9 +55,6 @@ void	if_count_is_1(t_ms *shell, char *oldpwd, char *home)
 
 void	if_pipe_count(t_ms *shell, char **command, char *oldpwd)
 {
-	char	*temp;
-
-	temp = oldpwd;
 	if (chdir(command[1]) == -1)
 	{
 		ft_putstr_fd("cd: no such file or directory: ", 2);

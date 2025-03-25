@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 20:07:41 by smishos           #+#    #+#             */
-/*   Updated: 2025/03/24 17:40:40 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/25 15:41:06 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,10 +121,13 @@ void			sig_handler_heredoc(int signal);
 int				default_signals(void);
 int				init_signals(void);
 void			start_sig_checkers(void *handler_func);
+void			start_sig_checkers(void *handler_func);
 //utils.c
 void			free_args(char **commands);
 void			free_env(t_ms *shell);
 void			print_error(char *message, t_ms *shell, \
+					unsigned char status, int clean_shell);
+int				count_args(char **command);
 					unsigned char status, int clean_shell);
 int				count_args(char **command);
 void			malloc_error(t_ms *shell);
@@ -135,6 +138,7 @@ int				event(void);
 void			ft_putstr_eq(char *str);
 //builtin
 void			ft_echo(char **command, t_ms *shell);
+void			ft_pwd(t_ms *shell);
 void			ft_pwd(t_ms *shell);
 void			ft_exit(t_command *command, t_ms *shell);
 void			ft_env(char **command, t_ms *shell);

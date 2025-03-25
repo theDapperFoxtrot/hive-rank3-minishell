@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   export1.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/19 20:08:16 by smishos           #+#    #+#             */
-/*   Updated: 2025/03/20 17:56:57 by smishos          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/minishell.h"
 
 void	print_sorted_env(t_ms *shell)
@@ -33,7 +21,8 @@ void	print_sorted_env(t_ms *shell)
 	i = 0;
 	while (copy_list[i])
 	{
-		print_variables(copy_list, i);
+		ft_putstr_fd(copy_list[i], 1);
+		ft_putstr_fd("\n", 1);
 		i++;
 	}
 	free(copy_list);
@@ -70,14 +59,8 @@ void	if_equal_found(t_ms *shell, char *key, int i)
 
 int	sift_through_env(t_ms *shell, char *key, char *value, int i)
 {
-	char	*already_stored_value;
-
 	if (ft_strncmp(shell->env_list[i], key, ft_strlen(key)) == 0)
 	{
-		already_stored_value = ft_strchr(shell->env_list[i], '=');
-		already_stored_value++;
-		if (shell->env_list[i] && already_stored_value && !value)
-			return (1);
 		free(shell->env_list[i]);
 		if (ft_strlen(value) > 0)
 			if_value_not_empty(shell, key, value, i);

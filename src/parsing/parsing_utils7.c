@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 20:09:21 by smishos           #+#    #+#             */
-/*   Updated: 2025/03/24 17:33:01 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/25 15:42:29 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,26 +41,15 @@ void	tokenize_input_lm(t_ms *shell)
 
 int	pipe_syntax_check(t_ms *shell, t_token *token)
 {
-	int	result;
-
-	if (token->next->type == TOKEN_APPEND)
-		result = print_ret(shell, \
-		"minishell: syntax error near unexpected token `>>'");
-	else if (token->next->type == TOKEN_HERE_DOC)
-		result = print_ret(shell, \
-		"minishell: syntax error near unexpected token `<<'");
-	else if (token->next->type == TOKEN_REDIR_OUT)
-		result = print_ret(shell, \
-		"minishell: syntax error near unexpected token `>'");
-	else if (token->next->type == TOKEN_REDIR_IN)
-		result = print_ret(shell, \
-		"minishell: syntax error near unexpected token `<'");
-	else if (token->next->type == TOKEN_PIPE)
-		result = print_ret(shell, \
-		"minishell: syntax error near unexpected token `|'");
-	else
-		result = 0;
-	return (result);
+	if (token->next->type == TOKEN_PIPE)
+	{
+		print_error("minishell: syntax error near unexpected token `|'", \
+			shell, 2, 0);
+		shell->exit_code = 2;
+		shell->token_error = 1;
+		return (1);
+	}
+	return (0);
 }
 
 void	pipe_no_next_token(t_ms *shell)

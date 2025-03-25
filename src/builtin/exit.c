@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:33:02 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/20 15:10:00 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/25 15:41:38 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,24 @@ void	it_was_alpha(t_command *command, t_ms *shell)
 	cleanup(shell, 1);
 	exit(shell->exit_code);
 }
+void	it_was_alpha(t_command *command, t_ms *shell)
+{
+	shell->exit_code = 2;
+	ft_putstr_fd("minishell: exit: ", 2);
+	ft_putstr_fd(command->args[1], 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
+	if (ft_strncmp(command->args[1], "false", 5) == 0)
+		shell->exit_code = 1;
+	if (ft_strncmp(command->args[1], "true", 4) == 0)
+		shell->exit_code = 0;
+	cleanup(shell, 1);
+	exit(shell->exit_code);
+}
 
 static void	check_numeric(t_command *command, t_ms *shell)
 {
+	int			i;
+	long long	ret_value;
 	int			i;
 	long long	ret_value;
 
@@ -80,6 +95,7 @@ static void	check_numeric(t_command *command, t_ms *shell)
 	while (command->args[1][i])
 	{
 		if (ft_isalpha(command->args[1][i]) == 1)
+			it_was_alpha(command, shell);
 			it_was_alpha(command, shell);
 		i++;
 	}

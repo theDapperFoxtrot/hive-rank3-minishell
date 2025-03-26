@@ -6,7 +6,7 @@
 /*   By: smishos <smishos@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/09 13:47:21 by saylital          #+#    #+#             */
-/*   Updated: 2025/03/25 16:02:49 by smishos          ###   ########.fr       */
+/*   Updated: 2025/03/26 13:34:01 by smishos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ int	update_pwd(t_ms *shell, char *string, char *value)
 		}
 		i++;
 	}
+	free(new_value);
 	return (0);
 }
 
